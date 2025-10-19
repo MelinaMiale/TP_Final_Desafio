@@ -10,7 +10,7 @@ class LoginController {
     }
 
     public function loginForm() {
-        $this->renderer->render("login", []);
+        $this->renderer->render("login", []); //SIN EL [] APARECE : Warning: Trying to access array offset on value of type null i C:\xampp\htdocs\TP_Final_Desafio\vendor\mustache\src\Mustache\Parser.php on line 278
     }
 
     public function login() {
