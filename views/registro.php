@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Desafío UNLaM</title>
+
+    <!-- Hojas de estilo separadas -->
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/buttons.css">
+    <link rel="stylesheet" href="../css/map.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<header class="main-header">
+    <h1 class="logo">Desafío UNLaM</h1>
+    <nav class="nav-links">
+        <a href="#">Inicio</a>
+        <a href="#">Ranking</a>
+        <a href="#">Ayuda</a>
+    </nav>
+</header>
+
+<div class="container">
+    <h1 class="title">Registro de Usuario</h1>
+    <form action="../index.php?controller=Usuario&action=registrar" method="POST" enctype="multipart/form-data" class="register-form">
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label for="nombreCompleto">Nombre completo:</label>
+                <input type="text" id="nombreCompleto" name="nombreCompleto" placeholder="Ej: Melina González" required>
+            </div>
+
+            <div class="form-group">
+                <label for="anioNacimiento">Año de nacimiento:</label>
+                <input type="number" id="anioNacimiento" name="anioNacimiento" min="1900" max="2025" required>
+            </div>
+
+            <div class="form-group">
+                <label for="sexo">Sexo:</label>
+                <select id="sexo" name="sexo" required>
+                    <option value="" disabled selected>Seleccioná una opción</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                    <option value="NoCargar">Prefiero no cargarlo</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="username">Nombre de usuario:</label>
+                <input type="text" id="username" name="username" placeholder="Elegí un nombre de usuario" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="tuemail@ejemplo.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres" minlength="6" required>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmarPassword">Confirmar contraseña:</label>
+                <input type="password" id="confirmarPassword" name="confirmarPassword" placeholder="Repetí la contraseña" minlength="6" required>
+            </div>
+
+            <div class="form-group">
+                <label for="fotoPerfil">Foto de perfil:</label>
+                <input type="file" id="fotoPerfil" name="fotoPerfil" accept="image/*">
+            </div>
+
+            <!-- Mapa ocupa toda la fila -->
+            <div class="form-group map-full">
+                <label for="ubicacion">País y ciudad:</label>
+                <input type="text" id="ubicacion" name="ubicacion" placeholder="Seleccioná en el mapa o escribí..." required>
+                <div id="mapa" class="map-container">
+                    <p class="map-placeholder">🗺️ Mapa interactivo próximamente...</p>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn">Registrarme</button>
+
+        <p class="form-footer">
+            ¿Ya tenés cuenta? <a href="index.php?controller=Juego&action=login">Iniciá sesión</a>
+        </p>
+    </form>
+</div>
+<footer class="main-footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>Preguntas frecuentes</h3>
+            <ul>
+                <li><a href="../README.md" target="_blank">¿Cómo se juega?</a></li>
+                <li><a href="../README.md" target="_blank">Reglas</a></li>
+                <li><a href="#">Puntajes</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h3>Redes sociales</h3>
+            <ul>
+                <li><a href="https://www.instagram.com/unlamoficial/?hl=es" target="_blank">Instagram</a></li>
+                <li><a href="https://www.facebook.com/UnlamOficial/?locale=es_LA"target="_blank" >Facebook</a></li>
+                <li><a href="https://www.youtube.com/c/unlamoficial" target="_blank">YouTube</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h3>Contacto</h3>
+            <p>desafio@unlam.edu.ar</p>
+        </div>
+    </div>
+
+    <p class="footer-bottom">© 2025 Desafío UNLaM — Proyecto académico</p>
+</footer>
+
+</body>
+</html>

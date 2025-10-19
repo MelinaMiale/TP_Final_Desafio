@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafío UNLaM</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/buttons.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+    <header class="main-header">
+        <h1 class="logo">Desafío UNLaM</h1>
+        <nav class="nav-links">
+            <a href="#">Inicio</a>
+            <a href="#">Ranking</a>
+            <a href="#">Ayuda</a>
+        </nav>
+    </header>
+    <div class="container login-container">
+        <h1 class="title">Desafío UNLaM</h1>
+
+        <form action="../index.php?controller=Juego&action=iniciar" method="POST" class="login-form">
+            <div class="form-group">
+                <label for="nombre">Ingresá tu nombre</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Tu nombre..." required>
+            </div>
+            <div class="form-group">
+                <label for="contrasenia">Ingresá tu contraseña</label>
+                <input type="text" id="contrasenia" name="contrasenia" placeholder="Tu contrasenia..." required>
+            </div>
+            <button type="submit" class="btn">Comenzar</button>
+        </form>
+    </div>
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Preguntas frecuentes</h3>
+                <ul>
+                    <li><a href="#">¿Cómo se juega?</a></li>
+                    <li><a href="#">Reglas</a></li>
+                    <li><a href="#">Puntajes</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Redes sociales</h3>
+                <ul>
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">Facebook</a></li>
+                    <li><a href="#">YouTube</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p>desafio@unlam.edu.ar</p>
+            </div>
+        </div>
+
+        <p class="footer-bottom">© 2025 Desafío UNLaM — Proyecto académico</p>
+    </footer>
+</body>
+</html>

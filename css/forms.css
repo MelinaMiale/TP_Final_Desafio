@@ -1,0 +1,77 @@
+/* ---------- Estructura de formulario ---------- */
+.register-form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---------- Grid de dos columnas ---------- */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 1.5rem;
+    text-align: left;
+    margin-top: 1.5rem; /* 🔹 separa del título */
+    margin-bottom: 2rem; /* 🔹 espacio inferior */
+}
+
+/* ---------- Campos ---------- */
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    color: #fff;
+    font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+/* ---------- Campo de mapa ocupa toda la fila ---------- */
+.map-full {
+    grid-column: 1 / 3;
+}
+
+/* ---------- Archivo ---------- */
+input[type="file"] {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+    background: #e9c46a;
+    border: none;
+    color: #264653;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-right: 1rem;
+}
+
+/* ---------- Pie de formulario ---------- */
+.form-footer {
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
+.form-footer a {
+    color: #e9c46a;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.form-footer a:hover {
+    text-decoration: underline;
+}
