@@ -10,7 +10,7 @@ class LoginController {
     }
 
     public function loginForm() {
-        $this->renderer->render("login");
+        $this->renderer->render("login", []);
     }
 
     public function login() {

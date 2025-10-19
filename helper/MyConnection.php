@@ -10,9 +10,14 @@ class MyConnection{
     public function query($sql) {
         $result = $this->connection->query($sql);
 
-        if ($result->num_rows > 0) {
+        if ($result === true) {
+            return true; // INSERT, UPDATE, DELETE exitoso
+        }
+        
+        if ($result && $result->num_rows > 0) {
             return $result->fetch_all(MYSQLI_ASSOC);
         }
+        
         return null;
     }
 }

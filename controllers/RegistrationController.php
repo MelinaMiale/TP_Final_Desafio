@@ -10,19 +10,24 @@ class RegistrationController {
     }
 
     public function registroForm() {
-        $this->renderer->render("registro");
+        $this->renderer->render("registration");
     }
 
     public function registrar() {
-        $user_name = $_POST["user_name"];
+        $nombre_completo = $_POST["nombreCompleto"];
+        $anio_nacimiento = $_POST["anioNacimiento"];
+        $sexo = $_POST["sexo"];
+        $nombre_usuario = $_POST["username"];
+        $email = $_POST["email"];
         $password = $_POST["password"];
+        $ubicacion = $_POST["ubicacion"];
+        // foto después
 
-        $existe = $this->model->getUserByName($user_name);
-        if ($existe) {
-            $this->renderer->render("registro", ["error" => "El usuario ya existe"]);
-        } else {
-            $this->model->crearUsuario($user_name, $password);
-            header("Location: ?controller=login&method=loginForm");
-        }
+        // Luego llamar al modelo con TODOS los datos
+        $this->model->crearUsuario($nombre_completo, $anio_nacimiento, $sexo, $nombre_usuario, $email, $password, $ubicacion);
+        
+        // Redirigir al login después de registrar
+        header("Location: index.php?controller=login&method=loginForm");
+        exit;
     }
 }

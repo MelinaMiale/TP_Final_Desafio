@@ -25,7 +25,7 @@ class Router
         $controller = $this->configFactory->get($controllerName);
 
         if ($controller == null) {
-            header("location: /");
+            header("location: /index.php?controller=login&method=loginForm");
             exit;
         }
 
