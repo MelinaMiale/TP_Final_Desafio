@@ -5,7 +5,7 @@ include_once("Router.php");
 include_once(__DIR__ . '/../controllers/LoginController.php');
 include_once(__DIR__ . '/../controllers/RegistrationController.php');
 include_once(__DIR__ . '/../models/LoginModel.php');
-include_once(__DIR__ . '/../models/RegistrationModel.php');
+include_once(__DIR__ . '/../models/RegistroModel.php');
 include_once(__DIR__ . '/../vendor/mustache/src/Mustache/Autoloader.php');
 
 
