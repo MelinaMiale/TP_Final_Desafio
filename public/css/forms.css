@@ -37,9 +37,7 @@
 }
 
 /* ---------- Campo de mapa ocupa toda la fila ---------- */
-.map-full {
-    grid-column: 1 / 3;
-}
+/*movido a map.css
 
 /* ---------- Archivo ---------- */
 input[type="file"] {
@@ -75,3 +73,5 @@ input[type="file"]::-webkit-file-upload-button {
 .form-footer a:hover {
     text-decoration: underline;
 }
+
+

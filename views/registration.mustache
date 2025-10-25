@@ -50,16 +50,19 @@
                 <input type="file" id="fotoPerfil" name="fotoPerfil" accept="image/*">
             </div>
 
-            <!-- Mapa ocupa toda la fila -->
-            <div class="form-group map-full">
-                <label for="ubicacion">País y ciudad:</label>
-                <input type="text" id="ubicacion" name="ubicacion" placeholder="Seleccioná en el mapa o escribí..." required>
-                <div id="mapa" class="map-container">
-                    <p class="map-placeholder">🗺️ Mapa interactivo próximamente...</p>
-                </div>
+            <div class="form-group" style="pointer-events: none;">
+                <label for="ciudad">Ciudad:</label>
+                <input type="text" id="ciudad" name="ciudad" placeholder="Haz click en el mapa..." readonly required>
+            </div>
+
+            <div class="form-group" style="pointer-events: none;">
+                <label for="pais">País:</label>
+                <input type="text" id="pais" name="pais" placeholder="Haz click en el mapa..." readonly required>
             </div>
         </div>
+        <div id="mapa">
 
+        </div>
         <button type="submit" class="btn">Registrarme</button>
 
         <p class="form-footer">
@@ -67,4 +70,44 @@
         </p>
     </form>
 </div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    if (document.getElementById('mapa')) {
+        let map = L.map('mapa').setView([-34.6037, -58.3816], 5);
+        let marcador;
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: ''
+        }).addTo(map);
+
+        map.on('click', function(evento) {
+            let lat = evento.latlng.lat;
+            let lng = evento.latlng.lng;
+            let token = "pk.4bceeb166ba6748c7eae85a1eed87707";
+            if (marcador) {
+                map.removeLayer(marcador);
+            }
+
+            marcador = L.marker([lat, lng]).addTo(map);
+
+            fetch(`https://us1.locationiq.com/v1/reverse?key=${token}&lat=${lat}&lon=${lng}&format=json`)
+                    .then(res => res.json())
+                    .then(data => {
+                        let ciudad = data.address.city ||
+                                data.address.town ||
+                                data.address.village ||
+                                data.address.hamlet ||
+                                data.address.municipality ||
+                                data.address.county;
+                        let pais = data.address.country;
+                        document.getElementById('ciudad').value = ciudad;
+                        document.getElementById('pais').value = pais;
+                        marcador.bindPopup(ciudad + ', ' + pais).openPopup();
+                        console.log(`Ciudad: ${ciudad}, País: ${pais}`);
+                    })
+                    .catch(err => console.error(err));
+
+        });
+    }
+</script>
 {{> footer }}

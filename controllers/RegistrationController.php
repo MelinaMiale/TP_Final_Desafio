@@ -20,13 +20,12 @@ class RegistrationController {
         $nombre_usuario = $_POST["username"];
         $email = $_POST["email"];
         $password = $_POST["password"];
-        $ubicacion = $_POST["ubicacion"];
-        // foto después
+        $ciudad = $_POST["ciudad"];
+        $pais = $_POST["pais"];
 
-        // Luego llamar al modelo con TODOS los datos
-        $this->model->crearUsuario($nombre_completo, $anio_nacimiento, $sexo, $nombre_usuario, $email, $password, $ubicacion);
+        $this->model->crearUsuario($nombre_completo, $anio_nacimiento, $sexo, $nombre_usuario, $email, $password, $ciudad, $pais);
         
-        // Redirigir al login después de registrar
+        //aqui cambiar por el email
         header("Location: index.php?controller=login&method=loginForm");
         exit;
     }

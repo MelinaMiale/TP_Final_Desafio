@@ -21,9 +21,9 @@ class LoginController {
         if ($resultado) {
             $_SESSION["user_name"] = $user_name;
             header("Location: ?controller=login&method=home");
+            exit;
         } else {
             $this->renderer->render("login", [
-                "titulo" => "Iniciar sesión",
                 "error" => "Usuario o clave incorrecta"
             ]);
         }
