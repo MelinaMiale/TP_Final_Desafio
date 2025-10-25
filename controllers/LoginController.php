@@ -16,17 +16,27 @@ class LoginController {
     public function login() {
         $user_name = $_POST["user_name"];
         $password = $_POST["password"];
-        $resultado = $this->model->getUserWith($user_name, $password);
+        $resultado = $this->model->getUserByUserNameAndPassword($user_name, $password);
 
-        if ($resultado) {
+        if ($resultado && $resultado["cuenta_verificada"] == 1) {
             $_SESSION["user_name"] = $user_name;
             header("Location: ?controller=login&method=home");
             exit;
         } else {
+            $mensaje = $resultado
+                ? "Tu cuenta aún no fue verificada. Revisa tu correo."
+                : "Usuario o clave incorrecta";
+
+            if($mensaje == "Tu cuenta aún no fue verificada. Revisa tu correo."){
+
+            }
+
             $this->renderer->render("login", [
-                "error" => "Usuario o clave incorrecta"
+                // "titulo" => "Iniciar sesión",
+                "error" => $mensaje
             ]);
         }
+
     }
 
     public function home() {

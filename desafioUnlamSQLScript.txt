@@ -57,6 +57,8 @@ CREATE TABLE USUARIO(
     id_sexo INT NOT NULL,
     id_rol INT NOT NULL,
     id_ciudad INT NOT NULL,
+	cuenta_verificada BIT DEFAULT 0,
+    codigo_verificacion VARCHAR(255) DEFAULT NULL,
     FOREIGN KEY (id_sexo) REFERENCES SEXO (id),
     FOREIGN KEY (id_rol) REFERENCES ROL (id),
     FOREIGN KEY (id_ciudad) REFERENCES CIUDAD (id)

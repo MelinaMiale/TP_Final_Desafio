@@ -11,7 +11,7 @@ class MyConnection{
         $result = $this->connection->query($sql);
 
         if ($result === true) {
-            return true; // INSERT, UPDATE, DELETE exitoso
+            return true;
         }
         
         if ($result && $result->num_rows > 0) {
@@ -20,6 +20,7 @@ class MyConnection{
         
         return null;
     }
+
     public function getLastInsertId() {
         return $this->connection->insert_id;
     }

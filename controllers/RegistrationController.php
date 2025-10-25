@@ -9,11 +9,11 @@ class RegistrationController {
         $this->renderer = $renderer;
     }
 
-    public function registroForm() {
+    public function registerForm() {
         $this->renderer->render("registration");
     }
 
-    public function registrar() {
+    public function register() {
         $nombre_completo = $_POST["nombreCompleto"];
         $anio_nacimiento = $_POST["anioNacimiento"];
         $sexo = $_POST["sexo"];
@@ -22,11 +22,30 @@ class RegistrationController {
         $password = $_POST["password"];
         $ciudad = $_POST["ciudad"];
         $pais = $_POST["pais"];
+        // todo: agregar lógica para la foto de usuario
+        $cleanEmail = filter_var($email, FILTER_SANITIZE_EMAIL);
 
-        $this->model->crearUsuario($nombre_completo, $anio_nacimiento, $sexo, $nombre_usuario, $email, $password, $ciudad, $pais);
-        
-        //aqui cambiar por el email
-        header("Location: index.php?controller=login&method=loginForm");
+        $confirmationCode = $this->model->createUser($nombre_completo, $anio_nacimiento, $sexo, $nombre_usuario, $cleanEmail, $password, $ciudad, $pais);;
+
+        $mailManager = new MailManager();
+        $mailManager->sendEmailConfirmation($cleanEmail, $confirmationCode);
+
+        $success = $mailManager->sendEmailConfirmation($cleanEmail, $confirmationCode);
+        if (!$success) {
+            echo "<p>Error al enviar el correo de confirmación.</p>";
+        }
+
+        $this->renderer->render("partial/successful_registration");
         exit;
+    }
+
+    public function validateNewUser() {
+        $confirmationCode = $_GET['confirmationCode'] ?? null;
+
+        if ($confirmationCode && $this->model->validateUser($confirmationCode)) {
+            $this->renderer->render("partial/successful_account_validation");
+        } else {
+            $this->renderer->render("partial/failed_account_validation");
+        }
     }
 }
