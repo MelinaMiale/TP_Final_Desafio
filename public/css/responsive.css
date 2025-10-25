@@ -14,10 +14,6 @@
         grid-template-columns: 1fr;
     }
 
-    .map-full {
-        grid-column: 1;
-    }
-
     .btn {
         padding: 0.7rem;
     }

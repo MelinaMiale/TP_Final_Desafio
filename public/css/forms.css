@@ -36,11 +36,6 @@
     margin-bottom: 0.5rem;
 }
 
-/* ---------- Campo de mapa ocupa toda la fila ---------- */
-.map-full {
-    grid-column: 1 / 3;
-}
-
 /* ---------- Archivo ---------- */
 input[type="file"] {
     background-color: rgba(255, 255, 255, 0.15);
