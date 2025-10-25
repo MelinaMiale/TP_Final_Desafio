@@ -25,14 +25,17 @@ class RegistrationController {
         // todo: agregar lógica para la foto de usuario
         $cleanEmail = filter_var($email, FILTER_SANITIZE_EMAIL);
 
-        $confirmationCode = $this->model->createUser($nombre_completo, $anio_nacimiento, $sexo, $nombre_usuario, $email, $password, $ciudad, $pais);;
+        $confirmationCode = $this->model->createUser($nombre_completo, $anio_nacimiento, $sexo, $nombre_usuario, $cleanEmail, $password, $ciudad, $pais);;
 
         $mailManager = new MailManager();
         $mailManager->sendEmailConfirmation($cleanEmail, $confirmationCode);
 
-        //todo: ¿deberíamos manejar algún posible error en el envío del mail?
+        $success = $mailManager->sendEmailConfirmation($cleanEmail, $confirmationCode);
+        if (!$success) {
+            echo "<p>Error al enviar el correo de confirmación.</p>";
+        }
 
-        echo $this->renderer->render("partial/successful_registration");
+        $this->renderer->render("partial/successful_registration");
         exit;
     }
 
@@ -40,9 +43,9 @@ class RegistrationController {
         $confirmationCode = $_GET['confirmationCode'] ?? null;
 
         if ($confirmationCode && $this->model->validateUser($confirmationCode)) {
-            echo $this->renderer->render("partial/successful_account_validation");
+            $this->renderer->render("partial/successful_account_validation");
         } else {
-            echo $this->renderer->render("partial/failed_account_validation");
+            $this->renderer->render("partial/failed_account_validation");
         }
     }
 }
