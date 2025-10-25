@@ -20,4 +20,7 @@ class MyConnection{
         
         return null;
     }
+    public function getLastInsertId() {
+        return $this->connection->insert_id;
+    }
 }

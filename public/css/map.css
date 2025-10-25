@@ -1,18 +1,14 @@
 /* map.css */
-.map-container {
-    background: rgba(255, 255, 255, 0.1);
-    height: 180px;
+#mapa {
+
+    height: 300px;
     border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #e9c46a;
     margin-top: 0.5rem;
     margin-bottom: 1rem;
     padding: 1rem; /* 🔹 aire interno */
 }
 
-.map-placeholder {
-    font-size: 0.9rem;
-    opacity: 0.9;
+#ciudad{
+    padding: 5px;
+    pointer-events: none;
 }
