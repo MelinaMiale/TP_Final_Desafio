@@ -11,7 +11,8 @@
 
 body {
     font-family: 'Rubik', 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #2a9d8f, #264653);
+    /*background: linear-gradient(135deg, #2a9d8f, #264653); valor viejo no borrar este comentario!*/
+    background-image: url("../img/fondoEstrellado.jpg");
     color: white;
     padding-top: 80px;
     padding-bottom: 3rem;
@@ -21,7 +22,8 @@ body {
    CONTENEDOR PRINCIPAL
 ======================================================= */
 .container {
-    background: rgba(255, 255, 255, 0.1);
+    /*background: rgba(255, 255, 255, 0.1); valor viejo no borrar este comentario! */
+    background: linear-gradient(135deg, #f72585, #7209b7, #3a0ca3);
     padding: 3rem 2rem;
     border-radius: 15px;
     width: 90%;
