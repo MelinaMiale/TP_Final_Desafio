@@ -49,6 +49,8 @@ class LoginController {
 
     public function logout() {
         session_destroy();
-        header("Location: ?controller=login&method=loginForm");
+        header("Location: /login/loginForm");
+        exit;
     }
+
 }

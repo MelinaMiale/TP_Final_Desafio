@@ -5,11 +5,13 @@ include_once("Router.php");
 include_once("helper/MailManager.php");
 include_once(__DIR__ . '/../controllers/LoginController.php');
 include_once(__DIR__ . '/../controllers/RegistrationController.php');
+include_once(__DIR__ . '/../controllers/HomeController.php');
+include_once(__DIR__ . '/../controllers/GameController.php');
 include_once(__DIR__ . '/../models/LoginModel.php');
 include_once(__DIR__ . '/../models/RegistrationModel.php');
-include_once(__DIR__ . '/../vendor/mustache/src/Mustache/Autoloader.php');
-include_once(__DIR__ . '/../controllers/HomeController.php');
 include_once(__DIR__ . '/../models/HomeModel.php');
+include_once(__DIR__ . '/../models/GameSessionModel.php');
+include_once(__DIR__ . '/../vendor/mustache/src/Mustache/Autoloader.php');
 
 
 class ConfigFactory {
@@ -39,6 +41,9 @@ class ConfigFactory {
 
         $this->objects["HomeController"] =
             new HomeController(new HomeModel($this->connection), $this->renderer);
+
+        $this->objects["GameController"] =
+            new GameController(new GameSessionModel($this->connection), $this->renderer);
     }
 
     public function get($objectName) {
