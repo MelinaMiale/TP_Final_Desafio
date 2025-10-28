@@ -7,10 +7,12 @@ include_once(__DIR__ . '/../controllers/LoginController.php');
 include_once(__DIR__ . '/../controllers/RegistrationController.php');
 include_once(__DIR__ . '/../controllers/HomeController.php');
 include_once(__DIR__ . '/../controllers/GameController.php');
+include_once(__DIR__ . '/../controllers/ProfileController.php');
 include_once(__DIR__ . '/../models/LoginModel.php');
 include_once(__DIR__ . '/../models/RegistrationModel.php');
 include_once(__DIR__ . '/../models/HomeModel.php');
 include_once(__DIR__ . '/../models/GameSessionModel.php');
+include_once(__DIR__ . '/../models/ProfileModel.php');
 include_once(__DIR__ . '/../vendor/mustache/src/Mustache/Autoloader.php');
 
 
@@ -44,6 +46,10 @@ class ConfigFactory {
 
         $this->objects["GameController"] =
             new GameController(new GameSessionModel($this->connection), $this->renderer);
+
+        $this->objects["ProfileController"] =
+            new ProfileController(new ProfileModel($this->connection), $this->renderer);
+
     }
 
     public function get($objectName) {
