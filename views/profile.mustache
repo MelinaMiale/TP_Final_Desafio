@@ -1,0 +1,80 @@
+{{> header }}
+<div class="profile-container">
+
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-image">
+                {{#foto_perfil}}
+                    <img src="{{foto_perfil}}" alt="Foto de perfil">
+                {{/foto_perfil}}
+                {{^foto_perfil}}
+                    <div class="default-avatar">{{inicial}}</div>
+                {{/foto_perfil}}
+
+            </div>
+
+            <div class="profile-info">
+                <h2 class="username">{{nombre_usuario}}</h2>
+                <p class="user-details">{{ciudad}} • {{puntos_totales}} pts</p>
+            </div>
+
+            <div class="profile-qr">
+                <img src="{{qr_base64}}" alt="Código QR de ejemplo">
+                <p class="qr-text">Escaneá para ver mi perfil</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="history-card">
+        <h3>Partidas recientes</h3>
+
+        <div class="match">
+            <div class="player winner">
+                <div class="player-image">AL</div>
+                <div class="player-name">Alice</div>
+            </div>
+
+            <div class="match-icon">🏆</div>
+
+            <div class="player">
+                <div class="player-image">BO</div>
+                <div class="player-name">Bob</div>
+            </div>
+        </div>
+
+        <div class="match">
+            <div class="player">
+                <div class="player-image">CH</div>
+                <div class="player-name">Charlie</div>
+            </div>
+
+            <div class="match-icon">🏆</div>
+
+            <div class="player winner">
+                <div class="player-image">DA</div>
+                <div class="player-name">Daisy</div>
+            </div>
+        </div>
+
+        <div class="match">
+            <div class="player winner">
+                <div class="player-image">EV</div>
+                <div class="player-name">Eve</div>
+            </div>
+
+            <div class="match-icon">🏆</div>
+
+            <div class="player">
+                <div class="player-image">FR</div>
+                <div class="player-name">Frank</div>
+            </div>
+        </div>
+
+        <!-- Repetir hasta 5 filas -->
+    </div>
+
+
+    <a href="/index.php?controller=home&method=index" class="btn">⬅ Volver al inicio</a>
+</div>
+
+{{> footer }}
