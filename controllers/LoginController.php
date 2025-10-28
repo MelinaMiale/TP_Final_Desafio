@@ -20,6 +20,7 @@ class LoginController {
 
         if ($resultado && $resultado["cuenta_verificada"] == 1) {
             $_SESSION["user_name"] = $user_name;
+            $_SESSION["userId"] = $resultado["id"];
             header("Location: ?controller=home&method=displayHome");
             exit;
         } else {
