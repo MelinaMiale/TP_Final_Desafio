@@ -10,7 +10,7 @@
     <div class="question-block">
         <p class="question-text">{{text}}</p>
 
-        <form action="../index.php?controller=Game&method=getNextQuestion" method="POST" class="options-form">
+        <form action="../index.php?controller=Game&method=submitAnswer" method="POST" class="options-form">
             <input type="hidden" name="questionId" value="{{questionId}}">
             <div class="option">
                 <label><input type="radio" name="answer" value="A" required> A) {{optionA}}</label>
