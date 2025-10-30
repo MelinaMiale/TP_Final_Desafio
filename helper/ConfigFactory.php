@@ -8,6 +8,8 @@ include_once(__DIR__ . '/../controllers/RegistrationController.php');
 include_once(__DIR__ . '/../models/LoginModel.php');
 include_once(__DIR__ . '/../models/RegistrationModel.php');
 include_once(__DIR__ . '/../vendor/mustache/src/Mustache/Autoloader.php');
+include_once(__DIR__ . '/../controllers/RankingController.php');
+include_once(__DIR__ . '/../models/RankingModel.php');
 
 
 class ConfigFactory {
@@ -34,6 +36,9 @@ class ConfigFactory {
 
         $this->objects["RegistrationController"] =
             new RegistrationController(new RegistrationModel($this->connection), $this->renderer);
+
+        $this->objects["RankingController"] =
+            new RankingController(new RankingModel($this->connection), $this->renderer);
     }
 
     public function get($objectName) {
