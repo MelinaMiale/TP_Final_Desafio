@@ -1,1 +1,36 @@
-<h1>¡BIENVENIDO!</h1>
+{{> header }}
+
+    <div class="container lobby-container">
+        <h2 class="title">¡Bienvenida, {{user_name}}!</h2>
+        <p class="ranking-info">🏆 Estás en el puesto <strong>#{{ranking}}</strong> con <strong>{{score}} puntos</strong></p>
+        <p class="games-played">Has jugado <strong>{{games_played}}</strong> partidas</p>
+
+        <div class="lobby-actions">
+            <a href="../index.php?controller=game&method=startGame" class="btn">🎮 Iniciar Nueva Partida</a>
+            <a href="/ranking" class="btn">📊 Ver Ranking Completo</a>
+            <a href="/question/create" class="btn">➕ Crear Pregunta</a>
+            <a href="/index.php?controller=profile&method=showProfile" class="btn">👤 Ver Perfil</a>
+        </div>
+
+        <h3 class="subtitle">🕹️ Historial de Partidas</h3>
+        <table class="game-history">
+            <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Correctas</th>
+                <th>Puntos</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#games}}
+                <tr>
+                    <td>{{date}}</td>
+                    <td>{{correct}}/10</td>
+                    <td>{{points}} pts</td>
+                </tr>
+            {{/games}}
+            </tbody>
+        </table>
+    </div>
+
+{{> footer }}

@@ -20,7 +20,7 @@ class LoginController {
 
         if ($resultado && $resultado["cuenta_verificada"] == 1) {
             $_SESSION["user_name"] = $user_name;
-            header("Location: ?controller=login&method=home");
+            header("Location: ?controller=home&method=displayHome");
             exit;
         } else {
             $mensaje = $resultado
@@ -28,11 +28,10 @@ class LoginController {
                 : "Usuario o clave incorrecta";
 
             if($mensaje == "Tu cuenta aún no fue verificada. Revisa tu correo."){
-
+                // todo: ¿deberíamos re-enviar el mail o exponer la opción para reenviar el mail?
             }
 
             $this->renderer->render("login", [
-                // "titulo" => "Iniciar sesión",
                 "error" => $mensaje
             ]);
         }
@@ -50,6 +49,8 @@ class LoginController {
 
     public function logout() {
         session_destroy();
-        header("Location: ?controller=login&method=loginForm");
+        header("Location: /login/loginForm");
+        exit;
     }
+
 }

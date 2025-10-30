@@ -16,8 +16,13 @@ class Router
     }
 
     public function executeController($controllerParam, $methodParam) {
-        $controller = $this->getControllerFrom($controllerParam);
-        $this->executeMethodFromController($controller, $methodParam);
+        if($_SESSION["user_name"] || $controllerParam == "login"){
+            $controller = $this->getControllerFrom($controllerParam);
+            $this->executeMethodFromController($controller, $methodParam);
+        } else {
+            header("location: /index.php?controller=login&method=loginForm");
+            exit;
+        }
     }
 
     private function getControllerFrom($controllerName) {

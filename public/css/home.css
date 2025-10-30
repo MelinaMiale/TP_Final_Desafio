@@ -1,0 +1,49 @@
+.lobby-container {
+    background: linear-gradient(135deg, #f72585, #7209b7, #3a0ca3);
+    color: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+}
+
+.ranking-info, .games-played {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.lobby-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.game-history {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.game-history th, .game-history td {
+    padding: 0.8rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.game-history th {
+    background-color: rgba(255,255,255,0.2);
+    font-weight: bold;
+}
+
+.game-history tr:hover {
+    background-color: rgba(255,255,255,0.15);
+}
