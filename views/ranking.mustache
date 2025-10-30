@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ranking</title>
+    <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link rel="stylesheet" href="../public/css/ranking.css">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-main">
+
+            <div class="header">
+                <a href="/login/home" class="btn-back">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </a>
+                <h1>Ranking</h1>
+            </div>
+
+            <div class="search-container">
+                <div class="search-wrapper">
+                    <div class="input-group">
+                            <span class="input-icon">
+                                <span class="material-symbols-outlined">search</span>
+                            </span>
+                        <input type="text" class="input-field" placeholder="Buscar jugador...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th style="width: 100px;">Rango</th>
+                            <th>Jugador</th>
+                            <th>Puntuación</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{#ranking}}
+                            <tr class="rank-{{posicion}}">
+                                <td>
+                                    <div class="rank-cell">
+                                        <span># {{posicion}}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="player-cell">
+                                        <img src="/public/subidos/avatars/{{foto}}" alt="{{nombre_usuario}}" class="player-avatar">
+                                        <span class="player-name">{{nombre_usuario}}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="score-cell">{{puntos_totales}}</div>
+                                </td>
+                            </tr>
+                        {{/ranking}}
+
+                        <!-- Fila del usuario actual -->
+                        <tr class="player-row">
+                            <td>
+                                <div class="rank-cell">
+                                    <span># {{posicion_usuario}}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="player-cell">
+                                    <img src="/public/subidos/avatars/{{foto_usuario}}" alt="{{user_name}}" class="player-avatar">
+                                    <span class="player-name">{{user_name}}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="score-cell">{{puntos}}</div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-container">
+                <nav>
+                    <ul class="pagination">
+                        <!-- Botón Anterior -->
+                        {{#es_primera_pagina}}
+                        <li class="page-item disabled">
+                            <span class="page-link disabled">
+                                <span class="material-symbols-outlined">chevron_left</span>
+                            </span>
+                        </li>
+                        {{/es_primera_pagina}}
+                        {{^es_primera_pagina}}
+                        <li class="page-item">
+                            <a href="/ranking/mostrar?pagina={{pagina_anterior}}" class="page-link">
+                                <span class="material-symbols-outlined">chevron_left</span>
+                            </a>
+                        </li>
+                        {{/es_primera_pagina}}
+
+                        <!-- Números de páginas -->
+                        {{#total_paginas}}
+                            <li class="page-item">
+                                <a href="/ranking/mostrar?pagina={{.}}" class="page-link">{{.}}</a>
+                            </li>
+                        {{/total_paginas}}
+
+                        <!-- Botón Siguiente -->
+                        {{#es_ultima_pagina}}
+                        <li class="page-item disabled">
+                            <span class="page-link disabled">
+                                <span class="material-symbols-outlined">chevron_right</span>
+                            </span>
+                        </li>
+                        {{/es_ultima_pagina}}
+                        {{^es_ultima_pagina}}
+                        <li class="page-item">
+                            <a href="/ranking/mostrar?pagina={{pagina_siguiente}}" class="page-link">
+                                <span class="material-symbols-outlined">chevron_right</span>
+                            </a>
+                        </li>
+                        {{/es_ultima_pagina}}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

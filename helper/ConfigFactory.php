@@ -14,6 +14,8 @@ include_once(__DIR__ . '/../models/HomeModel.php');
 include_once(__DIR__ . '/../models/GameSessionModel.php');
 include_once(__DIR__ . '/../models/ProfileModel.php');
 include_once(__DIR__ . '/../vendor/mustache/src/Mustache/Autoloader.php');
+include_once(__DIR__ . '/../controllers/RankingController.php');
+include_once(__DIR__ . '/../models/RankingModel.php');
 
 
 class ConfigFactory {
@@ -41,6 +43,9 @@ class ConfigFactory {
         $this->objects["RegistrationController"] =
             new RegistrationController(new RegistrationModel($this->connection), $this->renderer);
 
+        $this->objects["RankingController"] =
+            new RankingController(new RankingModel($this->connection), $this->renderer);
+      
         $this->objects["HomeController"] =
             new HomeController(new HomeModel($this->connection), $this->renderer);
 
