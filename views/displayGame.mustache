@@ -1,67 +1,33 @@
-<!--{{> header }}-->
-
-<!--<div class="container game-container">-->
-<!--    <h2 class="title">🧠 Pregunta 1</h2>-->
-
-<!--    <div class="question-block">-->
-<!--        <p class="question-text">{{enunciado}}</p>-->
-<!--        <div class="category-tag" style="background-color: {{colorCategoria}};">-->
-<!--            {{nombreCategoria}}-->
-<!--        </div>-->
-
-<!--        <form action="../index.php?controller=game&method=submitAnswer" method="POST" class="options-form">-->
-<!--            <input type="hidden" name="idPregunta" value="{{idPregunta}}">-->
-<!--            <div class="option">-->
-<!--                <label><input type="radio" name="respuesta" value="A" required> A) {{opcionA}}</label>-->
-<!--            </div>-->
-<!--            <div class="option">-->
-<!--                <label><input type="radio" name="respuesta" value="B"> B) {{opcionB}}</label>-->
-<!--            </div>-->
-<!--            <div class="option">-->
-<!--                <label><input type="radio" name="respuesta" value="C"> C) {{opcionC}}</label>-->
-<!--            </div>-->
-<!--            <div class="option">-->
-<!--                <label><input type="radio" name="respuesta" value="D"> D) {{opcionD}}</label>-->
-<!--            </div>-->
-
-<!--            <button type="submit" class="btn">Responder</button>-->
-<!--        </form>-->
-<!--    </div>-->
-<!--</div>-->
-
-<!--{{> footer }}-->
-
-
 {{> header }}
-
-<div class="container game-container">
+    <div class="container game-container">
     <div class="category-header">
-        <img src="../public/img/arte.png" alt="Icono de categoría" class="category-icon">
-        <span class="category-name">Arte</span>
+        <img src="../public/img/{{categoryIcon}}.png" alt="Category icon" class="category-icon">
+        <span class="category-name">{{categoryName}}</span>
     </div>
 
-    <h2 class="title">Pregunta 1</h2>
+    <h2 class="title">Question {{questionNumber}}</h2>
 
     <div class="question-block">
-        <p class="question-text">¿Quién pintó La Última Cena?</p>
+        <p class="question-text">{{text}}</p>
 
-        <form action="#" method="POST" class="options-form">
+        <form action="../index.php?controller=Game&method=submitAnswer" method="POST" class="options-form">
+            <input type="hidden" name="questionId" value="{{questionId}}">
             <div class="option">
-                <label><input type="radio" name="respuesta" value="A" required> A) Leonardo da Vinci</label>
+                <label><input type="radio" name="answer" value="A" required> A) {{optionA}}</label>
             </div>
             <div class="option">
-                <label><input type="radio" name="respuesta" value="B"> B) Miguel Ángel</label>
+                <label><input type="radio" name="answer" value="B"> B) {{optionB}}</label>
             </div>
             <div class="option">
-                <label><input type="radio" name="respuesta" value="C"> C) Rafael</label>
+                <label><input type="radio" name="answer" value="C"> C) {{optionC}}</label>
             </div>
             <div class="option">
-                <label><input type="radio" name="respuesta" value="D"> D) Donatello</label>
+                <label><input type="radio" name="answer" value="D"> D) {{optionD}}</label>
             </div>
 
-            <button type="submit" class="btn">Confirmar Respuesta</button>
+            <button type="submit" class="btn">Submit Answer</button>
         </form>
     </div>
 </div>
-
 {{> footer }}
+

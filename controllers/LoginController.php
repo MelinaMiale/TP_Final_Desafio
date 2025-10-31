@@ -20,6 +20,8 @@ class LoginController {
 
         if ($resultado && $resultado["cuenta_verificada"] == 1) {
             $_SESSION["user_name"] = $user_name;
+            $_SESSION["userId"] = $resultado["id"];
+            $_SESSION["totalScore"] = $resultado["puntos_totales"];
             header("Location: ?controller=home&method=displayHome");
             exit;
         } else {
