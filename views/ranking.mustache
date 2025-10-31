@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-bs-theme="dark">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,10 +23,10 @@
             <div class="search-container">
                 <div class="search-wrapper">
                     <div class="input-group">
-                            <span class="input-icon">
-                                <span class="material-symbols-outlined">search</span>
-                            </span>
-                        <input type="text" class="input-field" placeholder="Buscar jugador...">
+                        <span class="input-icon">
+                            <span class="material-symbols-outlined">search</span>
+                        </span>
+                        <input type="text" class="input-field" placeholder="Search player...">
                     </div>
                 </div>
             </div>
@@ -36,46 +36,46 @@
                     <table>
                         <thead>
                         <tr>
-                            <th style="width: 100px;">Rango</th>
-                            <th>Jugador</th>
-                            <th>Puntuación</th>
+                            <th style="width: 100px;">Rank</th>
+                            <th>Player</th>
+                            <th>Score</th>
                         </tr>
                         </thead>
                         <tbody>
                         {{#ranking}}
-                            <tr class="rank-{{posicion}}">
+                            <tr class="rank-{{rank}}">
                                 <td>
                                     <div class="rank-cell">
-                                        <span># {{posicion}}</span>
+                                        <span># {{rank}}</span>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="player-cell">
-                                        <img src="/public/subidos/avatars/{{foto}}" alt="{{nombre_usuario}}" class="player-avatar">
-                                        <span class="player-name">{{nombre_usuario}}</span>
+                                        <img src="/public/subidos/avatars/{{user_avatar}}" alt="{{user_name}}" class="player-avatar">
+                                        <span class="player-name">{{username}}</span>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="score-cell">{{puntos_totales}}</div>
+                                    <div class="score-cell">{{total_score}}</div>
                                 </td>
                             </tr>
                         {{/ranking}}
 
-                        <!-- Fila del usuario actual -->
+                        <!-- Current user row -->
                         <tr class="player-row">
                             <td>
                                 <div class="rank-cell">
-                                    <span># {{posicion_usuario}}</span>
+                                    <span># {{user_rank}}</span>
                                 </div>
                             </td>
                             <td>
                                 <div class="player-cell">
-                                    <img src="/public/subidos/avatars/{{foto_usuario}}" alt="{{user_name}}" class="player-avatar">
+                                    <img src="/public/subidos/avatars/{{user_avatar}}" alt="{{user_name}}" class="player-avatar">
                                     <span class="player-name">{{user_name}}</span>
                                 </div>
                             </td>
                             <td>
-                                <div class="score-cell">{{puntos}}</div>
+                                <div class="score-cell">{{score}}</div>
                             </td>
                         </tr>
                         </tbody>
@@ -87,44 +87,41 @@
             <div class="pagination-container">
                 <nav>
                     <ul class="pagination">
-                        <!-- Botón Anterior -->
-                        {{#es_primera_pagina}}
-                        <li class="page-item disabled">
+                        {{#is_first_page}}
+                            <li class="page-item disabled">
                             <span class="page-link disabled">
                                 <span class="material-symbols-outlined">chevron_left</span>
                             </span>
-                        </li>
-                        {{/es_primera_pagina}}
-                        {{^es_primera_pagina}}
-                        <li class="page-item">
-                            <a href="/ranking/mostrar?pagina={{pagina_anterior}}" class="page-link">
-                                <span class="material-symbols-outlined">chevron_left</span>
-                            </a>
-                        </li>
-                        {{/es_primera_pagina}}
-
-                        <!-- Números de páginas -->
-                        {{#total_paginas}}
-                            <li class="page-item">
-                                <a href="/ranking/mostrar?pagina={{.}}" class="page-link">{{.}}</a>
                             </li>
-                        {{/total_paginas}}
+                        {{/is_first_page}}
+                        {{^is_first_page}}
+                            <li class="page-item">
+                                <a href="/ranking/display?page={{previous_page}}" class="page-link">
+                                <span class="material-symbols-outlined">chevron_left</span>
+                                </a>
+                            </li>
+                        {{/is_first_page}}
 
-                        <!-- Botón Siguiente -->
-                        {{#es_ultima_pagina}}
-                        <li class="page-item disabled">
+                        {{#total_pages}}
+                            <li class="page-item">
+                                <a href="/ranking/display?page={{.}}" class="page-link">{{.}}</a>
+                            </li>
+                        {{/total_pages}}
+
+                        {{#is_last_page}}
+                            <li class="page-item disabled">
                             <span class="page-link disabled">
                                 <span class="material-symbols-outlined">chevron_right</span>
                             </span>
-                        </li>
-                        {{/es_ultima_pagina}}
-                        {{^es_ultima_pagina}}
-                        <li class="page-item">
-                            <a href="/ranking/mostrar?pagina={{pagina_siguiente}}" class="page-link">
+                            </li>
+                        {{/is_last_page}}
+                        {{^is_last_page}}
+                            <li class="page-item">
+                                <a href="/ranking/display?page={{next_page}}" class="page-link">
                                 <span class="material-symbols-outlined">chevron_right</span>
-                            </a>
-                        </li>
-                        {{/es_ultima_pagina}}
+                                </a>
+                            </li>
+                        {{/is_last_page}}
                     </ul>
                 </nav>
             </div>

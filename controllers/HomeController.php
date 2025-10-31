@@ -21,6 +21,7 @@ class HomeController {
             exit;
         }
 
+        // TODO: esto es provisorio y lo tenemos que cambiar
         $datosSimulados = [
             'user_name' => $_SESSION["user_name"],
             'ranking' => 1,

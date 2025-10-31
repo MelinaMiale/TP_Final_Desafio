@@ -232,7 +232,6 @@ INSERT INTO CATEGORIA (nombre, color) VALUES
 ('Videojuegos', '#800080'),
 ('Gastronomía', '#CC760E'),
 ('Mitología', '#FFD700'),
-('Biología', '#90EE90'),
 ('Química', '#00CED1'),
 ('Astronomia', '#191970'),
 ('Política', '#36454F'),
@@ -246,499 +245,940 @@ INSERT INTO TIPO_PARTIDA (nombre) VALUES ('Vs Bot'), ('Vs Otro Jugador');
 
 INSERT INTO USUARIO (nombre_completo, anio_nacimiento, correo_electronico, contrasenia, nombre_usuario, foto, puntos_totales, id_sexo, id_rol, id_ciudad) VALUES ('Adrian Rivas', 1983, 'admin@desafioUnlam.com', '12345', 'Admin', NULL, 0, 2, 1, 1);
 
--- RESPUESTAS HISTORIA
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES
-('1492', '1512', '1482', '1502', 'A'),
-('Napoleón Bonaparte', 'Julio César', 'Alejandro Magno', 'Genghis Khan', 'A'),
-('Revolución Francesa', 'Revolución Rusa', 'Revolución Industrial', 'Revolución Americana', 'A'),
-('Roma', 'Grecia', 'Egipto', 'Mesopotamia', 'A'),
-('Magna Carta', 'Bill of Rights', 'Declaración de Independencia', 'Código de Hammurabi', 'A'),
-('Tratado de Tordesillas', 'Paz de Westfalia', 'Concordato de Worms', 'Tratado de Utrecht', 'A'),
-('Carlos V', 'Felipe II', 'Luis XIV', 'Fernando VII', 'A'),
-('Batalla de Stalingrado', 'Batalla de Normandía', 'Batalla de Midway', 'Batalla de Kursk', 'A'),
-('Imperio Hitita', 'Imperio Asirio', 'Imperio Persa', 'Imperio Romano', 'A'),
-('Revolución Gloriosa', 'Revolución Industrial', 'Revolución Cubana', 'Revolución Meiji', 'A');
+-- HISTORIA --------------------------------------------------------------------------------------
 
--- PREGUNTAS HISTORIA
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES
-('¿En qué año llegó Cristóbal Colón a América?', 1, 1, 1, 1, 'facil'),
-('¿Quién fue el líder militar francés que se coronó emperador en 1804?', 2, 1, 1, 1, 'facil'),
-('¿Cuál de estas revoluciones comenzó en 1789 en Francia?', 3, 1, 1, 1, 'facil'),
-('¿Qué civilización construyó el Coliseo?', 4, 1, 1, 1, 'facil'),
-('¿Qué documento histórico limitó el poder del rey de Inglaterra en 1215?', 5, 1, 1, 1, 'facil'),
-('¿Qué tratado dividió las tierras descubiertas entre España y Portugal en 1494?', 6, 1, 1, 1, 'dificil'),
-('¿Quién fue rey de España durante la época de la Armada Invencible?', 7, 1, 1, 1, 'dificil'),
-('¿Qué batalla fue decisiva en la Segunda Guerra Mundial en el frente oriental?', 8, 1, 1, 1, 'dificil'),
-('¿Qué imperio antiguo se centró en Anatolia y Siria entre los siglos XVII y XII a.C.?', 9, 1, 1, 1, 'dificil'),
-('¿Qué revolución en Inglaterra resultó en la deposición del rey Jacobo II?', 10, 1, 1, 1, 'dificil');
+-- Pregunta 1
+INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
+VALUES ('1492', '1512', '1482', '1502', 'A');
+SET @idResp1 = LAST_INSERT_ID();
 
--- RESPUESTAS ARTE
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES
-('Leonardo da Vinci', 'Miguel Ángel', 'Rafael', 'Donatello', 'A'),
-('Vincent van Gogh', 'Claude Monet', 'Pablo Picasso', 'Salvador Dalí', 'A'),
-('La Mona Lisa', 'La última cena', 'El nacimiento de Venus', 'La persistencia de la memoria', 'A'),
-('Renacimiento', 'Barroco', 'Romanticismo', 'Impresionismo', 'A'),
-('Fresco', 'Óleo', 'Acuarela', 'Témpera', 'A'),
-('Cubismo', 'Surrealismo', 'Expresionismo', 'Futurismo', 'A'),
-('Guernica', 'El jardín de las delicias', 'La noche estrellada', 'Las meninas', 'A'),
-('Claude Monet', 'Paul Cézanne', 'Edgar Degas', 'Pierre-Auguste Renoir', 'A'),
-('Arte Paleolítico', 'Arte Románico', 'Arte Gótico', 'Arte Barroco', 'A'),
-('Sandro Botticelli', 'Hieronymus Bosch', 'Caravaggio', 'El Greco', 'A');
+INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
+VALUES ('¿En qué año llegó Cristóbal Colón a América?', @idResp1, 1, 1, 1, 'facil');
 
--- PREGUNTAS ARTE
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES
-('¿Quién pintó La Última Cena?', 1, 2, 1, 1, 'facil'),
-('¿Qué artista neerlandés cortó su propia oreja?', 2, 2, 1, 1, 'facil'),
-('¿Cuál es la pintura más famosa de Leonardo da Vinci?', 3, 2, 1, 1, 'facil'),
-('¿A qué movimiento artístico pertenece Leonardo da Vinci?', 4, 2, 1, 1, 'facil'),
-('¿Qué técnica consiste en aplicar pigmento sobre yeso húmedo?', 5, 2, 1, 1, 'facil'),
-('¿Qué movimiento artístico fue desarrollado por Picasso y Braque?', 6, 2, 1, 1, 'dificil'),
-('¿Qué obra de Picasso representa los horrores de la guerra civil española?', 7, 2, 1, 1, 'dificil'),
-('¿Quién fue un pintor líder del impresionismo francés?', 8, 2, 1, 1, 'dificil'),
-('¿Qué arte es característico de las pinturas de las cuevas de Altamira?', 9, 2, 1, 1, 'dificil'),
-('¿Quién pintó “El nacimiento de Venus”?', 10, 2, 1, 1, 'dificil');
+-- Pregunta 2
+INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
+VALUES ('Napoleón Bonaparte', 'Julio César', 'Alejandro Magno', 'Genghis Khan', 'A');
+SET @idResp2 = LAST_INSERT_ID();
 
--- RESPUESTAS MATEMÁTICAS
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES
-('3.1416', '2.718', '1.618', '1.414', 'A'),
-('2', '3', '5', '7', 'A'),
-('Pitágoras', 'Euclides', 'Arquímedes', 'Descartes', 'A'),
-('x = -b ± √(b²-4ac)/2a', 'x = (b+c)/a', 'x = a² + b²', 'x = √(a²+b²)', 'A'),
-('Suma de ángulos de un triángulo es 180°', 'Suma de ángulos de un cuadrado es 180°', 'Suma de ángulos de un pentágono es 360°', 'Suma de ángulos de un hexágono es 540°', 'A'),
-('Integral de e^x es e^x + C', 'Integral de ln(x) es x ln(x)', 'Integral de sen(x) es cos(x)', 'Integral de x^2 es x^3', 'A'),
-('Teorema Fundamental del Álgebra', 'Teorema de Bayes', 'Teorema de Pitágoras', 'Teorema de Rolle', 'A'),
-('Serie de Fibonacci', 'Serie Geométrica', 'Serie Armónica', 'Serie de Taylor', 'A'),
-('Número primo de Mersenne', 'Número de Fermat', 'Número de Euler', 'Número de Catalan', 'A'),
-('Ecuación diferencial de segundo orden', 'Ecuación lineal simple', 'Ecuación exponencial', 'Ecuación logarítmica', 'A');
+INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
+VALUES ('¿Quién fue el líder militar francés que se coronó emperador en 1804?', @idResp2, 1, 1, 1, 'facil');
 
--- PREGUNTAS MATEMÁTICAS
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES
-('¿Cuál es el valor aproximado de π?', 1, 3, 1, 1, 'facil'),
-('¿Cuánto es 1 + 1?', 2, 3, 1, 1, 'facil'),
-('¿Quién formuló los principios de la geometría euclidiana?', 3, 3, 1, 1, 'facil'),
-('¿Cuál es la fórmula general para resolver ecuaciones cuadráticas?', 4, 3, 1, 1, 'facil'),
-('¿Cuál es la suma de los ángulos de un triángulo?', 5, 3, 1, 1, 'facil'),
-('¿Cuál es la integral de e^x?', 6, 3, 1, 1, 'dificil'),
-('¿Qué teorema establece que todo polinomio de grado n tiene n raíces (reales o complejas)?', 7, 3, 1, 1, 'dificil'),
-('¿Qué secuencia comienza 0, 1, 1, 2, 3, 5...?', 8, 3, 1, 1, 'dificil'),
-('¿Qué tipo de número primo se expresa como 2^p - 1?', 9, 3, 1, 1, 'dificil'),
-('¿Cómo se llama una ecuación que involucra derivadas de segundo orden?', 10, 3, 1, 1, 'dificil');
+-- Pregunta 3
+INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
+VALUES ('Revolución Francesa', 'Revolución Rusa', 'Revolución Industrial', 'Revolución Americana', 'A');
+SET @idResp3 = LAST_INSERT_ID();
 
+INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
+VALUES ('¿Cuál de estas revoluciones comenzó en 1789 en Francia?', @idResp3, 1, 1, 1, 'facil');
 
--- RESPUESTAS FISICA
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES
-('Isaac Newton', 'Albert Einstein', 'Galileo Galilei', 'Niels Bohr', 'A'),
-('F = m * a', 'E = mc^2', 'p = mv', 'V = IR', 'A'),
-('Gravedad', 'Electromagnetismo', 'Fuerza nuclear fuerte', 'Fuerza nuclear débil', 'A'),
-('186,000 millas por segundo', '300,000 km por hora', '150,000 km/s', '299,792 km/s', 'D'),
-('La primera ley de Newton', 'La segunda ley de Newton', 'La tercera ley de Newton', 'Ley de gravitación universal', 'A'),
-('Principio de incertidumbre de Heisenberg', 'Teoría de la relatividad', 'Ley de Coulomb', 'Ley de Ohm', 'A'),
-('Efecto fotoeléctrico', 'Difracción de rayos X', 'Principio de Arquímedes', 'Ley de Hooke', 'A'),
-('Ondas electromagnéticas', 'Ondas mecánicas', 'Ondas gravitacionales', 'Ondas sonoras', 'C'),
-('Partículas subatómicas: quarks', 'Átomos neutros', 'Moléculas simples', 'Electrones libres', 'A'),
-('Superconductividad', 'Superfluidez', 'Magnetismo', 'Termodinámica', 'A');
+-- Pregunta 4
+INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
+VALUES ('Roma', 'Grecia', 'Egipto', 'Mesopotamia', 'A');
+SET @idResp4 = LAST_INSERT_ID();
 
--- PREGUNTAS FISICA
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES
-('¿Quién formuló las leyes del movimiento?', 1, 4, 1, 1, 'facil'),
-('¿Cuál es la fórmula de la fuerza según Newton?', 2, 4, 1, 1, 'facil'),
-('¿Qué fuerza mantiene los planetas en órbita alrededor del Sol?', 3, 4, 1, 1, 'facil'),
-('¿Cuál es la velocidad de la luz en el vacío?', 4, 4, 1, 1, 'facil'),
-('¿Qué ley de Newton establece que un objeto en reposo permanecerá en reposo?', 5, 4, 1, 1, 'facil'),
-('¿Qué principio en mecánica cuántica establece que no se pueden conocer simultáneamente posición y momento con precisión?', 6, 4, 1, 1, 'dificil'),
-('¿Qué fenómeno explicó Einstein en 1905 usando fotones?', 7, 4, 1, 1, 'dificil'),
-('¿Qué tipo de ondas predice la teoría de la relatividad y fueron detectadas en 2015?', 8, 4, 1, 1, 'dificil'),
-('¿Qué partículas subatómicas forman los protones y neutrones?', 9, 4, 1, 1, 'dificil'),
-('¿Qué fenómeno ocurre en ciertos materiales a temperaturas muy bajas, permitiendo resistencia eléctrica cero?', 10, 4, 1, 1, 'dificil');
+INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
+VALUES ('¿Qué civilización construyó el Coliseo?', @idResp4, 1, 1, 1, 'facil');
 
+-- Pregunta 5
+INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
+VALUES ('Magna Carta', 'Bill of Rights', 'Declaración de Independencia', 'Código de Hammurabi', 'A');
+SET @idResp5 = LAST_INSERT_ID();
 
--- RESPUESTAS BIOLOGIA
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES
-('Célula', 'Tejido', 'Órgano', 'Sistema', 'A'),
-('ADN', 'ARN', 'Proteína', 'Lípido', 'A'),
-('Charles Darwin', 'Gregor Mendel', 'Louis Pasteur', 'James Watson', 'A'),
-('Fotosíntesis', 'Respiración celular', 'Fermentación', 'Digestión', 'A'),
-('Corazón', 'Pulmón', 'Hígado', 'Riñón', 'A'),
-('Mitosis', 'Meiosis', 'Fagocitosis', 'Difusión', 'A'),
-('Cloroplastos', 'Mitocondrias', 'Núcleo', 'Retículo endoplásmico', 'A'),
-('Sistemas nervioso y endocrino', 'Sistemas circulatorio y respiratorio', 'Sistemas digestivo y excretor', 'Sistemas muscular y esquelético', 'A'),
-('Especie Homo sapiens', 'Especie Homo erectus', 'Especie Neanderthal', 'Especie Australopithecus', 'A'),
-('Genética molecular', 'Biología celular', 'Ecología', 'Fisiología', 'A');
+INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
+VALUES ('¿Qué documento histórico limitó el poder del rey de Inglaterra en 1215?', @idResp5, 1, 1, 1, 'facil');
 
--- PREGUNTAS BIOLOGIA
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES
-('¿Cuál es la unidad básica de la vida?', 1, 5, 1, 1, 'facil'),
-('¿Cuál es la molécula que contiene la información genética?', 2, 5, 1, 1, 'facil'),
-('¿Quién propuso la teoría de la evolución por selección natural?', 3, 5, 1, 1, 'facil'),
-('¿Qué proceso realizan las plantas para producir glucosa?', 4, 5, 1, 1, 'facil'),
-('¿Qué órgano bombea sangre a todo el cuerpo?', 5, 5, 1, 1, 'facil'),
-('¿Cómo se llama la división celular que produce células hijas idénticas?', 6, 5, 1, 1, 'dificil'),
-('¿Qué orgánulo celular realiza la fotosíntesis?', 7, 5, 1, 1, 'dificil'),
-('¿Qué sistemas regulan las funciones del cuerpo humano?', 8, 5, 1, 1, 'dificil'),
-('¿Cuál es la especie humana moderna?', 9, 5, 1, 1, 'dificil'),
-('¿Qué rama estudia los genes a nivel molecular?', 10, 5, 1, 1, 'dificil');
+-- Pregunta 6
+INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
+VALUES ('Tratado de Tordesillas', 'Paz de Westfalia', 'Concordato de Worms', 'Tratado de Utrecht', 'A');
+SET @idResp6 = LAST_INSERT_ID();
+
+INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
+VALUES ('¿Qué tratado dividió las tierras descubiertas entre España y Portugal en 1494?', @idResp6, 1, 1, 1, 'dificil');
+
+-- Pregunta 7
+INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
+VALUES ('Carlos V', 'Felipe II', 'Luis XIV', 'Fernando VII', 'A');
+SET @idResp7 = LAST_INSERT_ID();
+
+INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
+VALUES ('¿Quién fue rey de España durante la época de la Armada Invencible?', @idResp7, 1, 1, 1, 'dificil');
+
+-- Pregunta 8
+INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
+VALUES ('Batalla de Stalingrado', 'Batalla de Normandía', 'Batalla de Midway', 'Batalla de Kursk', 'A');
+SET @idResp8 = LAST_INSERT_ID();
+
+INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
+VALUES ('¿Qué batalla fue decisiva en la Segunda Guerra Mundial en el frente oriental?', @idResp8, 1, 1, 1, 'dificil');
+
+-- Pregunta 9
+INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
+VALUES ('Imperio Hitita', 'Imperio Asirio', 'Imperio Persa', 'Imperio Romano', 'A');
+SET @idResp9 = LAST_INSERT_ID();
+
+INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
+VALUES ('¿Qué imperio antiguo se centró en Anatolia y Siria entre los siglos XVII y XII a.C.?', @idResp9, 1, 1, 1, 'dificil');
+
+-- Pregunta 10
+INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
+VALUES ('Revolución Gloriosa', 'Revolución Industrial', 'Revolución Cubana', 'Revolución Meiji', 'A');
+SET @idResp10 = LAST_INSERT_ID();
+
+INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
+VALUES ('¿Qué revolución en Inglaterra resultó en la deposición del rey Jacobo II?', @idResp10, 1, 1, 1, 'dificil');
+
+--  MATEMÁTICAS --------------------------------------------------------------------------------------
+
+INSERT INTO RESPUESTA VALUES ('Leonardo da Vinci', 'Miguel Ángel', 'Rafael', 'Donatello', 'A');
+SET @idRespArte1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién pintó La Última Cena?', @idRespArte1, 2, 1, 1, 'facil');
+
+INSERT INTO RESPUESTA VALUES ('3.1416', '2.718', '1.618', '1.414', 'A');
+SET @idRespArte1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es el valor aproximado de π?', @idRespArte1, 3, 1, 1, 'facil');
+
+INSERT INTO RESPUESTA VALUES ('2', '3', '5', '7', 'A');
+SET @idRespArte1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuánto es 1 + 1?', @idRespArte1, 3, 1, 1, 'facil');
+
+INSERT INTO RESPUESTA VALUES ('Pitágoras', 'Euclides', 'Arquímedes', 'Descartes', 'A');
+SET @idRespArte1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién formuló los principios de la geometría euclidiana?', @idRespArte1, 3, 1, 1, 'facil');
+
+INSERT INTO RESPUESTA VALUES ('x = -b ± √(b²-4ac)/2a', 'x = (b+c)/a', 'x = a² + b²', 'x = √(a²+b²)', 'A');
+SET @idRespArte1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es la fórmula general para resolver ecuaciones cuadráticas?', @idRespArte1, 3, 1, 1, 'facil');
+
+INSERT INTO RESPUESTA VALUES ('Suma de ángulos de un triángulo es 180°', 'Suma de ángulos de un cuadrado es 180°', 'Suma de ángulos de un pentágono es 360°', 'Suma de ángulos de un hexágono es 540°', 'A');
+SET @idRespArte1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es la suma de los ángulos de un triángulo?', @idRespArte1, 3, 1, 1, 'facil');
+
+INSERT INTO RESPUESTA VALUES ('Integral de e^x es e^x + C', 'Integral de ln(x) es x ln(x)', 'Integral de sen(x) es cos(x)', 'Integral de x^2 es x^3', 'A');
+SET @idRespArte1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es la integral de e^x?', @idRespArte1, 3, 1, 1, 'dificil');
+
+INSERT INTO RESPUESTA VALUES ('Teorema Fundamental del Álgebra', 'Teorema de Bayes', 'Teorema de Pitágoras', 'Teorema de Rolle', 'A');
+SET @idRespArte1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué teorema establece que todo polinomio de grado n tiene n raíces (reales o complejas)?', @idRespArte1, 3, 1, 1, 'dificil');
+
+INSERT INTO RESPUESTA VALUES ('Serie de Fibonacci', 'Serie Geométrica', 'Serie Armónica', 'Serie de Taylor', 'A');
+SET @idRespArte1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué secuencia comienza 0, 1, 1, 2, 3, 5...?', @idRespArte1, 3, 1, 1, 'dificil');
+
+INSERT INTO RESPUESTA VALUES ('Número primo de Mersenne', 'Número de Fermat', 'Número de Euler', 'Número de Catalan', 'A');
+SET @idRespArte1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué tipo de número primo se expresa como 2^p - 1?', @idRespArte1, 3, 1, 1, 'dificil');
+
+INSERT INTO RESPUESTA VALUES ('Ecuación diferencial de segundo orden', 'Ecuación lineal simple', 'Ecuación exponencial', 'Ecuación logarítmica', 'A');
+SET @idRespArte1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cómo se llama una ecuación que involucra derivadas de segundo orden?', 1@idRespArte1, 3, 1, 1, 'dificil');
 
 
--- RESPUESTAS CINE
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES
-('Steven Spielberg', 'Christopher Nolan', 'James Cameron', 'Quentin Tarantino', 'A'),
-('Titanic', 'Avatar', 'Gladiator', 'Jurassic Park', 'A'),
-('Star Wars', 'Star Trek', 'Guardians of the Galaxy', 'The Matrix', 'A'),
-('Premios Oscar', 'Globos de Oro', 'BAFTA', 'Cannes', 'A'),
-('El Padrino', 'Goodfellas', 'Scarface', 'Casablanca', 'A'),
-('Cinematografía', 'Edición', 'Guion', 'Dirección artística', 'A'),
-('Guionistas', 'Directores', 'Productores', 'Actores', 'A'),
-('Suspense psicológico', 'Comedia romántica', 'Western', 'Musical', 'A'),
-('Efectos especiales digitales', 'Stop motion', 'Animación tradicional', 'Trucos mecánicos', 'A'),
-('Premio Palme d\'Or', 'Premio Saturn', 'Premio Hugo', 'Premio Emmy', 'A');
+-- RESPUESTAS FISICA --------------------------------------------------------------------------------------
 
--- PREGUNTAS CINE
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES
-('¿Quién dirigió "E.T. el Extraterrestre"?', 1, 6, 1, 1, 'facil'),
-('¿Qué película de James Cameron se estrenó en 1997 y cuenta una historia de amor en un barco hundiéndose?', 2, 6, 1, 1, 'facil'),
-('¿Qué saga espacial comenzó en 1977 con la primera película?', 3, 6, 1, 1, 'facil'),
-('¿Cuál es el premio más importante del cine estadounidense?', 4, 6, 1, 1, 'facil'),
-('¿Qué película de Francis Ford Coppola es un clásico del cine de mafia?', 5, 6, 1, 1, 'facil'),
-('¿Qué término describe la técnica de capturar la imagen en cine?', 6, 6, 1, 1, 'dificil'),
-('¿Quién crea la historia y los diálogos de una película?', 7, 6, 1, 1, 'dificil'),
-('¿Qué género cinematográfico enfatiza la tensión y el misterio psicológico?', 8, 6, 1, 1, 'dificil'),
-('¿Qué técnica moderna se utiliza para crear efectos visuales realistas en películas?', 9, 6, 1, 1, 'dificil'),
-('¿Cuál es el premio máximo del Festival de Cannes?', 10, 6, 1, 1, 'dificil');
+INSERT INTO RESPUESTA VALUES ('Isaac Newton', 'Albert Einstein', 'Galileo Galilei', 'Niels Bohr', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién formuló las leyes del movimiento?', 1, 4, 1, 1, 'facil')
 
--- RESPUESTAS LITERATURA
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES
-('Miguel de Cervantes', 'William Shakespeare', 'Gabriel García Márquez', 'Jorge Luis Borges', 'A'),
-('Don Quijote de la Mancha', 'La Odisea', 'Cien años de soledad', 'Hamlet', 'A'),
-('William Shakespeare', 'Charles Dickens', 'Mark Twain', 'Jane Austen', 'A'),
-('Poesía', 'Novela', 'Ensayo', 'Teatro', 'A'),
-('Realismo', 'Romanticismo', 'Modernismo', 'Barroco', 'A'),
-('Gabriel García Márquez', 'Mario Vargas Llosa', 'Julio Cortázar', 'Isabel Allende', 'A'),
-('El Aleph', 'Ficciones', 'Cien años de soledad', 'Rayuela', 'B'),
-('Soneto', 'Haiku', 'Oda', 'Elegía', 'A'),
-('James Joyce', 'Virginia Woolf', 'Ernest Hemingway', 'F. Scott Fitzgerald', 'A'),
-('Teoría literaria', 'Crítica literaria', 'Semiótica', 'Hermenéutica', 'A');
+INSERT INTO RESPUESTA VALUES ('F = m * a', 'E = mc^2', 'p = mv', 'V = IR', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es la fórmula de la fuerza según Newton?', 2, 4, 1, 1, 'facil')
 
--- PREGUNTAS LITERATURA
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES
-('¿Quién escribió "Don Quijote de la Mancha"?', 1, 7, 1, 1, 'facil'),
-('¿Cuál es la obra más famosa de Cervantes?', 2, 7, 1, 1, 'facil'),
-('¿Quién es considerado el dramaturgo inglés más importante?', 3, 7, 1, 1, 'facil'),
-('¿Qué género literario se centra en la representación de personajes y acciones en forma narrativa?', 4, 7, 1, 1, 'facil'),
-('¿Qué movimiento literario enfatiza la objetividad y la descripción detallada de la realidad?', 5, 7, 1, 1, 'facil'),
-('¿Quién ganó el Nobel de Literatura con "Cien años de soledad"?', 6, 7, 1, 1, 'dificil'),
-('¿Qué colección de cuentos de Borges incluye "El Aleph"?', 7, 7, 1, 1, 'dificil'),
-('¿Qué tipo de poema tiene 14 versos?', 8, 7, 1, 1, 'dificil'),
-('¿Quién es autor de "Ulises", novela experimental del siglo XX?', 9, 7, 1, 1, 'dificil'),
-('¿Qué disciplina estudia los métodos de interpretación y análisis de textos literarios?', 10, 7, 1, 1, 'dificil');
+INSERT INTO RESPUESTA VALUES ('Gravedad', 'Electromagnetismo', 'Fuerza nuclear fuerte', 'Fuerza nuclear débil', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué fuerza mantiene los planetas en órbita alrededor del Sol?', 3, 4, 1, 1, 'facil')
 
--- RESPUESTAS GEOGRAFIA
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES
-('Monte Everest', 'K2', 'Annapurna', 'Makalu', 'A'),
-('Amazonas', 'Nilo', 'Yangtsé', 'Misisipi', 'A'),
-('Asia', 'África', 'América', 'Europa', 'A'),
-('Río Nilo', 'Río Congo', 'Río Amazonas', 'Río Mekong', 'A'),
-('Desierto del Sahara', 'Desierto de Gobi', 'Desierto de Atacama', 'Desierto de Kalahari', 'A'),
-('Cordillera de los Andes', 'Montañas Rocosas', 'Himalaya', 'Alpes', 'A'),
-('Océano Pacífico', 'Océano Atlántico', 'Océano Índico', 'Océano Ártico', 'A'),
-('Lagos de Plitvice', 'Lago Baikal', 'Lago Titicaca', 'Lago Superior', 'B'),
-('Fusión continental', 'Subducción', 'Deriva continental', 'Erosión', 'C'),
-('Climas tropicales', 'Climas templados', 'Climas polares', 'Climas desérticos', 'A');
+INSERT INTO RESPUESTA VALUES ('186,000 millas por segundo', '300,000 km por hora', '150,000 km/s', '299,792 km/s', 'D');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es la velocidad de la luz en el vacío?', 4, 4, 1, 1, 'facil')
 
--- PREGUNTAS GEOGRAFIA
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES
-('¿Cuál es la montaña más alta del mundo?', 1, 8, 1, 1, 'facil'),
-('¿Qué río es considerado el más caudaloso del mundo?', 2, 8, 1, 1, 'facil'),
-('¿Cuál es el continente más grande por superficie?', 3, 8, 1, 1, 'facil'),
-('¿Qué río atraviesa Egipto de sur a norte?', 4, 8, 1, 1, 'facil'),
-('¿Cuál es el desierto más grande del mundo?', 5, 8, 1, 1, 'facil'),
-('¿Qué cordillera se extiende a lo largo de la costa occidental de Sudamérica?', 6, 8, 1, 1, 'facil'),
-('¿Cuál es el océano más grande del planeta?', 7, 8, 1, 1, 'dificil'),
-('¿Qué lago en Siberia es el más profundo del mundo?', 8, 8, 1, 1, 'dificil'),
-('¿Qué fenómeno explica el movimiento de los continentes?', 9, 8, 1, 1, 'dificil'),
-('¿Qué tipo de climas predominan cerca del ecuador?', 10, 8, 1, 1, 'dificil');
+INSERT INTO RESPUESTA VALUES ('La primera ley de Newton', 'La segunda ley de Newton', 'La tercera ley de Newton', 'Ley de gravitación universal', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué ley de Newton establece que un objeto en reposo permanecerá en reposo?', 5, 4, 1, 1, 'facil')
 
--- RESPUESTAS MUSICA
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES
-('Ludwig van Beethoven', 'Wolfgang Amadeus Mozart', 'Johann Sebastian Bach', 'Frédéric Chopin', 'A'),
-('Piano', 'Violín', 'Flauta', 'Guitarra', 'A'),
-('Sinfonía', 'Ópera', 'Concierto', 'Sonata', 'A'),
-('Rock', 'Jazz', 'Blues', 'Pop', 'A'),
-('Beatles', 'Rolling Stones', 'Pink Floyd', 'Queen', 'A'),
-('Freddie Mercury', 'Elvis Presley', 'David Bowie', 'Jimi Hendrix', 'A'),
-('Notas musicales: Do, Re, Mi, Fa, Sol, La, Si', 'Notas musicales: La, Si, Do, Re, Mi, Fa, Sol', 'Notas musicales: Re, Mi, Fa, Sol, La, Si, Do', 'Notas musicales: Mi, Fa, Sol, La, Si, Do, Re', 'A'),
-('Escala mayor', 'Escala menor', 'Escala pentatónica', 'Escala cromática', 'A'),
-('Compositores del barroco', 'Compositores del romanticismo', 'Compositores del impresionismo', 'Compositores del renacimiento', 'A'),
-('Teoría musical', 'Armonía', 'Contrapunto', 'Orquestación', 'B');
+INSERT INTO RESPUESTA VALUES ('Principio de incertidumbre de Heisenberg', 'Teoría de la relatividad', 'Ley de Coulomb', 'Ley de Ohm', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué principio en mecánica cuántica establece que no se pueden conocer simultáneamente posición y momento con precisión?', 6, 4, 1, 1, 'dificil')
 
--- PREGUNTAS MUSICA
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES
-('¿Quién compuso la Novena Sinfonía?', 1, 9, 1, 1, 'facil'),
-('¿Qué instrumento tiene 88 teclas?', 2, 9, 1, 1, 'facil'),
-('¿Qué forma musical orquestal tiene varios movimientos y está escrita para una orquesta completa?', 3, 9, 1, 1, 'facil'),
-('¿Qué género musical nació en Estados Unidos en los años 50?', 4, 9, 1, 1, 'facil'),
-('¿Qué banda británica lanzó el álbum "Sgt. Pepper\'s Lonely Hearts Club Band"?', 5, 9, 1, 1, 'facil'),
-('¿Quién fue el vocalista principal de Queen?', 6, 9, 1, 1, 'dificil'),
-('¿Cuáles son las notas musicales en orden ascendente?', 7, 9, 1, 1, 'dificil'),
-('¿Qué escala tiene un patrón de tonos y semitonos: T-T-S-T-T-T-S?', 8, 9, 1, 1, 'dificil'),
-('¿Qué compositores se destacan en el periodo barroco?', 9, 9, 1, 1, 'dificil'),
-('¿Qué disciplina estudia la combinación de sonidos y acordes en la música?', 10, 9, 1, 1, 'dificil');
+INSERT INTO RESPUESTA VALUES ('Efecto fotoeléctrico', 'Difracción de rayos X', 'Principio de Arquímedes', 'Ley de Hooke', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué fenómeno explicó Einstein en 1905 usando fotones?', 7, 4, 1, 1, 'dificil')
 
--- RESPUESTAS DEPORTES
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES
-('Fútbol', 'Baloncesto', 'Tenis', 'Natación', 'A'),
-('Lionel Messi', 'Cristiano Ronaldo', 'Pelé', 'Diego Maradona', 'A'),
-('Olimpiadas', 'Mundial de Fútbol', 'Copa América', 'Eurocopa', 'A'),
-('Maratón', '100 metros', 'Salto de altura', 'Lanzamiento de jabalina', 'A'),
-('Michael Jordan', 'LeBron James', 'Kobe Bryant', 'Magic Johnson', 'A'),
-('Boxeo', 'Lucha libre', 'Kickboxing', 'Judo', 'A'),
-('Tour de Francia', 'Giro de Italia', 'Vuelta a España', 'Clasico de Italia', 'A'),
-('Formula 1', 'Nascar', 'IndyCar', 'Rally Dakar', 'A'),
-('Rugby', 'Fútbol americano', 'Hockey sobre césped', 'Balonmano', 'A'),
-('Tenis de mesa', 'Bádminton', 'Squash', 'Pickleball', 'B');
+INSERT INTO RESPUESTA VALUES ('Ondas electromagnéticas', 'Ondas mecánicas', 'Ondas gravitacionales', 'Ondas sonoras', 'C');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué tipo de ondas predice la teoría de la relatividad y fueron detectadas en 2015?', 8, 4, 1, 1, 'dificil')
 
--- PREGUNTAS DEPORTES
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES
-('¿Cuál es el deporte más popular del mundo?', 1, 10, 1, 1, 'facil'),
-('¿Qué jugador argentino ganó 7 Balones de Oro?', 2, 10, 1, 1, 'facil'),
-('¿Cuál es el evento deportivo internacional que ocurre cada 4 años y reúne varios deportes?', 3, 10, 1, 1, 'facil'),
-('¿Qué prueba de atletismo consiste en correr 42,195 km?', 4, 10, 1, 1, 'facil'),
-('¿Quién es considerado uno de los mejores jugadores de baloncesto de todos los tiempos?', 5, 10, 1, 1, 'facil'),
-('¿Qué deporte de combate se caracteriza por golpes de puño y guantes acolchados?', 6, 10, 1, 1, 'dificil'),
-('¿Qué carrera ciclista es la más famosa de Francia?', 7, 10, 1, 1, 'dificil'),
-('¿Cuál es la categoría máxima de automovilismo a nivel mundial?', 8, 10, 1, 1, 'dificil'),
-('¿Qué deporte de contacto se juega con un balón ovalado y placajes?', 9, 10, 1, 1, 'dificil'),
-('¿Cuál de estos deportes se juega con volante y raqueta en una cancha interior?', 10, 10, 1, 1, 'dificil');
+INSERT INTO RESPUESTA VALUES ('Partículas subatómicas: quarks', 'Átomos neutros', 'Moléculas simples', 'Electrones libres', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué partículas subatómicas forman los protones y neutrones?', 9, 4, 1, 1, 'dificil')
 
--- RESPUESTAS TECNOLOGIA
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES
-('Internet', 'Bluetooth', 'Wi-Fi', 'NFC', 'A'),
-('Tim Berners-Lee', 'Steve Jobs', 'Bill Gates', 'Elon Musk', 'A'),
-('CPU', 'GPU', 'RAM', 'ROM', 'A'),
-('Software', 'Hardware', 'Firmware', 'Middleware', 'A'),
-('Python', 'Java', 'C++', 'JavaScript', 'A'),
-('Inteligencia Artificial', 'Realidad Virtual', 'Blockchain', 'Big Data', 'A'),
-('Algoritmo de búsqueda', 'Algoritmo de ordenamiento', 'Algoritmo de cifrado', 'Algoritmo de compresión', 'B'),
-('Redes neuronales', 'Redes locales', 'Redes de área amplia', 'Redes inalámbricas', 'A'),
-('Criptografía', 'Programación web', 'Sistemas operativos', 'Ciberseguridad', 'D'),
-('Aprendizaje profundo', 'Aprendizaje supervisado', 'Aprendizaje no supervisado', 'Aprendizaje por refuerzo', 'A');
+INSERT INTO RESPUESTA VALUES ('Superconductividad', 'Superfluidez', 'Magnetismo', 'Termodinámica', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué fenómeno ocurre en ciertos materiales a temperaturas muy bajas, permitiendo resistencia eléctrica cero?', 10, 4, 1, 1, 'dificil')
 
--- PREGUNTAS TECNOLOGIA
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES
-('¿Qué red mundial permite la conexión de computadoras a nivel global?', 1, 11, 1, 1, 'facil'),
-('¿Quién inventó la World Wide Web?', 2, 11, 1, 1, 'facil'),
-('¿Qué componente central ejecuta las instrucciones de un computador?', 3, 11, 1, 1, 'facil'),
-('¿Cómo se llama la parte tangible de un computador?', 4, 11, 1, 1, 'facil'),
-('¿Qué lenguaje de programación se caracteriza por su sintaxis clara y legible?', 5, 11, 1, 1, 'facil'),
-('¿Qué tecnología permite que las máquinas imiten procesos de pensamiento humano?', 6, 11, 1, 1, 'dificil'),
-('¿Qué tipo de algoritmo organiza datos en orden ascendente o descendente?', 7, 11, 1, 1, 'dificil'),
-('¿Qué arquitectura informática se inspira en el funcionamiento del cerebro humano?', 8, 11, 1, 1, 'dificil'),
-('¿Qué área de la informática protege la información frente a ataques y accesos no autorizados?', 9, 11, 1, 1, 'dificil'),
-('¿Qué técnica de IA utiliza múltiples capas para aprender representaciones complejas de datos?', 10, 11, 1, 1, 'dificil');
+-- BIOLOGIA --------------------------------------------------------------------------------------
+INSERT INTO RESPUESTA VALUES ('Célula', 'Tejido', 'Órgano', 'Sistema', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es la unidad básica de la vida?', @idResp, 5, 1, 1, 'facil'),
 
--- RESPUESTAS VIDEOJUEGOS
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES
-('Super Mario', 'Sonic', 'Pac-Man', 'Zelda', 'A'),
-('Nintendo', 'Sony', 'Microsoft', 'Sega', 'A'),
-('The Legend of Zelda', 'Final Fantasy', 'Metroid', 'Donkey Kong', 'A'),
-('Fortnite', 'Minecraft', 'Roblox', 'Among Us', 'B'),
-('Minecraft', 'Call of Duty', 'FIFA', 'Tetris', 'A'),
-('Pokémon', 'Digimon', 'Yu-Gi-Oh!', 'Bakugan', 'A'),
-('Esports', 'Speedrun', 'Cosplay', 'Modding', 'A'),
-('Engine Unreal', 'Unity', 'CryEngine', 'Frostbite', 'B'),
-('Juego de mundo abierto', 'Juego lineal', 'Juego de puzzles', 'Juego de rol', 'A'),
-('Inteligencia artificial en NPCs', 'Física en motores gráficos', 'Renderizado 3D', 'Programación de servidores', 'A');
+INSERT INTO RESPUESTA VALUES ('ADN', 'ARN', 'Proteína', 'Lípido', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es la molécula que contiene la información genética?', @idResp, 5, 1, 1, 'facil'),
 
--- PREGUNTAS VIDEOJUEGOS
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES
-('¿Qué personaje es el fontanero icónico de Nintendo?', 1, 12, 1, 1, 'facil'),
-('¿Qué compañía desarrolló la consola Switch?', 2, 12, 1, 1, 'facil'),
-('¿Cuál es la saga protagonizada por Link?', 3, 12, 1, 1, 'facil'),
-('¿Qué juego permite construir bloques y explorar libremente?', 4, 12, 1, 1, 'facil'),
-('¿Qué juego de construcción y supervivencia se volvió viral en 2010?', 5, 12, 1, 1, 'facil'),
-('¿Qué franquicia de monstruos tiene Pikachu como personaje principal?', 6, 12, 1, 1, 'facil'),
-('¿Cómo se denomina la competición profesional de videojuegos?', 7, 12, 1, 1, 'dificil'),
-('¿Qué motor de videojuegos es desarrollado por Unity Technologies?', 8, 12, 1, 1, 'dificil'),
-('¿Qué tipo de juego permite explorar un mundo sin restricciones lineales?', 9, 12, 1, 1, 'dificil'),
-('¿Qué técnica se utiliza para dotar de comportamiento inteligente a personajes no jugables?', 10, 12, 1, 1, 'dificil');
+INSERT INTO RESPUESTA VALUES ('Charles Darwin', 'Gregor Mendel', 'Louis Pasteur', 'James Watson', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién propuso la teoría de la evolución por selección natural?', @idResp, 5, 1, 1, 'facil'),
 
--- RESPUESTAS GASTRONOMIA
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES
-('Pizza', 'Hamburguesa', 'Sushi', 'Pasta', 'A'),
-('Italia', 'Francia', 'España', 'México', 'A'),
-('Sushi', 'Taco', 'Paella', 'Curry', 'A'),
-('Café', 'Té', 'Chocolate', 'Agua', 'A'),
-('Cocción', 'Fritura', 'Horneado', 'Salteado', 'C'),
-('Sous-vide', 'Braseado', 'Glaseado', 'Escabeche', 'A'),
-('Cocina molecular', 'Cocina casera', 'Cocina rápida', 'Cocina tradicional', 'A'),
-('Maridaje', 'Fermentación', 'Pasteurización', 'Confitado', 'A'),
-('Champiñones', 'Trufa', 'Setas', 'Boletus', 'B'),
-('Fermentación láctica', 'Deshidratación', 'Curado', 'Ahumado', 'A');
+INSERT INTO RESPUESTA VALUES ('Fotosíntesis', 'Respiración celular', 'Fermentación', 'Digestión', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué proceso realizan las plantas para producir glucosa?', @idResp, 5, 1, 1, 'facil'),
 
--- PREGUNTAS GASTRONOMIA
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES
-('¿Qué plato italiano se hace con masa, tomate y queso?', 1, 13, 1, 1, 'facil'),
-('¿De qué país es originaria la pizza?', 2, 13, 1, 1, 'facil'),
-('¿Qué plato japonés incluye pescado crudo y arroz?', 3, 13, 1, 1, 'facil'),
-('¿Qué bebida se obtiene por tostado y molido de granos?', 4, 13, 1, 1, 'facil'),
-('¿Qué método de cocción utiliza calor seco en un horno?', 5, 13, 1, 1, 'facil'),
-('¿Qué técnica culinaria consiste en cocinar alimentos al vacío y baja temperatura?', 6, 13, 1, 1, 'dificil'),
-('¿Qué rama de la gastronomía aplica principios químicos y físicos a la cocina?', 7, 13, 1, 1, 'dificil'),
-('¿Qué término describe la combinación armoniosa de alimentos y bebidas?', 8, 13, 1, 1, 'dificil'),
-('¿Qué hongo es considerado un manjar de alta cocina y muy caro?', 9, 13, 1, 1, 'dificil'),
-('¿Qué proceso convierte la lactosa en ácido láctico en alimentos?', 10, 13, 1, 1, 'dificil');
+INSERT INTO RESPUESTA VALUES ('Corazón', 'Pulmón', 'Hígado', 'Riñón', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué órgano bombea sangre a todo el cuerpo?', @idResp, 5, 1, 1, 'facil'),
 
--- RESPUESTAS MITOLOGIA
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES
-('Zeus', 'Hades', 'Poseidón', 'Ares', 'A'),
-('Olimpo', 'Tártaro', 'Érebo', 'Asgard', 'A'),
-('Thor', 'Loki', 'Odin', 'Freya', 'C'),
-('Hércules', 'Aquiles', 'Perseo', 'Teseo', 'A'),
-('Medusa', 'Minotauro', 'Hidra', 'Quimera', 'A'),
-('Valquirias', 'Nornas', 'Elfos', 'Jotuns', 'A'),
-('Atenea', 'Artemisa', 'Afrodita', 'Hera', 'A'),
-('Dionisio', 'Apolo', 'Hermes', 'Hefesto', 'B'),
-('Odiseo', 'Aquiles', 'Agamenón', 'Paris', 'A'),
-('Mitología comparada', 'Mitología clásica', 'Mitología nórdica', 'Mitología egipcia', 'A');
+INSERT INTO RESPUESTA VALUES ('Mitosis', 'Meiosis', 'Fagocitosis', 'Difusión', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cómo se llama la división celular que produce células hijas idénticas?', @idResp, 5, 1, 1, 'dificil'),
 
--- PREGUNTAS MITOLOGIA
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES
-('¿Quién es el dios supremo del Olimpo?', 1, 14, 1, 1, 'facil'),
-('¿Dónde residían los dioses griegos?', 2, 14, 1, 1, 'facil'),
-('¿Quién es el dios principal de la mitología nórdica?', 3, 14, 1, 1, 'facil'),
-('¿Qué héroe realizó los 12 trabajos?', 4, 14, 1, 1, 'facil'),
-('¿Qué criatura tenía serpientes en lugar de cabello?', 5, 14, 1, 1, 'facil'),
-('¿Qué figuras femeninas elegían a los guerreros muertos para el Valhalla?', 6, 14, 1, 1, 'dificil'),
-('¿Quién es la diosa de la sabiduría en Grecia?', 7, 14, 1, 1, 'dificil'),
-('¿Qué dios griego es el patrón de la música y las artes?', 8, 14, 1, 1, 'dificil'),
-('¿Qué héroe griego ideó el caballo de Troya?', 9, 14, 1, 1, 'dificil'),
-('¿Qué disciplina compara mitologías de diferentes culturas?', 10, 14, 1, 1, 'dificil');
+INSERT INTO RESPUESTA VALUES ('Cloroplastos', 'Mitocondrias', 'Núcleo', 'Retículo endoplásmico', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué orgánulo celular realiza la fotosíntesis?', @idResp, 5, 1, 1, 'dificil'),
 
--- RESPUESTAS BIOLOGIA2
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES
-('Proteínas', 'Carbohidratos', 'Lípidos', 'Vitaminas', 'A'),
-('Mitocondrias', 'Núcleo', 'Cloroplastos', 'Ribosomas', 'A'),
-('Tejido epitelial', 'Tejido muscular', 'Tejido nervioso', 'Tejido conectivo', 'A'),
-('Ósmosis', 'Difusión', 'Transporte activo', 'Endocitosis', 'A'),
-('ARN mensajero', 'ARN ribosomal', 'ARN de transferencia', 'ADN', 'A'),
-('Hormonas', 'Neurotransmisores', 'Vitaminas', 'Enzimas', 'A'),
-('Células madre', 'Células somáticas', 'Gametas', 'Neuronas', 'A'),
-('Evolución por selección natural', 'Mutación aleatoria', 'Deriva genética', 'Migración', 'A'),
-('Ecosistema', 'Bioma', 'Población', 'Hábitat', 'A'),
-('Genética cuantitativa', 'Genética molecular', 'Epigenética', 'Genómica', 'B');
+INSERT INTO RESPUESTA VALUES ('Sistemas nervioso y endocrino', 'Sistemas circulatorio y respiratorio', 'Sistemas digestivo y excretor', 'Sistemas muscular y esquelético', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué sistemas regulan las funciones del cuerpo humano?', @idResp, 5, 1, 1, 'dificil'),
 
--- PREGUNTAS BIOLOGIA2
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES
-('¿Qué macromolécula está formada por aminoácidos?', 1, 15, 1, 1, 'facil'),
-('¿Qué orgánulo produce energía en la célula?', 2, 15, 1, 1, 'facil'),
-('¿Qué tipo de tejido cubre superficies y órganos?', 3, 15, 1, 1, 'facil'),
-('¿Qué proceso permite el paso de agua a través de membranas semipermeables?', 4, 15, 1, 1, 'facil'),
-('¿Qué ARN transporta información del ADN al ribosoma?', 5, 15, 1, 1, 'facil'),
-('¿Qué sustancias regulan funciones del cuerpo a distancia?', 6, 15, 1, 1, 'dificil'),
-('¿Qué células pueden diferenciarse en otros tipos celulares?', 7, 15, 1, 1, 'dificil'),
-('¿Qué proceso explica la adaptación de las especies al ambiente?', 8, 15, 1, 1, 'dificil'),
-('¿Qué conjunto de organismos y su entorno se denomina?', 9, 15, 1, 1, 'dificil'),
-('¿Qué área estudia la herencia cuantitativa y la variación genética?', 10, 15, 1, 1, 'dificil');
+INSERT INTO RESPUESTA VALUES ('Especie Homo sapiens', 'Especie Homo erectus', 'Especie Neanderthal', 'Especie Australopithecus', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es la especie humana moderna?', @idResp, 5, 1, 1, 'dificil'),
 
--- RESPUESTAS QUIMICA
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES
-('H2O', 'CO2', 'O2', 'N2', 'A'),
-('Elemento', 'Molécula', 'Compuesto', 'Ion', 'A'),
-('Tabla periódica', 'Tabla de símbolos', 'Tabla de masas', 'Tabla de reacciones', 'A'),
-('Ácido', 'Base', 'Sal', 'Óxido', 'A'),
-('pH 7', 'pH 0', 'pH 14', 'pH 3', 'A'),
-('Ley de conservación de la masa', 'Ley de las proporciones definidas', 'Ley de Boyle', 'Ley de Charles', 'A'),
-('Reacción redox', 'Reacción ácido-base', 'Reacción de precipitación', 'Reacción endotérmica', 'A'),
-('Enlace covalente', 'Enlace iónico', 'Enlace metálico', 'Enlace de hidrógeno', 'A'),
-('Catalizador', 'Inhibidor', 'Reactivo', 'Producto', 'A'),
-('Química orgánica', 'Química inorgánica', 'Bioquímica', 'Físicoquímica', 'C');
+INSERT INTO RESPUESTA VALUES ('Genética molecular', 'Biología celular', 'Ecología', 'Fisiología', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué rama estudia los genes a nivel molecular?', @idResp, 5, 1, 1, 'dificil');
 
--- PREGUNTAS QUIMICA
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES
-('¿Cuál es la fórmula química del agua?', 1, 16, 1, 1, 'facil'),
-('¿Cómo se llama una sustancia formada por átomos del mismo tipo?', 2, 16, 1, 1, 'facil'),
-('¿Qué tabla organiza los elementos químicos según sus propiedades?', 3, 16, 1, 1, 'facil'),
-('¿Qué tipo de sustancia tiene un pH menor a 7?', 4, 16, 1, 1, 'facil'),
-('¿Qué pH indica una solución neutra?', 5, 16, 1, 1, 'facil'),
-('¿Qué ley establece que la masa no se crea ni se destruye en una reacción?', 6, 16, 1, 1, 'dificil'),
-('¿Qué reacción implica transferencia de electrones?', 7, 16, 1, 1, 'dificil'),
-('¿Qué tipo de enlace comparte electrones entre átomos?', 8, 16, 1, 1, 'dificil'),
-('¿Qué sustancia acelera una reacción química sin consumirse?', 9, 16, 1, 1, 'dificil'),
-('¿Qué rama estudia moléculas biológicas como proteínas y carbohidratos?', 10, 16, 1, 1, 'dificil');
 
--- RESPUESTAS ASTRONOMIA
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES
-('Sol', 'Luna', 'Marte', 'Júpiter', 'A'),
-('Planeta', 'Estrella', 'Cometa', 'Asteroide', 'B'),
-('Vía Láctea', 'Andrómeda', 'Triángulo', 'Sagitario', 'A'),
-('Sistema solar', 'Galaxia', 'Nebulosa', 'Constelación', 'A'),
-('Neil Armstrong', 'Yuri Gagarin', 'Buzz Aldrin', 'Michael Collins', 'A'),
-('Telescopio', 'Microscopio', 'Espectroscopio', 'Cámara', 'A'),
-('Agujero negro', 'Supernova', 'Estrella de neutrones', 'Quásar', 'A'),
-('Materia oscura', 'Energía oscura', 'Radiación cósmica', 'Planetas extrasolares', 'B'),
-('Exoplanetas', 'Cometas', 'Asteroides', 'Satélites', 'A'),
-('Big Bang', 'Teoría de la relatividad', 'Inflación cósmica', 'Gravedad cuántica', 'A');
+-- CINE --------------------------------------------------------------------------------------
+INSERT INTO RESPUESTA VALUES ('Steven Spielberg', 'Christopher Nolan', 'James Cameron', 'Quentin Tarantino', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES('¿Quién dirigió "E.T. el Extraterrestre"?', @idResp, 6, 1, 1, 'facil');
 
--- PREGUNTAS ASTRONOMIA
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES
-('¿Qué estrella es el centro del sistema solar?', 1, 17, 1, 1, 'facil'),
-('¿Qué cuerpo celeste genera luz propia?', 2, 17, 1, 1, 'facil'),
-('¿Cómo se llama la galaxia donde se encuentra la Tierra?', 3, 17, 1, 1, 'facil'),
-('¿Cómo se denomina el conjunto de planetas y cuerpos que orbitan una estrella?', 4, 17, 1, 1, 'facil'),
-('¿Quién fue el primer hombre en caminar sobre la Luna?', 5, 17, 1, 1, 'facil'),
-('¿Qué instrumento permite observar cuerpos celestes a gran distancia?', 6, 17, 1, 1, 'dificil'),
-('¿Qué fenómeno astronómico es una región del espacio con gravedad extrema de la que nada escapa?', 7, 17, 1, 1, 'dificil'),
-('¿Qué componente misterioso representa aproximadamente el 70% de la energía del universo?', 8, 17, 1, 1, 'dificil'),
-('¿Qué planeta fuera del sistema solar ha sido detectado orbitando otra estrella?', 9, 17, 1, 1, 'dificil'),
-('¿Qué teoría explica el origen y expansión del universo hace aproximadamente 13.8 mil millones de años?', 10, 17, 1, 1, 'dificil');
+INSERT INTO RESPUESTA VALUES ('Titanic', 'Avatar', 'Gladiator', 'Jurassic Park', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES('¿Qué película de James Cameron se estrenó en 1997 y cuenta una historia de amor en un barco hundiéndose?', @idResp, 6, 1, 1, 'facil');
 
--- RESPUESTAS POLITICA
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES
-('Democracia', 'Monarquía', 'Dictadura', 'República', 'A'),
-('División de poderes', 'Soberanía popular', 'Derechos humanos', 'Estado de derecho', 'A'),
-('Presidente', 'Primer Ministro', 'Canciller', 'Rey', 'A'),
-('ONU', 'OTAN', 'UE', 'OEA', 'A'),
-('Elecciones', 'Referéndum', 'Plebiscito', 'Asamblea', 'A'),
-('Separación de poderes', 'Federalismo', 'Centralismo', 'Autonomía', 'A'),
-('Liberalismo', 'Socialismo', 'Conservadurismo', 'Nacionalismo', 'A'),
-('Constitución', 'Decreto', 'Ley', 'Reglamento', 'A'),
-('Partido político', 'Sindicato', 'ONG', 'Cooperativa', 'A'),
-('Geopolítica', 'Política fiscal', 'Política monetaria', 'Política energética', 'A');
+INSERT INTO RESPUESTA VALUES ('Star Wars', 'Star Trek', 'Guardians of the Galaxy', 'The Matrix', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES('¿Qué saga espacial comenzó en 1977 con la primera película?', @idResp, 6, 1, 1, 'facil');
 
--- PREGUNTAS POLITICA
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES
-('¿Qué sistema permite a los ciudadanos elegir a sus representantes?', 1, 18, 1, 1, 'facil'),
-('¿Qué principio establece que los poderes del Estado son independientes?', 2, 18, 1, 1, 'facil'),
-('¿Qué cargo es la máxima autoridad ejecutiva en muchos países?', 3, 18, 1, 1, 'facil'),
-('¿Qué organización internacional promueve la paz y la cooperación mundial?', 4, 18, 1, 1, 'facil'),
-('¿Qué mecanismo permite que los ciudadanos aprueben o rechacen leyes directamente?', 5, 18, 1, 1, 'facil'),
-('¿Qué principio limita el poder del Estado mediante órganos independientes?', 6, 18, 1, 1, 'dificil'),
-('¿Qué ideología promueve la libertad individual y economía de mercado?', 7, 18, 1, 1, 'dificil'),
-('¿Qué documento establece los derechos y deberes fundamentales de los ciudadanos?', 8, 18, 1, 1, 'dificil'),
-('¿Cómo se llama la agrupación que busca influir en la política mediante elecciones?', 9, 18, 1, 1, 'dificil'),
-('¿Qué estudio analiza la influencia del espacio geográfico en la política?', 10, 18, 1, 1, 'dificil');
+INSERT INTO RESPUESTA VALUES ('Premios Oscar', 'Globos de Oro', 'BAFTA', 'Cannes', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES('¿Cuál es el premio más importante del cine estadounidense?', @idResp, 6, 1, 1, 'facil');
 
--- RESPUESTAS ECONOMIA
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES
-('Oferta y demanda', 'Inflación', 'Deflación', 'Intervención estatal', 'A'),
-('Producto Interno Bruto', 'Renta Nacional', 'Ingreso per cápita', 'Deuda pública', 'A'),
-('Inflación', 'Deflación', 'Recesión', 'Depresión', 'A'),
-('Mercado', 'Banco', 'Estado', 'Empresa', 'A'),
-('Microeconomía', 'Macroeconomía', 'Econometría', 'Finanzas', 'A'),
-('Adam Smith', 'John Maynard Keynes', 'Karl Marx', 'Milton Friedman', 'A'),
-('Oferta monetaria', 'Tasa de interés', 'Déficit fiscal', 'Balanza de pagos', 'B'),
-('Economía conductual', 'Economía normativa', 'Economía positiva', 'Economía experimental', 'A'),
-('Producto marginal', 'Costo marginal', 'Ingreso marginal', 'Beneficio marginal', 'C'),
-('Política fiscal', 'Política monetaria', 'Política comercial', 'Política industrial', 'A');
+INSERT INTO RESPUESTA VALUES ('El Padrino', 'Goodfellas', 'Scarface', 'Casablanca', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES('¿Qué película de Francis Ford Coppola es un clásico del cine de mafia?', @idResp, 6, 1, 1, 'facil');
 
--- PREGUNTAS ECONOMIA
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES
-('¿Qué ley básica explica cómo se determinan los precios en un mercado?', 1, 19, 1, 1, 'facil'),
-('¿Qué indicador mide el valor total de los bienes y servicios producidos en un país?', 2, 19, 1, 1, 'facil'),
-('¿Qué fenómeno económico implica aumento generalizado de los precios?', 3, 19, 1, 1, 'facil'),
-('¿Qué institución regula la compraventa de bienes y servicios?', 4, 19, 1, 1, 'facil'),
-('¿Qué rama estudia la economía de individuos y empresas?', 5, 19, 1, 1, 'facil'),
-('¿Quién es considerado el padre de la economía moderna?', 6, 19, 1, 1, 'dificil'),
-('¿Qué indicador mide la cantidad de dinero disponible en la economía?', 7, 19, 1, 1, 'dificil'),
-('¿Qué rama analiza los comportamientos económicos y decisiones humanas?', 8, 19, 1, 1, 'dificil'),
-('¿Qué concepto mide el ingreso adicional por unidad producida?', 9, 19, 1, 1, 'dificil'),
-('¿Qué política utiliza el gobierno para influir en la economía mediante gastos e impuestos?', 10, 19, 1, 1, 'dificil');
+INSERT INTO RESPUESTA VALUES ('Cinematografía', 'Edición', 'Guion', 'Dirección artística', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES('¿Qué término describe la técnica de capturar la imagen en cine?', @idResp, 6, 1, 1, 'dificil');
+
+INSERT INTO RESPUESTA VALUES ('Guionistas', 'Directores', 'Productores', 'Actores', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES('¿Quién crea la historia y los diálogos de una película?', @idResp, 6, 1, 1, 'dificil');
+
+INSERT INTO RESPUESTA VALUES ('Suspense psicológico', 'Comedia romántica', 'Western', 'Musical', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES('¿Qué género cinematográfico enfatiza la tensión y el misterio psicológico?', @idResp, 6, 1, 1, 'dificil');
+
+INSERT INTO RESPUESTA VALUES ('Efectos especiales digitales', 'Stop motion', 'Animación tradicional', 'Trucos mecánicos', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES('¿Qué técnica moderna se utiliza para crear efectos visuales realistas en películas?', @idResp, 6, 1, 1, 'dificil');
+
+INSERT INTO RESPUESTA VALUES ('Premio Palme', 'Premio Saturn', 'Premio Hugo', 'Premio Emmy', 'A');
+SET @idResp = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES('¿Cuál es el premio máximo del Festival de Cannes?', @idResp, 6, 1, 1, 'dificil');
+
+-- ===================== ARTE =====================
+-- Pregunta 1
+INSERT INTO RESPUESTA VALUES ('Leonardo da Vinci', 'Miguel Ángel', 'Rafael', 'Donatello', 'A');
+SET @idRespArte1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién pintó La Última Cena?', @idRespArte1, 2, 1, 1, 'facil');
+
+-- Pregunta 2
+INSERT INTO RESPUESTA VALUES ('Vincent van Gogh', 'Claude Monet', 'Pablo Picasso', 'Salvador Dalí', 'A');
+SET @idRespArte2 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué artista neerlandés cortó su propia oreja?', @idRespArte2, 2, 1, 1, 'facil');
+
+-- Pregunta 3
+INSERT INTO RESPUESTA VALUES ('La Mona Lisa', 'La última cena', 'El nacimiento de Venus', 'La persistencia de la memoria', 'A');
+SET @idRespArte3 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es la pintura más famosa de Leonardo da Vinci?', @idRespArte3, 2, 1, 1, 'facil');
+
+-- Pregunta 4
+INSERT INTO RESPUESTA VALUES ('Renacimiento', 'Barroco', 'Romanticismo', 'Impresionismo', 'A');
+SET @idRespArte4 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿A qué movimiento artístico pertenece Leonardo da Vinci?', @idRespArte4, 2, 1, 1, 'facil');
+
+-- Pregunta 5
+INSERT INTO RESPUESTA VALUES ('Fresco', 'Óleo', 'Acuarela', 'Témpera', 'A');
+SET @idRespArte5 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué técnica consiste en aplicar pigmento sobre yeso húmedo?', @idRespArte5, 2, 1, 1, 'facil');
+
+-- Pregunta 6
+INSERT INTO RESPUESTA VALUES ('Cubismo', 'Surrealismo', 'Expresionismo', 'Futurismo', 'A');
+SET @idRespArte6 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué movimiento artístico fue desarrollado por Picasso y Braque?', @idRespArte6, 2, 1, 1, 'dificil');
+
+-- Pregunta 7
+INSERT INTO RESPUESTA VALUES ('Guernica', 'El jardín de las delicias', 'La noche estrellada', 'Las meninas', 'A');
+SET @idRespArte7 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué obra de Picasso representa los horrores de la guerra civil española?', @idRespArte7, 2, 1, 1, 'dificil');
+
+-- Pregunta 8
+INSERT INTO RESPUESTA VALUES ('Claude Monet', 'Paul Cézanne', 'Edgar Degas', 'Pierre-Auguste Renoir', 'A');
+SET @idRespArte8 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién fue un pintor líder del impresionismo francés?', @idRespArte8, 2, 1, 1, 'dificil');
+
+-- Pregunta 9
+INSERT INTO RESPUESTA VALUES ('Arte Paleolítico', 'Arte Románico', 'Arte Gótico', 'Arte Barroco', 'A');
+SET @idRespArte9 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué arte es característico de las pinturas de las cuevas de Altamira?', @idRespArte9, 2, 1, 1, 'dificil');
+
+-- Pregunta 10
+INSERT INTO RESPUESTA VALUES ('Sandro Botticelli', 'Hieronymus Bosch', 'Caravaggio', 'El Greco', 'A');
+SET @idRespArte10 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién pintó “El nacimiento de Venus”?', @idRespArte10, 2, 1, 1, 'dificil');
+
+-- Literatura -----------------------------------------------------------------------
+
+-- Pregunta 1
+INSERT INTO RESPUESTA VALUES ('Miguel de Cervantes', 'William Shakespeare', 'Gabriel García Márquez', 'Jorge Luis Borges', 'A');
+SET @idRespLit1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién escribió "Don Quijote de la Mancha"?', @idRespLit1, 7, 1, 1, 'facil');
+
+-- Pregunta 2
+INSERT INTO RESPUESTA VALUES ('Don Quijote de la Mancha', 'La Odisea', 'Cien años de soledad', 'Hamlet', 'A');
+SET @idRespLit2 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es la obra más famosa de Cervantes?', @idRespLit2, 7, 1, 1, 'facil');
+
+-- Pregunta 3
+INSERT INTO RESPUESTA VALUES ('William Shakespeare', 'Charles Dickens', 'Mark Twain', 'Jane Austen', 'A');
+SET @idRespLit3 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién es considerado el dramaturgo inglés más importante?', @idRespLit3, 7, 1, 1, 'facil');
+
+-- Pregunta 4
+INSERT INTO RESPUESTA VALUES ('Poesía', 'Novela', 'Ensayo', 'Teatro', 'A');
+SET @idRespLit4 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué género literario se centra en la representación de personajes y acciones en forma narrativa?', @idRespLit4, 7, 1, 1, 'facil');
+
+-- Pregunta 5
+INSERT INTO RESPUESTA VALUES ('Realismo', 'Romanticismo', 'Modernismo', 'Barroco', 'A');
+SET @idRespLit5 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué movimiento literario enfatiza la objetividad y la descripción detallada de la realidad?', @idRespLit5, 7, 1, 1, 'facil');
+
+-- Pregunta 6
+INSERT INTO RESPUESTA VALUES ('Gabriel García Márquez', 'Mario Vargas Llosa', 'Julio Cortázar', 'Isabel Allende', 'A');
+SET @idRespLit6 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién ganó el Nobel de Literatura con "Cien años de soledad"?', @idRespLit6, 7, 1, 1, 'dificil');
+
+-- Pregunta 7
+INSERT INTO RESPUESTA VALUES ('El Aleph', 'Ficciones', 'Cien años de soledad', 'Rayuela', 'B');
+SET @idRespLit7 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué colección de cuentos de Borges incluye "El Aleph"?', @idRespLit7, 7, 1, 1, 'dificil');
+
+-- Pregunta 8
+INSERT INTO RESPUESTA VALUES ('Soneto', 'Haiku', 'Oda', 'Elegía', 'A');
+SET @idRespLit8 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué tipo de poema tiene 14 versos?', @idRespLit8, 7, 1, 1, 'dificil');
+
+-- Pregunta 9
+INSERT INTO RESPUESTA VALUES ('James Joyce', 'Virginia Woolf', 'Ernest Hemingway', 'F. Scott Fitzgerald', 'A');
+SET @idRespLit9 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién es autor de "Ulises", novela experimental del siglo XX?', @idRespLit9, 7, 1, 1, 'dificil');
+
+-- Pregunta 10
+INSERT INTO RESPUESTA VALUES ('Teoría literaria', 'Crítica literaria', 'Semiótica', 'Hermenéutica', 'A');
+SET @idRespLit10 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué disciplina estudia los métodos de interpretación y análisis de textos literarios?', @idRespLit10, 7, 1, 1, 'dificil');
+
+
+-- geografia -----------------------------------------------------------------------
+
+-- Pregunta 1
+INSERT INTO RESPUESTA VALUES ('Monte Everest', 'K2', 'Annapurna', 'Makalu', 'A');
+SET @idRespGeo1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es la montaña más alta del mundo?', @idRespGeo1, 8, 1, 1, 'facil');
+
+-- Pregunta 2
+INSERT INTO RESPUESTA VALUES ('Amazonas', 'Nilo', 'Yangtsé', 'Misisipi', 'A');
+SET @idRespGeo2 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué río es considerado el más caudaloso del mundo?', @idRespGeo2, 8, 1, 1, 'facil');
+
+-- Pregunta 3
+INSERT INTO RESPUESTA VALUES ('Asia', 'África', 'América', 'Europa', 'A');
+SET @idRespGeo3 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es el continente más grande por superficie?', @idRespGeo3, 8, 1, 1, 'facil');
+
+-- Pregunta 4
+INSERT INTO RESPUESTA VALUES ('Río Nilo', 'Río Congo', 'Río Amazonas', 'Río Mekong', 'A');
+SET @idRespGeo4 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué río atraviesa Egipto de sur a norte?', @idRespGeo4, 8, 1, 1, 'facil');
+
+-- Pregunta 5
+INSERT INTO RESPUESTA VALUES ('Desierto del Sahara', 'Desierto de Gobi', 'Desierto de Atacama', 'Desierto de Kalahari', 'A');
+SET @idRespGeo5 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es el desierto más grande del mundo?', @idRespGeo5, 8, 1, 1, 'facil');
+
+-- Pregunta 6
+INSERT INTO RESPUESTA VALUES ('Cordillera de los Andes', 'Montañas Rocosas', 'Himalaya', 'Alpes', 'A');
+SET @idRespGeo6 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué cordillera se extiende a lo largo de la costa occidental de Sudamérica?', @idRespGeo6, 8, 1, 1, 'facil');
+
+-- Pregunta 7
+INSERT INTO RESPUESTA VALUES ('Océano Pacífico', 'Océano Atlántico', 'Océano Índico', 'Océano Ártico', 'A');
+SET @idRespGeo7 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es el océano más grande del planeta?', @idRespGeo7, 8, 1, 1, 'dificil');
+
+-- Pregunta 8
+INSERT INTO RESPUESTA VALUES ('Lagos de Plitvice', 'Lago Baikal', 'Lago Titicaca', 'Lago Superior', 'B');
+SET @idRespGeo8 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué lago en Siberia es el más profundo del mundo?', @idRespGeo8, 8, 1, 1, 'dificil');
+
+-- Pregunta 9
+INSERT INTO RESPUESTA VALUES ('Fusión continental', 'Subducción', 'Deriva continental', 'Erosión', 'C');
+SET @idRespGeo9 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué fenómeno explica el movimiento de los continentes?', @idRespGeo9, 8, 1, 1, 'dificil');
+
+-- Pregunta 10
+INSERT INTO RESPUESTA VALUES ('Climas tropicales', 'Climas templados', 'Climas polares', 'Climas desérticos', 'A');
+SET @idRespGeo10 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué tipo de climas predominan cerca del ecuador?', @idRespGeo10, 8, 1, 1, 'dificil');
+
+-- MUSICA -----------------------------------------------------------------------
+
+
+-- Pregunta 1
+INSERT INTO RESPUESTA VALUES ('Ludwig van Beethoven', 'Wolfgang Amadeus Mozart', 'Johann Sebastian Bach', 'Frédéric Chopin', 'A');
+SET @idRespMus1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién compuso la Novena Sinfonía?', @idRespMus1, 9, 1, 1, 'facil');
+
+-- Pregunta 2
+INSERT INTO RESPUESTA VALUES ('Piano', 'Violín', 'Flauta', 'Guitarra', 'A');
+SET @idRespMus2 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué instrumento tiene 88 teclas?', @idRespMus2, 9, 1, 1, 'facil');
+
+-- Pregunta 3
+INSERT INTO RESPUESTA VALUES ('Sinfonía', 'Ópera', 'Concierto', 'Sonata', 'A');
+SET @idRespMus3 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué forma musical orquestal tiene varios movimientos y está escrita para una orquesta completa?', @idRespMus3, 9, 1, 1, 'facil');
+
+-- Pregunta 4
+INSERT INTO RESPUESTA VALUES ('Rock', 'Jazz', 'Blues', 'Pop', 'A');
+SET @idRespMus4 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué género musical nació en Estados Unidos en los años 50?', @idRespMus4, 9, 1, 1, 'facil');
+
+-- Pregunta 5
+INSERT INTO RESPUESTA VALUES ('Beatles', 'Rolling Stones', 'Pink Floyd', 'Queen', 'A');
+SET @idRespMus5 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué banda británica lanzó el álbum "Sgt. Pepper\'s Lonely Hearts Club Band"?', @idRespMus5, 9, 1, 1, 'facil');
+
+-- Pregunta 6
+INSERT INTO RESPUESTA VALUES ('Freddie Mercury', 'Elvis Presley', 'David Bowie', 'Jimi Hendrix', 'A');
+SET @idRespMus6 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién fue el vocalista principal de Queen?', @idRespMus6, 9, 1, 1, 'dificil');
+
+-- Pregunta 7
+INSERT INTO RESPUESTA VALUES ('Notas musicales: Do, Re, Mi, Fa, Sol, La, Si', 'Notas musicales: La, Si, Do, Re, Mi, Fa, Sol', 'Notas musicales: Re, Mi, Fa, Sol, La, Si, Do', 'Notas musicales: Mi, Fa, Sol, La, Si, Do, Re', 'A');
+SET @idRespMus7 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuáles son las notas musicales en orden ascendente?', @idRespMus7, 9, 1, 1, 'dificil');
+
+-- Pregunta 8
+INSERT INTO RESPUESTA VALUES ('Escala mayor', 'Escala menor', 'Escala pentatónica', 'Escala cromática', 'A');
+SET @idRespMus8 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué escala tiene un patrón de tonos y semitonos: T-T-S-T-T-T-S?', @idRespMus8, 9, 1, 1, 'dificil');
+
+-- Pregunta 9
+INSERT INTO RESPUESTA VALUES ('Compositores del barroco', 'Compositores del romanticismo', 'Compositores del impresionismo', 'Compositores del renacimiento', 'A');
+SET @idRespMus9 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué compositores se destacan en el periodo barroco?', @idRespMus9, 9, 1, 1, 'dificil');
+
+-- Pregunta 10
+INSERT INTO RESPUESTA VALUES ('Teoría musical', 'Armonía', 'Contrapunto', 'Orquestación', 'B');
+SET @idRespMus10 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué disciplina estudia la combinación de sonidos y acordes en la música?', @idRespMus10, 9, 1, 1, 'dificil');
+
+
+-- DEPORTES -----------------------------------------------------------------------
+
+-- Pregunta 1
+INSERT INTO RESPUESTA VALUES ('Fútbol', 'Baloncesto', 'Tenis', 'Natación', 'A');
+SET @idRespDep1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es el deporte más popular del mundo?', @idRespDep1, 10, 1, 1, 'facil');
+
+-- Pregunta 2
+INSERT INTO RESPUESTA VALUES ('Lionel Messi', 'Cristiano Ronaldo', 'Pelé', 'Diego Maradona', 'A');
+SET @idRespDep2 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué jugador argentino ganó 7 Balones de Oro?', @idRespDep2, 10, 1, 1, 'facil');
+
+-- Pregunta 3
+INSERT INTO RESPUESTA VALUES ('Olimpiadas', 'Mundial de Fútbol', 'Copa América', 'Eurocopa', 'A');
+SET @idRespDep3 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es el evento deportivo internacional que ocurre cada 4 años y reúne varios deportes?', @idRespDep3, 10, 1, 1, 'facil');
+
+-- Pregunta 4
+INSERT INTO RESPUESTA VALUES ('Maratón', '100 metros', 'Salto de altura', 'Lanzamiento de jabalina', 'A');
+SET @idRespDep4 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué prueba de atletismo consiste en correr 42,195 km?', @idRespDep4, 10, 1, 1, 'facil');
+
+-- Pregunta 5
+INSERT INTO RESPUESTA VALUES ('Michael Jordan', 'LeBron James', 'Kobe Bryant', 'Magic Johnson', 'A');
+SET @idRespDep5 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién es considerado uno de los mejores jugadores de baloncesto de todos los tiempos?', @idRespDep5, 10, 1, 1, 'facil');
+
+-- Pregunta 6
+INSERT INTO RESPUESTA VALUES ('Boxeo', 'Lucha libre', 'Kickboxing', 'Judo', 'A');
+SET @idRespDep6 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué deporte de combate se caracteriza por golpes de puño y guantes acolchados?', @idRespDep6, 10, 1, 1, 'dificil');
+
+-- Pregunta 7
+INSERT INTO RESPUESTA VALUES ('Tour de Francia', 'Giro de Italia', 'Vuelta a España', 'Clasico de Italia', 'A');
+SET @idRespDep7 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué carrera ciclista es la más famosa de Francia?', @idRespDep7, 10, 1, 1, 'dificil');
+
+-- Pregunta 8
+INSERT INTO RESPUESTA VALUES ('Formula 1', 'Nascar', 'IndyCar', 'Rally Dakar', 'A');
+SET @idRespDep8 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es la categoría máxima de automovilismo a nivel mundial?', @idRespDep8, 10, 1, 1, 'dificil');
+
+-- Pregunta 9
+INSERT INTO RESPUESTA VALUES ('Rugby', 'Fútbol americano', 'Hockey sobre césped', 'Balonmano', 'A');
+SET @idRespDep9 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué deporte de contacto se juega con un balón ovalado y placajes?', @idRespDep9, 10, 1, 1, 'dificil');
+
+-- Pregunta 10
+INSERT INTO RESPUESTA VALUES ('Tenis de mesa', 'Bádminton', 'Squash', 'Pickleball', 'B');
+SET @idRespDep10 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál de estos deportes se juega con volante y raqueta en una cancha interior?', @idRespDep10, 10, 1, 1, 'dificil');
+
+-- TECNOLOGIA -----------------------------------------------------------------------
+
+-- Pregunta 1
+INSERT INTO RESPUESTA VALUES ('Internet', 'Bluetooth', 'Wi-Fi', 'NFC', 'A');
+SET @idRespTec1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué red mundial permite la conexión de computadoras a nivel global?', @idRespTec1, 11, 1, 1, 'facil');
+
+-- Pregunta 2
+INSERT INTO RESPUESTA VALUES ('Tim Berners-Lee', 'Steve Jobs', 'Bill Gates', 'Elon Musk', 'A');
+SET @idRespTec2 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién inventó la World Wide Web?', @idRespTec2, 11, 1, 1, 'facil');
+
+-- Pregunta 3
+INSERT INTO RESPUESTA VALUES ('CPU', 'GPU', 'RAM', 'ROM', 'A');
+SET @idRespTec3 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué componente central ejecuta las instrucciones de un computador?', @idRespTec3, 11, 1, 1, 'facil');
+
+-- Pregunta 4
+INSERT INTO RESPUESTA VALUES ('Software', 'Hardware', 'Firmware', 'Middleware', 'A');
+SET @idRespTec4 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cómo se llama la parte tangible de un computador?', @idRespTec4, 11, 1, 1, 'facil');
+
+-- Pregunta 5
+INSERT INTO RESPUESTA VALUES ('Python', 'Java', 'C++', 'JavaScript', 'A');
+SET @idRespTec5 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué lenguaje de programación se caracteriza por su sintaxis clara y legible?', @idRespTec5, 11, 1, 1, 'facil');
+
+-- Pregunta 6
+INSERT INTO RESPUESTA VALUES ('Inteligencia Artificial', 'Realidad Virtual', 'Blockchain', 'Big Data', 'A');
+SET @idRespTec6 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué tecnología permite que las máquinas imiten procesos de pensamiento humano?', @idRespTec6, 11, 1, 1, 'dificil');
+
+-- Pregunta 7
+INSERT INTO RESPUESTA VALUES ('Algoritmo de búsqueda', 'Algoritmo de ordenamiento', 'Algoritmo de cifrado', 'Algoritmo de compresión', 'B');
+SET @idRespTec7 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué tipo de algoritmo organiza datos en orden ascendente o descendente?', @idRespTec7, 11, 1, 1, 'dificil');
+
+-- Pregunta 8
+INSERT INTO RESPUESTA VALUES ('Redes neuronales', 'Redes locales', 'Redes de área amplia', 'Redes inalámbricas', 'A');
+SET @idRespTec8 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué arquitectura informática se inspira en el funcionamiento del cerebro humano?', @idRespTec8, 11, 1, 1, 'dificil');
+
+-- Pregunta 9
+INSERT INTO RESPUESTA VALUES ('Criptografía', 'Programación web', 'Sistemas operativos', 'Ciberseguridad', 'D');
+SET @idRespTec9 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué área de la informática protege la información frente a ataques y accesos no autorizados?', @idRespTec9, 11, 1, 1, 'dificil');
+
+-- Pregunta 10
+INSERT INTO RESPUESTA VALUES ('Aprendizaje profundo', 'Aprendizaje supervisado', 'Aprendizaje no supervisado', 'Aprendizaje por refuerzo', 'A');
+SET @idRespTec10 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué técnica de IA utiliza múltiples capas para aprender representaciones complejas de datos?', @idRespTec10, 11, 1, 1, 'dificil');
+
+
+
+-- VIDEOJUEGOS -----------------------------------------------------------------------
+
+-- Pregunta 1
+INSERT INTO RESPUESTA VALUES ('Super Mario', 'Sonic', 'Pac-Man', 'Zelda', 'A');
+SET @idRespVid1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué personaje es el fontanero icónico de Nintendo?', @idRespVid1, 12, 1, 1, 'facil');
+
+-- Pregunta 2
+INSERT INTO RESPUESTA VALUES ('Nintendo', 'Sony', 'Microsoft', 'Sega', 'A');
+SET @idRespVid2 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué compañía desarrolló la consola Switch?', @idRespVid2, 12, 1, 1, 'facil');
+
+-- Pregunta 3
+INSERT INTO RESPUESTA VALUES ('The Legend of Zelda', 'Final Fantasy', 'Metroid', 'Donkey Kong', 'A');
+SET @idRespVid3 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es la saga protagonizada por Link?', @idRespVid3, 12, 1, 1, 'facil');
+
+-- Pregunta 4
+INSERT INTO RESPUESTA VALUES ('Fortnite', 'Minecraft', 'Roblox', 'Among Us', 'B');
+SET @idRespVid4 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué juego permite construir bloques y explorar libremente?', @idRespVid4, 12, 1, 1, 'facil');
+
+-- Pregunta 5
+INSERT INTO RESPUESTA VALUES ('Minecraft', 'Call of Duty', 'FIFA', 'Tetris', 'A');
+SET @idRespVid5 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué juego de construcción y supervivencia se volvió viral en 2010?', @idRespVid5, 12, 1, 1, 'facil');
+
+-- Pregunta 6
+INSERT INTO RESPUESTA VALUES ('Pokémon', 'Digimon', 'Yu-Gi-Oh!', 'Bakugan', 'A');
+SET @idRespVid6 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué franquicia de monstruos tiene Pikachu como personaje principal?', @idRespVid6, 12, 1, 1, 'facil');
+
+-- Pregunta 7
+INSERT INTO RESPUESTA VALUES ('Esports', 'Speedrun', 'Cosplay', 'Modding', 'A');
+SET @idRespVid7 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cómo se denomina la competición profesional de videojuegos?', @idRespVid7, 12, 1, 1, 'dificil');
+
+-- Pregunta 8
+INSERT INTO RESPUESTA VALUES ('Engine Unreal', 'Unity', 'CryEngine', 'Frostbite', 'B');
+SET @idRespVid8 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué motor de videojuegos es desarrollado por Unity Technologies?', @idRespVid8, 12, 1, 1, 'dificil');
+
+-- Pregunta 9
+INSERT INTO RESPUESTA VALUES ('Juego de mundo abierto', 'Juego lineal', 'Juego de puzzles', 'Juego de rol', 'A');
+SET @idRespVid9 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué tipo de juego permite explorar un mundo sin restricciones lineales?', @idRespVid9, 12, 1, 1, 'dificil');
+
+-- Pregunta 10
+INSERT INTO RESPUESTA VALUES ('Inteligencia artificial en NPCs', 'Física en motores gráficos', 'Renderizado 3D', 'Programación de servidores', 'A');
+SET @idRespVid10 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué técnica se utiliza para dotar de comportamiento inteligente a personajes no jugables?', @idRespVid10, 12, 1, 1, 'dificil');
+
+
+-- GASTRONOMIA -----------------------------------------------------------------------
+
+-- Pregunta 1
+INSERT INTO RESPUESTA VALUES ('Pizza', 'Hamburguesa', 'Sushi', 'Pasta', 'A');
+SET @idRespGast1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué plato italiano se hace con masa, tomate y queso?', @idRespGast1, 13, 1, 1, 'facil');
+
+-- Pregunta 2
+INSERT INTO RESPUESTA VALUES ('Italia', 'Francia', 'España', 'México', 'A');
+SET @idRespGast2 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿De qué país es originaria la pizza?', @idRespGast2, 13, 1, 1, 'facil');
+
+-- Pregunta 3
+INSERT INTO RESPUESTA VALUES ('Sushi', 'Taco', 'Paella', 'Curry', 'A');
+SET @idRespGast3 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué plato japonés incluye pescado crudo y arroz?', @idRespGast3, 13, 1, 1, 'facil');
+
+-- Pregunta 4
+INSERT INTO RESPUESTA VALUES ('Café', 'Té', 'Chocolate', 'Agua', 'A');
+SET @idRespGast4 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué bebida se obtiene por tostado y molido de granos?', @idRespGast4, 13, 1, 1, 'facil');
+
+-- Pregunta 5
+INSERT INTO RESPUESTA VALUES ('Cocción', 'Fritura', 'Horneado', 'Salteado', 'C');
+SET @idRespGast5 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué método de cocción utiliza calor seco en un horno?', @idRespGast5, 13, 1, 1, 'facil');
+
+-- Pregunta 6
+INSERT INTO RESPUESTA VALUES ('Sous-vide', 'Braseado', 'Glaseado', 'Escabeche', 'A');
+SET @idRespGast6 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué técnica culinaria consiste en cocinar alimentos al vacío y baja temperatura?', @idRespGast6, 13, 1, 1, 'dificil');
+
+-- Pregunta 7
+INSERT INTO RESPUESTA VALUES ('Cocina molecular', 'Cocina casera', 'Cocina rápida', 'Cocina tradicional', 'A');
+SET @idRespGast7 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué rama de la gastronomía aplica principios químicos y físicos a la cocina?', @idRespGast7, 13, 1, 1, 'dificil');
+
+-- Pregunta 8
+INSERT INTO RESPUESTA VALUES ('Maridaje', 'Fermentación', 'Pasteurización', 'Confitado', 'A');
+SET @idRespGast8 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué término describe la combinación armoniosa de alimentos y bebidas?', @idRespGast8, 13, 1, 1, 'dificil');
+
+-- Pregunta 9
+INSERT INTO RESPUESTA VALUES ('Champiñones', 'Trufa', 'Setas', 'Boletus', 'B');
+SET @idRespGast9 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué hongo es considerado un manjar de alta cocina y muy caro?', @idRespGast9, 13, 1, 1, 'dificil');
+
+-- Pregunta 10
+INSERT INTO RESPUESTA VALUES ('Fermentación láctica', 'Deshidratación', 'Curado', 'Ahumado', 'A');
+SET @idRespGast10 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué proceso convierte la lactosa en ácido láctico en alimentos?', @idRespGast10, 13, 1, 1, 'dificil');
+
+
+-- MITOLOGIA -----------------------------------------------------------------------
+
+-- Pregunta 1
+INSERT INTO RESPUESTA VALUES ('Zeus', 'Hades', 'Poseidón', 'Ares', 'A');
+SET @idRespMit1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién es el dios supremo del Olimpo?', @idRespMit1, 14, 1, 1, 'facil');
+
+-- Pregunta 2
+INSERT INTO RESPUESTA VALUES ('Olimpo', 'Tártaro', 'Érebo', 'Asgard', 'A');
+SET @idRespMit2 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Dónde residían los dioses griegos?', @idRespMit2, 14, 1, 1, 'facil');
+
+-- Pregunta 3
+INSERT INTO RESPUESTA VALUES ('Thor', 'Loki', 'Odin', 'Freya', 'C');
+SET @idRespMit3 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién es el dios principal de la mitología nórdica?', @idRespMit3, 14, 1, 1, 'facil');
+
+-- Pregunta 4
+INSERT INTO RESPUESTA VALUES ('Hércules', 'Aquiles', 'Perseo', 'Teseo', 'A');
+SET @idRespMit4 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué héroe realizó los 12 trabajos?', @idRespMit4, 14, 1, 1, 'facil');
+
+-- Pregunta 5
+INSERT INTO RESPUESTA VALUES ('Medusa', 'Minotauro', 'Hidra', 'Quimera', 'A');
+SET @idRespMit5 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué criatura tenía serpientes en lugar de cabello?', @idRespMit5, 14, 1, 1, 'facil');
+
+-- Pregunta 6
+INSERT INTO RESPUESTA VALUES ('Valquirias', 'Nornas', 'Elfos', 'Jotuns', 'A');
+SET @idRespMit6 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué figuras femeninas elegían a los guerreros muertos para el Valhalla?', @idRespMit6, 14, 1, 1, 'dificil');
+
+-- Pregunta 7
+INSERT INTO RESPUESTA VALUES ('Atenea', 'Artemisa', 'Afrodita', 'Hera', 'A');
+SET @idRespMit7 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién es la diosa de la sabiduría en Grecia?', @idRespMit7, 14, 1, 1, 'dificil');
+
+-- Pregunta 8
+INSERT INTO RESPUESTA VALUES ('Dionisio', 'Apolo', 'Hermes', 'Hefesto', 'B');
+SET @idRespMit8 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué dios griego es el patrón de la música y las artes?', @idRespMit8, 14, 1, 1, 'dificil');
+
+-- Pregunta 9
+INSERT INTO RESPUESTA VALUES ('Odiseo', 'Aquiles', 'Agamenón', 'Paris', 'A');
+SET @idRespMit9 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué héroe griego ideó el caballo de Troya?', @idRespMit9, 14, 1, 1, 'dificil');
+
+-- Pregunta 10
+INSERT INTO RESPUESTA VALUES ('Mitología comparada', 'Mitología clásica', 'Mitología nórdica', 'Mitología egipcia', 'A');
+SET @idRespMit10 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué disciplina compara mitologías de diferentes culturas?', @idRespMit10, 14, 1, 1, 'dificil');
+
+
+-- QUIMICA -----------------------------------------------------------------------
+
+-- Pregunta 1
+INSERT INTO RESPUESTA VALUES ('H2O', 'CO2', 'O2', 'N2', 'A');
+SET @idRespQui1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cuál es la fórmula química del agua?', @idRespQui1, 16, 1, 1, 'facil');
+
+-- Pregunta 2
+INSERT INTO RESPUESTA VALUES ('Elemento', 'Molécula', 'Compuesto', 'Ion', 'A');
+SET @idRespQui2 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cómo se llama una sustancia formada por átomos del mismo tipo?', @idRespQui2, 16, 1, 1, 'facil');
+
+-- Pregunta 3
+INSERT INTO RESPUESTA VALUES ('Tabla periódica', 'Tabla de símbolos', 'Tabla de masas', 'Tabla de reacciones', 'A');
+SET @idRespQui3 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué tabla organiza los elementos químicos según sus propiedades?', @idRespQui3, 16, 1, 1, 'facil');
+
+-- Pregunta 4
+INSERT INTO RESPUESTA VALUES ('Ácido', 'Base', 'Sal', 'Óxido', 'A');
+SET @idRespQui4 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué tipo de sustancia tiene un pH menor a 7?', @idRespQui4, 16, 1, 1, 'facil');
+
+-- Pregunta 5
+INSERT INTO RESPUESTA VALUES ('pH 7', 'pH 0', 'pH 14', 'pH 3', 'A');
+SET @idRespQui5 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué pH indica una solución neutra?', @idRespQui5, 16, 1, 1, 'facil');
+
+-- Pregunta 6
+INSERT INTO RESPUESTA VALUES ('Ley de conservación de la masa', 'Ley de las proporciones definidas', 'Ley de Boyle', 'Ley de Charles', 'A');
+SET @idRespQui6 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué ley establece que la masa no se crea ni se destruye en una reacción?', @idRespQui6, 16, 1, 1, 'dificil');
+
+-- Pregunta 7
+INSERT INTO RESPUESTA VALUES ('Reacción redox', 'Reacción ácido-base', 'Reacción de precipitación', 'Reacción endotérmica', 'A');
+SET @idRespQui7 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué reacción implica transferencia de electrones?', @idRespQui7, 16, 1, 1, 'dificil');
+
+-- Pregunta 8
+INSERT INTO RESPUESTA VALUES ('Enlace covalente', 'Enlace iónico', 'Enlace metálico', 'Enlace de hidrógeno', 'A');
+SET @idRespQui8 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué tipo de enlace comparte electrones entre átomos?', @idRespQui8, 16, 1, 1, 'dificil');
+
+-- Pregunta 9
+INSERT INTO RESPUESTA VALUES ('Catalizador', 'Inhibidor', 'Reactivo', 'Producto', 'A');
+SET @idRespQui9 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué sustancia acelera una reacción química sin consumirse?', @idRespQui9, 16, 1, 1, 'dificil');
+
+-- Pregunta 10
+INSERT INTO RESPUESTA VALUES ('Química orgánica', 'Química inorgánica', 'Bioquímica', 'Físicoquímica', 'C');
+SET @idRespQui10 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué rama estudia moléculas biológicas como proteínas y carbohidratos?', @idRespQui10, 16, 1, 1, 'dificil');
+
+
+-- ASTRONOMIA -----------------------------------------------------------------------
+
+-- Pregunta 1
+INSERT INTO RESPUESTA VALUES ('Sol', 'Luna', 'Marte', 'Júpiter', 'A');
+SET @idRespAst1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué estrella es el centro del sistema solar?', @idRespAst1, 17, 1, 1, 'facil');
+
+-- Pregunta 2
+INSERT INTO RESPUESTA VALUES ('Planeta', 'Estrella', 'Cometa', 'Asteroide', 'B');
+SET @idRespAst2 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué cuerpo celeste genera luz propia?', @idRespAst2, 17, 1, 1, 'facil');
+
+-- Pregunta 3
+INSERT INTO RESPUESTA VALUES ('Vía Láctea', 'Andrómeda', 'Triángulo', 'Sagitario', 'A');
+SET @idRespAst3 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cómo se llama la galaxia donde se encuentra la Tierra?', @idRespAst3, 17, 1, 1, 'facil');
+
+-- Pregunta 4
+INSERT INTO RESPUESTA VALUES ('Sistema solar', 'Galaxia', 'Nebulosa', 'Constelación', 'A');
+SET @idRespAst4 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cómo se denomina el conjunto de planetas y cuerpos que orbitan una estrella?', @idRespAst4, 17, 1, 1, 'facil');
+
+-- Pregunta 5
+INSERT INTO RESPUESTA VALUES ('Neil Armstrong', 'Yuri Gagarin', 'Buzz Aldrin', 'Michael Collins', 'A');
+SET @idRespAst5 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién fue el primer hombre en caminar sobre la Luna?', @idRespAst5, 17, 1, 1, 'facil');
+
+-- Pregunta 6
+INSERT INTO RESPUESTA VALUES ('Telescopio', 'Microscopio', 'Espectroscopio', 'Cámara', 'A');
+SET @idRespAst6 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué instrumento permite observar cuerpos celestes a gran distancia?', @idRespAst6, 17, 1, 1, 'dificil');
+
+-- Pregunta 7
+INSERT INTO RESPUESTA VALUES ('Agujero negro', 'Supernova', 'Estrella de neutrones', 'Quásar', 'A');
+SET @idRespAst7 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué fenómeno astronómico es una región del espacio con gravedad extrema de la que nada escapa?', @idRespAst7, 17, 1, 1, 'dificil');
+
+-- Pregunta 8
+INSERT INTO RESPUESTA VALUES ('Materia oscura', 'Energía oscura', 'Radiación cósmica', 'Planetas extrasolares', 'B');
+SET @idRespAst8 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué componente misterioso representa aproximadamente el 70% de la energía del universo?', @idRespAst8, 17, 1, 1, 'dificil');
+
+-- Pregunta 9
+INSERT INTO RESPUESTA VALUES ('Exoplanetas', 'Cometas', 'Asteroides', 'Satélites', 'A');
+SET @idRespAst9 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué planeta fuera del sistema solar ha sido detectado orbitando otra estrella?', @idRespAst9, 17, 1, 1, 'dificil');
+
+-- Pregunta 10
+INSERT INTO RESPUESTA VALUES ('Big Bang', 'Teoría de la relatividad', 'Inflación cósmica', 'Gravedad cuántica', 'A');
+SET @idRespAst10 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué teoría explica el origen y expansión del universo hace aproximadamente 13.8 mil millones de años?', @idRespAst10, 17, 1, 1, 'dificil');
+
+-- POLITICA -----------------------------------------------------------------------
+
+-- Pregunta 1
+INSERT INTO RESPUESTA VALUES ('Democracia', 'Monarquía', 'Dictadura', 'República', 'A');
+SET @idRespPol1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué sistema permite a los ciudadanos elegir a sus representantes?', @idRespPol1, 18, 1, 1, 'facil');
+
+-- Pregunta 2
+INSERT INTO RESPUESTA VALUES ('División de poderes', 'Soberanía popular', 'Derechos humanos', 'Estado de derecho', 'A');
+SET @idRespPol2 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué principio establece que los poderes del Estado son independientes?', @idRespPol2, 18, 1, 1, 'facil');
+
+-- Pregunta 3
+INSERT INTO RESPUESTA VALUES ('Presidente', 'Primer Ministro', 'Canciller', 'Rey', 'A');
+SET @idRespPol3 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué cargo es la máxima autoridad ejecutiva en muchos países?', @idRespPol3, 18, 1, 1, 'facil');
+
+-- Pregunta 4
+INSERT INTO RESPUESTA VALUES ('ONU', 'OTAN', 'UE', 'OEA', 'A');
+SET @idRespPol4 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué organización internacional promueve la paz y la cooperación mundial?', @idRespPol4, 18, 1, 1, 'facil');
+
+-- Pregunta 5
+INSERT INTO RESPUESTA VALUES ('Elecciones', 'Referéndum', 'Plebiscito', 'Asamblea', 'A');
+SET @idRespPol5 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué mecanismo permite que los ciudadanos aprueben o rechacen leyes directamente?', @idRespPol5, 18, 1, 1, 'facil');
+
+-- Pregunta 6
+INSERT INTO RESPUESTA VALUES ('Separación de poderes', 'Federalismo', 'Centralismo', 'Autonomía', 'A');
+SET @idRespPol6 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué principio limita el poder del Estado mediante órganos independientes?', @idRespPol6, 18, 1, 1, 'dificil');
+
+-- Pregunta 7
+INSERT INTO RESPUESTA VALUES ('Liberalismo', 'Socialismo', 'Conservadurismo', 'Nacionalismo', 'A');
+SET @idRespPol7 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué ideología promueve la libertad individual y economía de mercado?', @idRespPol7, 18, 1, 1, 'dificil');
+
+-- Pregunta 8
+INSERT INTO RESPUESTA VALUES ('Constitución', 'Decreto', 'Ley', 'Reglamento', 'A');
+SET @idRespPol8 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué documento establece los derechos y deberes fundamentales de los ciudadanos?', @idRespPol8, 18, 1, 1, 'dificil');
+
+-- Pregunta 9
+INSERT INTO RESPUESTA VALUES ('Partido político', 'Sindicato', 'ONG', 'Cooperativa', 'A');
+SET @idRespPol9 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Cómo se llama la agrupación que busca influir en la política mediante elecciones?', @idRespPol9, 18, 1, 1, 'dificil');
+
+-- Pregunta 10
+INSERT INTO RESPUESTA VALUES ('Geopolítica', 'Política fiscal', 'Política monetaria', 'Política energética', 'A');
+SET @idRespPol10 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué estudio analiza la influencia del espacio geográfico en la política?', @idRespPol10, 18, 1, 1, 'dificil');
+
+-- ECONOMIA -----------------------------------------------------------------------
+
+-- Pregunta 1
+INSERT INTO RESPUESTA VALUES ('Oferta y demanda', 'Inflación', 'Deflación', 'Intervención estatal', 'A');
+SET @idRespEco1 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué ley básica explica cómo se determinan los precios en un mercado?', @idRespEco1, 19, 1, 1, 'facil');
+
+-- Pregunta 2
+INSERT INTO RESPUESTA VALUES ('Producto Interno Bruto', 'Renta Nacional', 'Ingreso per cápita', 'Deuda pública', 'A');
+SET @idRespEco2 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué indicador mide el valor total de los bienes y servicios producidos en un país?', @idRespEco2, 19, 1, 1, 'facil');
+
+-- Pregunta 3
+INSERT INTO RESPUESTA VALUES ('Inflación', 'Deflación', 'Recesión', 'Depresión', 'A');
+SET @idRespEco3 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué fenómeno económico implica aumento generalizado de los precios?', @idRespEco3, 19, 1, 1, 'facil');
+
+-- Pregunta 4
+INSERT INTO RESPUESTA VALUES ('Mercado', 'Banco', 'Estado', 'Empresa', 'A');
+SET @idRespEco4 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué institución regula la compraventa de bienes y servicios?', @idRespEco4, 19, 1, 1, 'facil');
+
+-- Pregunta 5
+INSERT INTO RESPUESTA VALUES ('Microeconomía', 'Macroeconomía', 'Econometría', 'Finanzas', 'A');
+SET @idRespEco5 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué rama estudia la economía de individuos y empresas?', @idRespEco5, 19, 1, 1, 'facil');
+
+-- Pregunta 6
+INSERT INTO RESPUESTA VALUES ('Adam Smith', 'John Maynard Keynes', 'Karl Marx', 'Milton Friedman', 'A');
+SET @idRespEco6 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Quién es considerado el padre de la economía moderna?', @idRespEco6, 19, 1, 1, 'dificil');
+
+-- Pregunta 7
+INSERT INTO RESPUESTA VALUES ('Oferta monetaria', 'Tasa de interés', 'Déficit fiscal', 'Balanza de pagos', 'B');
+SET @idRespEco7 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué indicador mide la cantidad de dinero disponible en la economía?', @idRespEco7, 19, 1, 1, 'dificil');
+
+-- Pregunta 8
+INSERT INTO RESPUESTA VALUES ('Economía conductual', 'Economía normativa', 'Economía positiva', 'Economía experimental', 'A');
+SET @idRespEco8 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué rama analiza los comportamientos económicos y decisiones humanas?', @idRespEco8, 19, 1, 1, 'dificil');
+
+-- Pregunta 9
+INSERT INTO RESPUESTA VALUES ('Producto marginal', 'Costo marginal', 'Ingreso marginal', 'Beneficio marginal', 'C');
+SET @idRespEco9 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué concepto mide el ingreso adicional por unidad producida?', @idRespEco9, 19, 1, 1, 'dificil');
+
+-- Pregunta 10
+INSERT INTO RESPUESTA VALUES ('Política fiscal', 'Política monetaria', 'Política comercial', 'Política industrial', 'A');
+SET @idRespEco10 = LAST_INSERT_ID();
+INSERT INTO PREGUNTA VALUES ('¿Qué política utiliza el gobierno para influir en la economía mediante gastos e impuestos?', @idRespEco10, 19, 1, 1, 'dificil');

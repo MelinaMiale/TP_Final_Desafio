@@ -53,8 +53,8 @@ class GameController {
         $_SESSION["currentGame"] = $currentGameData;
 
         // Renderizar primera pregunta
-        $preguntaActual = $playableQuestions[0]->getIndividualPlayableQuestion(false); // sin respuesta correcta
-        $this->renderer->render("displayGame", $preguntaActual);
+        $currentQuestion = $playableQuestions[0]->getIndividualPlayableQuestion(false); // sin respuesta correcta
+        $this->renderer->render("displayGame", $currentQuestion);
     }
 
     public function getAndDisplayNextQuestion() {

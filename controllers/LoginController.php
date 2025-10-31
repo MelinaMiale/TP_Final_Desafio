@@ -16,25 +16,25 @@ class LoginController {
     public function login() {
         $user_name = $_POST["user_name"];
         $password = $_POST["password"];
-        $resultado = $this->model->getUserByUserNameAndPassword($user_name, $password);
+        $result = $this->model->getUserByUserNameAndPassword($user_name, $password);
 
-        if ($resultado && $resultado["cuenta_verificada"] == 1) {
+        if ($result && $result["cuenta_verificada"] == 1) {
             $_SESSION["user_name"] = $user_name;
-            $_SESSION["userId"] = $resultado["id"];
-            $_SESSION["totalScore"] = $resultado["puntos_totales"];
+            $_SESSION["userId"] = $result["id"];
+            $_SESSION["totalScore"] = $result["puntos_totales"];
             header("Location: ?controller=home&method=displayHome");
             exit;
         } else {
-            $mensaje = $resultado
+            $message = $result
                 ? "Tu cuenta aún no fue verificada. Revisa tu correo."
                 : "Usuario o clave incorrecta";
 
-            if($mensaje == "Tu cuenta aún no fue verificada. Revisa tu correo."){
+            if($message == "Tu cuenta aún no fue verificada. Revisa tu correo."){
                 // todo: ¿deberíamos re-enviar el mail o exponer la opción para reenviar el mail?
             }
 
             $this->renderer->render("login", [
-                "error" => $mensaje
+                "error" => $message
             ]);
         }
 

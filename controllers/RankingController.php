@@ -10,56 +10,52 @@ class RankingController {
         $this->renderer = $renderer;
     }
 
-    public function mostrar() {
+    public function display() {
         if (!isset($_SESSION["user_name"])) {
             header("Location: ?controller=login&method=loginForm");
             exit;
         }
 
-        $pagina = $_GET['pagina'] ?? 1;
-        $porPagina = 4;
+        $page = $_GET['page'] ?? 1;
+        $perPage = 4;
 
-        $data = $this->model->obtenerJugadores($pagina, $porPagina);
-        $totalJugadores = $this->model->contarJugadores();
-        $totalPaginas = ceil($totalJugadores / $porPagina);
-        $paginas = range(1, $totalPaginas); // [1, 2, 3, 4]
+        $players = $this->model->getPlayers($page, $perPage);
+        $totalPlayers = $this->model->countPlayers();
+        $totalPages = ceil($totalPlayers / $perPage);
+        $pages = range(1, $totalPages);
 
-        $saltar = ($pagina - 1) * $porPagina;
-        foreach ($data as $index => &$jugador) {
-            $jugador['posicion'] = $saltar + $index + 1;
-            if (empty($jugador['foto'])) {
-                $jugador['foto'] = 'defaultImagen.png';
+        $offset = ($page - 1) * $perPage;
+        foreach ($players as $index => &$player) {
+            $player['rank'] = $offset + $index + 1;
+            if (empty($player['avatar'])) {
+                $player['avatar'] = 'defaultImagen.png';
             }
         }
 
-        $posicionUsuario = $this->model->obtenerPosicionUsuario($_SESSION["user_name"]);
-        
-        // Obtener foto del usuario actual (o usar default)
-        $fotoUsuario = $_SESSION["foto"] ?? 'defaultImagen.png';
-        if (empty($fotoUsuario)) {
-            $fotoUsuario = 'defaultImagen.png';
+        $userRank = $this->model->getUserRank($_SESSION["user_name"]);
+
+        $userAvatar = $_SESSION["foto"] ?? 'defaultImagen.png';
+        if (empty($userAvatar)) {
+            $userAvatar = 'defaultImagen.png';
         }
 
-        // Variables para la paginación
-        $paginaAnterior = $pagina - 1;
-        $paginaSiguiente = $pagina + 1;
-        $esPrimeraPagina = ($pagina <= 1);
-        $esUltimaPagina = ($pagina >= $totalPaginas);
+        $previousPage = $page - 1;
+        $nextPage = $page + 1;
+        $isFirstPage = ($page <= 1);
+        $isLastPage = ($page >= $totalPages);
 
         $this->renderer->render("ranking", [
             "user_name" => $_SESSION["user_name"],
-            "puntos" => $_SESSION["puntos"] ?? 0,
-            "posicion_usuario" => $posicionUsuario,
-            "foto_usuario" => $fotoUsuario,
-            "ranking" => $data,
-            "pagina_actual" => $pagina,
-            "total_paginas" => $paginas,
-            "pagina_anterior" => $paginaAnterior,
-            "pagina_siguiente" => $paginaSiguiente,
-            "es_primera_pagina" => $esPrimeraPagina,
-            "es_ultima_pagina" => $esUltimaPagina
+            "score" => $_SESSION["score"] ?? 0,
+            "user_rank" => $userRank,
+            "user_avatar" => $userAvatar,
+            "ranking" => $players,
+            "current_page" => $page,
+            "total_pages" => $pages,
+            "previous_page" => $previousPage,
+            "next_page" => $nextPage,
+            "is_first_page" => $isFirstPage,
+            "is_last_page" => $isLastPage
         ]);
     }
-
-
 }
