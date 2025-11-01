@@ -16,7 +16,7 @@ class Router
     }
 
     public function executeController($controllerParam, $methodParam) {
-        if($_SESSION["user_name"] || $controllerParam == "login"){
+        if($_SESSION["user_name"] || $controllerParam == "login" || $controllerParam == "registration"){
             $controller = $this->getControllerFrom($controllerParam);
             $this->executeMethodFromController($controller, $methodParam);
         } else {
