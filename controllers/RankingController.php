@@ -15,7 +15,6 @@ class RankingController {
             header("Location: ?controller=login&method=loginForm");
             exit;
         }
-
         $page = $_GET['page'] ?? 1;
         $perPage = 4;
 
@@ -34,11 +33,10 @@ class RankingController {
 
         $userRank = $this->model->getUserRank($_SESSION["user_name"]);
 
-        $userAvatar = $_SESSION["foto"] ?? 'defaultImagen.png';
+        $userAvatar = $this->model->getUserAvatar($_SESSION["user_name"]) ?? 'defaultImagen.png';
         if (empty($userAvatar)) {
             $userAvatar = 'defaultImagen.png';
         }
-
         $previousPage = $page - 1;
         $nextPage = $page + 1;
         $isFirstPage = ($page <= 1);
@@ -58,4 +56,5 @@ class RankingController {
             "is_last_page" => $isLastPage
         ]);
     }
+
 }

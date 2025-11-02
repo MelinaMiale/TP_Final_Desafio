@@ -50,4 +50,9 @@ class RankingModel {
         $result = $this->connection->query($sql);
         return $result[0]['rank'] ?? null;
     }
+    public function getUserAvatar($username) {
+        $sql = "SELECT foto FROM usuario WHERE nombre_usuario = '$username'";
+        $result = $this->connection->query($sql);
+        return $result[0]['foto'] ?? null;
+    }
 }
