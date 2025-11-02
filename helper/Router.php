@@ -16,7 +16,9 @@ class Router
     }
 
     public function executeController($controllerParam, $methodParam) {
-        if($_SESSION["user_name"] || $controllerParam == "login" || $controllerParam == "registration"){
+        // Normalizo el nombre del controlador porque a veces se rompe el registro. y necesitamos que siemppre venga en minuscula
+        $controllerParam = strtolower($controllerParam);
+        if ($_SESSION["user_name"] || in_array($controllerParam, ["login", "registration"])) {
             $controller = $this->getControllerFrom($controllerParam);
             $this->executeMethodFromController($controller, $methodParam);
         } else {
