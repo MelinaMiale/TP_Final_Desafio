@@ -6,7 +6,7 @@ class HomeController {
     /* necesito un modelo con los siguientes datos:
           * el nombre del usuario, que ya está guardado en la sesión.
           * el historial de partidas
-          * cantidad de preguntas correctas de esa partida
+          * (FALTA) cantidad de preguntas correctas de esa partida
           * mi posición en el ranking?
     */
 
@@ -21,22 +21,11 @@ class HomeController {
             exit;
         }
 
-        // TODO: esto es provisorio y lo tenemos que cambiar
-        $datosSimulados = [
-            'user_name' => $_SESSION["user_name"],
-            'ranking' => 1,
-            'score' => 2450,
-            'games_played' => 45,
-            'games' => [
-                ['date' => '11 oct 2023', 'correct' => 8, 'points' => 80],
-                ['date' => '10 oct 2023', 'correct' => 9, 'points' => 90],
-                ['date' => '9 oct 2023', 'correct' => 10, 'points' => 100],
-                ['date' => '8 oct 2023', 'correct' => 7, 'points' => 70],
-                ['date' => '7 oct 2023', 'correct' => 9, 'points' => 90],
-            ]
-        ];
+        $username = $_SESSION["user_name"];
+        $datos = $this->model->getUserStats($username);
 
-        $this->renderer->render("home", $datosSimulados);
+        $this->renderer->render("home", $datos);
     }
+
 
 }
