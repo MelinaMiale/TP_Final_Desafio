@@ -23,13 +23,18 @@ class ProfileController {
             return;
         }
 
+        // Traer las partidas del usuario
+        $userId = $userData['id'];
+        $partidas = $this->model->getPartidasByUser($userId);
+
+        // Datos adicionales
         $userData['inicial'] = strtoupper(substr($userData['nombre_usuario'], 0, 1));
-
-
-        // QR de ejemplo - Usando QRServer.com (funcional)
-        // Puedes cambiar size=150x150 para ajustar el tamaño.
         $userData['qr_base64'] = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://ejemplo.com/perfil/demo";
 
+        // Agregar partidas al contexto de Mustache
+        $userData['partidas'] = $partidas;
+
+        // Renderizar la vista
         $this->renderer->render("profile", $userData);
     }
 }
