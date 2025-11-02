@@ -33,6 +33,12 @@ class ProfileController {
 
         // Agregar partidas al contexto de Mustache
         $userData['partidas'] = $partidas;
+        //mostrar foto de perfil si existe
+        $baseUrl = "/public/subidos/avatars/";
+        $userData['foto_perfil'] = !empty($userData['foto'])
+            ? $baseUrl . $userData['foto']
+            : null;
+
 
         // Renderizar la vista
         $this->renderer->render("profile", $userData);

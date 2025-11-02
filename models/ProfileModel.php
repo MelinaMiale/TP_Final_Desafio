@@ -15,6 +15,7 @@ class ProfileModel {
             u.anio_nacimiento,
             u.nombre_usuario,
             u.correo_electronico,
+            u.foto,
             c.nombre AS ciudad,
             p.nombre AS pais,
             u.puntos_totales
