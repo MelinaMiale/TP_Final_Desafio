@@ -11,21 +11,6 @@ class GameController
         $this->renderer = $renderer;
     }
 
-// metodo con datos hardcodeados para probar la interfaz
-//    public function startGame() {
-//        $this->renderer->render("displayGame", [
-//            'idPregunta' => 1,
-//            'enunciado' => '¿Quién pintó La Última Cena?',
-//            'opcionA' => 'Leonardo da Vinci',
-//            'opcionB' => 'Miguel Ángel',
-//            'opcionC' => 'Rafael',
-//            'opcionD' => 'Donatello',
-//            'nombreCategoria' => 'Arte',
-//            'colorCategoria' => 'ff0000',
-//            'numeroPregunta' => 1
-//        ]);
-//    }
-
     public function getPlayableQuestionsAndSetGameData($userId, $currentGameId) {
         $playableQuestions = $this->model->getPlayableQuestionsForUser($userId);
 
@@ -67,34 +52,10 @@ class GameController
 
         // creo objeto currentGame con todos los atributos necesarios para la partida
         $currentGame = $this->model->createGame($userId);
-        $_SESSION["gameId"] = $currentGame->id;
-
-        /*
-        // Obtener preguntas "válidas" para el usuario logueado
-        $playableQuestions = $this->model->getPlayableQuestionsForUser($userId);
-
-        // Guardar en sesión $playableQuestions a currentGame y la primera es la preguntaActual (la cual va a ir dinamicamente cambiando)
-        // tengo que guardar en sesion $currentGame para poder ir mostrando las preguntas y actualizando: pregunta_actual y la respuesta en respuesta_usuario
-        $currentGameData = [
-            "gameId" => $currentGame->id,
-            "playableQuestions" => $playableQuestions,
-            "currentQuestionIndex" => 0,
-            "score" => 0,
-            "activeQuestion" => [
-                "id" => $playableQuestions[0]->questionId,
-                "timestamp" => time()
-            ]
-        ];
-        $_SESSION["currentGame"] = $currentGameData;
-
-        // Renderizar primera pregunta
-        $activeQuestion = $playableQuestions[0]->getIndividualPlayableQuestion(false); // sin respuesta correcta
-        */
-        $this->getPlayableQuestionsAndSetGameData($currentGame->id, $userId);
+        $this->getPlayableQuestionsAndSetGameData($userId, $currentGame->id);
     }
 
-    public function submitAnswer()
-    {
+    public function submitAnswer() {
         // si la pregunta que nos responde no es la que le mandamos, #hicisteTrampa, se cierra la partida
         $questionId = $_POST["questionId"];
         $submittedAnswer = $_POST['answer'];
@@ -106,8 +67,7 @@ class GameController
         // si la respuesta no es correcta muestro error
         if (!$this->isCorrectAnswer($submittedAnswer)) {
             $this->endGame($submittedAnswer);
-            $this->renderer->render("wrongAnswer"); // mejorar interfaz
-            exit;
+            $this->renderWrongAnswer($submittedAnswer);
         } else { // si es correcta...
             // 1. acumular el puntaje en score,
             $_SESSION["currentGame"]["score"] = $_SESSION["currentGame"]["score"] + 1;
@@ -123,38 +83,53 @@ class GameController
         }
     }
 
-    function isSameQuestion($questionId)
-    {
+    private function renderWrongAnswer($submittedAnswer) {
+        $index = $_SESSION["currentGame"]["currentQuestionIndex"];
+        $payedQuestion = $_SESSION["currentGame"]["playableQuestions"][$index];
+        $completePayedQuestion = $payedQuestion->getIndividualPlayableQuestion(true);
+        $flags = [
+            "isUserA" => $submittedAnswer === "A",
+            "isUserB" => $submittedAnswer === "B",
+            "isUserC" => $submittedAnswer === "C",
+            "isUserD" => $submittedAnswer === "D",
+            "isCorrectA" => $completePayedQuestion['correctAnswer'] === "A",
+            "isCorrectB" => $completePayedQuestion['correctAnswer'] === "B",
+            "isCorrectC" => $completePayedQuestion['correctAnswer'] === "C",
+            "isCorrectD" => $completePayedQuestion['correctAnswer'] === "D",
+        ];
+        $this->renderer->render("wrongAnswer", array_merge($completePayedQuestion, $flags, [
+            "respuesta_usuario" => $submittedAnswer,
+            "questionId" => $completePayedQuestion['questionId'],
+            "yaReportada" => isset($_SESSION["reportedQuestionId"])
+        ]));
+        exit;
+    }
+
+    private function isSameQuestion($questionId) {
         $activeQuestionId = $_SESSION['currentGame']['activeQuestion']['id'];
         return $activeQuestionId == $questionId;
     }
 
-    function isCorrectAnswer($submittedAnswer)
-    {
+    private function isCorrectAnswer($submittedAnswer) {
         $currentIndex = $_SESSION['currentGame']['currentQuestionIndex'];
         $question = $_SESSION['currentGame']['playableQuestions'][$currentIndex];
         $correctAnswer = $question->correctAnswer;
-//        echo "<p>respuesta correcta: $correctAnswer. pregunta: {$question->questionId} - {$question->text}</p>";
         return ($submittedAnswer === $correctAnswer);
     }
 
-    function updateQuestionRatio($questionId, $wasCorrect)
-    {
+    private function updateQuestionRatio($questionId, $wasCorrect) {
         $this->model->saveResponseRelatedData($questionId, $wasCorrect);
     }
 
-    function updateUserResponse($submittedAnswer, $questionId, $wasCorrect)
-    {
+    private function updateUserResponse($submittedAnswer, $questionId, $wasCorrect) {
         $this->model->updateUserResponseData($submittedAnswer, $questionId, $wasCorrect);
     }
 
-    function storeResults()
-    {
+    private function storeResults() {
         $this->model->storeGameResults();
     }
 
-    function endGame($submittedAnswer)
-    {
+    private function endGame($submittedAnswer) {
         $activeQuestionId = $_SESSION['currentGame']['activeQuestion']['id'];
         // actualizar el ratio de la preg (tabla pregunta)
         $this->updateQuestionRatio($activeQuestionId, false);

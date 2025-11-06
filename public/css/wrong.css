@@ -1,0 +1,17 @@
+.correct-answer {
+    background-color: #06d6a0;
+    border: 2px solid #06d6a0;
+    padding: 0.5rem;
+    border-radius: 8px;
+    font-weight: bold;
+    color: #1d3557;
+}
+
+.wrong-answer {
+    background-color: #ef476f;
+    border: 2px solid #ef476f;
+    padding: 0.5rem;
+    border-radius: 8px;
+    font-weight: bold;
+    color: white;
+}
