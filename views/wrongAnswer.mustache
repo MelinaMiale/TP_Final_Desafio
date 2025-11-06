@@ -1,9 +1,46 @@
 {{> header }}
-    <div class="container">
-        <h1 class="title">Error</h1>
-        <p>Respuesta Incorrecta. Perdiste la partida.</p>
-        <p class="form-footer">
-            <a href="../index.php?controller=home&method=displayHome" class="btn">Volver al Home</a>
-        </p>
+<div class="container game-container" style="--category-color: {{categoryColor}};">
+    <div class="category-header">
+        <img src="../public/img/{{categoryIcon}}.png" alt="Category icon" class="category-icon">
+        <span class="category-name">{{categoryName}}</span>
     </div>
+
+    <h2 class="title">¡Respuesta incorrecta!</h2>
+
+    <div class="question-block">
+        <p class="question-text">{{text}}</p>
+
+        <div class="options-form">
+            <div class="option {{#isUserA}}wrong-answer{{/isUserA}} {{#isCorrectA}}correct-answer{{/isCorrectA}}">
+                <span>A) {{optionA}}</span>
+            </div>
+            <div class="option {{#isUserB}}wrong-answer{{/isUserB}} {{#isCorrectB}}correct-answer{{/isCorrectB}}">
+                <span>B) {{optionB}}</span>
+            </div>
+            <div class="option {{#isUserC}}wrong-answer{{/isUserC}} {{#isCorrectC}}correct-answer{{/isCorrectC}}">
+                <span>C) {{optionC}}</span>
+            </div>
+            <div class="option {{#isUserD}}wrong-answer{{/isUserD}} {{#isCorrectD}}correct-answer{{/isCorrectD}}">
+                <span>D) {{optionD}}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="lobby-actions">
+        <form action="../index.php?controller=Game&method=startGame" method="POST">
+            <button type="submit" class="btn">Empezar nueva partida</button>
+        </form>
+
+        {{^yaReportada}}
+            <form action="../index.php?controller=Question&method=reportQuestion" method="POST">
+                <input type="hidden" name="questionId" value="{{questionId}}">
+                <button type="submit" class="btn">Reportar esta pregunta</button>
+            </form>
+        {{/yaReportada}}
+
+        {{#yaReportada}}
+            <p class="form-footer">Ya reportaste una pregunta en esta partida.</p>
+        {{/yaReportada}}
+    </div>
+</div>
 {{> footer }}
