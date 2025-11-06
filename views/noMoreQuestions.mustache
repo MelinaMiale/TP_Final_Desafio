@@ -1,0 +1,23 @@
+{{> header }}
+<div class="container game-container">
+    <div class="category-header">
+        <img src="../public/img/icons/reset.png" alt="Reset icon" class="category-icon">
+        <span class="category-name">¡Sin más preguntas!</span>
+    </div>
+
+    <h2 class="title">Ya respondiste todas las preguntas disponibles</h2>
+
+    <div class="question-block">
+        <p class="question-text">Podés reiniciar tu progreso y volver a jugar desde cero, o convertirte en editor para ayudar a mejorar el juego.</p>
+
+        <form action="../index.php?controller=home&method=displayHome" method="POST" class="options-form">
+            <button type="submit" class="btn">Volver a jugar desde cero</button>
+        </form>
+
+<!--        falta implementar-->
+        <form action="#" method="POST" class="options-form">
+            <button type="submit" class="btn">Convertirme en editor</button>
+        </form>
+    </div>
+</div>
+{{> footer }}

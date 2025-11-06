@@ -2,17 +2,29 @@
 
     <div class="container lobby-container">
         <h2 class="title">¡Te Desafio, {{user_name}}!</h2>
-        <p class="ranking-info">🏆 Estás en el puesto <strong>#{{ranking}}</strong> con <strong>{{score}} puntos</strong></p>
+        <p class="ranking-info">Estás en el puesto <strong>#{{ranking}}</strong> con <strong>{{score}} puntos</strong></p>
         <p class="games-played">Has jugado <strong>{{games_played}}</strong> partidas</p>
 
         <div class="lobby-actions">
-            <a href="../index.php?controller=game&method=startGame" class="btn">🎮 Iniciar Nueva Partida</a>
-            <a href="/ranking/display" class="btn">📊 Ver Ranking Completo</a>
-            <a href="/question/create" class="btn">➕ Crear Pregunta</a>
-            <a href="/index.php?controller=profile&method=showProfile" class="btn">👤 Ver Perfil</a>
+            <a href="../index.php?controller=game&method=startGame" class="btn">
+                <img src="../public/img/icons/jugar.png" alt="" class="icon-small">
+                Iniciar Nueva Partida
+            </a>
+            <a href="/ranking/display" class="btn">
+                <img src="../public/img/icons/ranking.png" alt="" class="icon-small">
+                Ver Ranking Completo
+            </a>
+            <a href="" class="btn">
+                <img src="../public/img/icons/mas.png" alt="" class="icon-small">
+                Crear Pregunta
+            </a>
+            <a href="/index.php?controller=profile&method=showProfile" class="btn">
+                <img src="../public/img/icons/perfil-del-usuario.png" alt="" class="icon-small">
+                Ver Perfil
+            </a>
         </div>
 
-        <h3 class="subtitle">🕹️ Historial de Partidas</h3>
+        <h3 class="subtitle">Historial de Partidas</h3>
         <table class="game-history">
             <thead>
             <tr>

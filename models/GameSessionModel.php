@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../enums/GameType.php';
 require_once __DIR__ . '/../enums/GameResult.php';
 require_once __DIR__ . '/PlayableQuestion.php';
+require_once __DIR__ . '/../enums/QuestionStatus.php';
 
 class GameSessionModel {
     private $connection;
@@ -42,6 +43,7 @@ class GameSessionModel {
     }
 
     public function getPlayableQuestionsForUser($userId) {
+        $approvedStatus = QuestionStatus::APPROVED;
         // busco en la base 10 preguntas que el usuario no haya respondido nunca
         $sql = "SELECT 
         p.id AS idPregunta,
@@ -57,11 +59,12 @@ class GameSessionModel {
         FROM PREGUNTA p
         JOIN RESPUESTA r ON p.id_respuesta = r.id
         JOIN CATEGORIA c ON p.id_categoria = c.id
+        LEFT JOIN AUDITORIA_PREGUNTA ap ON p.id = ap.id_pregunta
         WHERE p.id NOT IN (
             SELECT id_pregunta FROM RESPUESTA_USUARIO WHERE id_usuario = $userId
-        )
+        ) AND (ap.id_estado_pregunta = $approvedStatus OR ap.id_pregunta IS NULL)
         ORDER BY RAND()
-        LIMIT 10";
+        LIMIT 30";
 
         $result = $this->connection->query($sql);
 
@@ -145,6 +148,19 @@ class GameSessionModel {
                 id_resultado = $result";
 
         $this->connection->query($sql);
+    }
+
+    public function resetUserQuestionHistory() {
+        $userId = $_SESSION["userId"];
+
+        $sqlDeleteResponses = "DELETE FROM RESPUESTA_USUARIO WHERE id_usuario = $userId";
+        $this->connection->query($sqlDeleteResponses);
+
+        $sqlDeleteGames = "DELETE FROM PARTIDA WHERE id_jugador1 = $userId";
+        $this->connection->query($sqlDeleteGames);
+
+        $sqlResetPoints = "UPDATE USUARIO SET puntos_totales = 0 WHERE id = $userId";
+        $this->connection->query($sqlResetPoints);
     }
 
     public function generateBotScore() {

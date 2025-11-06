@@ -1,10 +1,12 @@
 <?php
 
-class GameController {
+class GameController
+{
     private $model;
     private $renderer;
 
-    public function __construct($model, $renderer) {
+    public function __construct($model, $renderer)
+    {
         $this->model = $model;
         $this->renderer = $renderer;
     }
@@ -24,16 +26,50 @@ class GameController {
 //        ]);
 //    }
 
-    public function startGame() {
+    public function getPlayableQuestionsAndSetGameData($userId, $currentGameId) {
+        $playableQuestions = $this->model->getPlayableQuestionsForUser($userId);
+
+        if (empty($playableQuestions)) {
+            $this->resetUserProgressIfNoQuestions();
+        }
+
+        if (!isset($_SESSION["currentGame"]["questionDisplayNumber"])) {
+            $_SESSION["currentGame"]["questionDisplayNumber"] = 1;
+        }
+
+        // aca voy a setear el numero de preg que. seria el questionNumber que muestro en la vista
+        if (!isset($_SESSION["currentGame"]["questionDisplayNumber"])) {
+            $_SESSION["currentGame"]["questionDisplayNumber"] = 1;
+        }
+
+        $score = $_SESSION["currentGame"]["score"] ?? 0;
+        $currentGameData = [
+            "gameId" => $currentGameId,
+            "playableQuestions" => $playableQuestions,
+            "currentQuestionIndex" => 0,
+            "score" => $score,
+            "questionDisplayNumber" => $_SESSION["currentGame"]["questionDisplayNumber"],
+            "activeQuestion" => [
+                "id" => $playableQuestions[0]->questionId,
+                "timestamp" => time()
+            ]
+        ];
+        $_SESSION["currentGame"] = $currentGameData;
+
+        $activeQuestion = $playableQuestions[0]->getIndividualPlayableQuestion(false);
+        $activeQuestion['questionNumber'] = $_SESSION["currentGame"]["questionDisplayNumber"];
+        $this->renderer->render("displayGame", $activeQuestion);
+    }
+
+    public function startGame()
+    {
         $userId = $_SESSION["userId"];
 
         // creo objeto currentGame con todos los atributos necesarios para la partida
         $currentGame = $this->model->createGame($userId);
         $_SESSION["gameId"] = $currentGame->id;
 
-        // llamar a metodo que genere puntaje aleatorio de bot
-        // $this->model->generateBotScore($currentGame->id);
-
+        /*
         // Obtener preguntas "válidas" para el usuario logueado
         $playableQuestions = $this->model->getPlayableQuestionsForUser($userId);
 
@@ -53,10 +89,12 @@ class GameController {
 
         // Renderizar primera pregunta
         $activeQuestion = $playableQuestions[0]->getIndividualPlayableQuestion(false); // sin respuesta correcta
-        $this->renderer->render("displayGame", $activeQuestion);
+        */
+        $this->getPlayableQuestionsAndSetGameData($currentGame->id, $userId);
     }
 
-    public function submitAnswer() {
+    public function submitAnswer()
+    {
         // si la pregunta que nos responde no es la que le mandamos, #hicisteTrampa, se cierra la partida
         $questionId = $_POST["questionId"];
         $submittedAnswer = $_POST['answer'];
@@ -73,6 +111,7 @@ class GameController {
         } else { // si es correcta...
             // 1. acumular el puntaje en score,
             $_SESSION["currentGame"]["score"] = $_SESSION["currentGame"]["score"] + 1;
+            $_SESSION["currentGame"]["questionDisplayNumber"] += 1;
             // 2. actualizar el ratio de aciertos de la preg,
             $this->updateQuestionRatio($questionId, true);
             // 3. guardar resp de usuario,
@@ -84,12 +123,14 @@ class GameController {
         }
     }
 
-    function isSameQuestion($questionId) {
+    function isSameQuestion($questionId)
+    {
         $activeQuestionId = $_SESSION['currentGame']['activeQuestion']['id'];
         return $activeQuestionId == $questionId;
     }
 
-    function isCorrectAnswer($submittedAnswer) {
+    function isCorrectAnswer($submittedAnswer)
+    {
         $currentIndex = $_SESSION['currentGame']['currentQuestionIndex'];
         $question = $_SESSION['currentGame']['playableQuestions'][$currentIndex];
         $correctAnswer = $question->correctAnswer;
@@ -97,19 +138,23 @@ class GameController {
         return ($submittedAnswer === $correctAnswer);
     }
 
-    function updateQuestionRatio($questionId, $wasCorrect) {
+    function updateQuestionRatio($questionId, $wasCorrect)
+    {
         $this->model->saveResponseRelatedData($questionId, $wasCorrect);
     }
 
-    function updateUserResponse($submittedAnswer, $questionId, $wasCorrect) {
+    function updateUserResponse($submittedAnswer, $questionId, $wasCorrect)
+    {
         $this->model->updateUserResponseData($submittedAnswer, $questionId, $wasCorrect);
     }
 
-    function storeResults() {
+    function storeResults()
+    {
         $this->model->storeGameResults();
     }
 
-    function endGame($submittedAnswer) {
+    function endGame($submittedAnswer)
+    {
         $activeQuestionId = $_SESSION['currentGame']['activeQuestion']['id'];
         // actualizar el ratio de la preg (tabla pregunta)
         $this->updateQuestionRatio($activeQuestionId, false);
@@ -120,28 +165,24 @@ class GameController {
     }
 
     public function getAndDisplayNextQuestion($submittedAnswer) {
-        $currentIndex = $_SESSION['currentGame']['currentQuestionIndex'];
-        $totalQuestions = count($_SESSION['currentGame']['playableQuestions']);
-        if ($currentIndex >= $totalQuestions) {
-            // acá llego cuando respondi todas las preguntas
-            // guardar puntaje jugador/es (tabla partida), por ahora solo un jugador
-            $activeQuestionId = $_SESSION['currentGame']['activeQuestion']['id'];
-            // actualizar el ratio de la preg (tabla pregunta)
-            $this->updateQuestionRatio($activeQuestionId, true);
-            // guardar resp de usuario (tabla usuario)
-            $this->updateUserResponse($submittedAnswer, $activeQuestionId, true);
-            $this->storeResults();
-            $this->renderer->render("victoryScreen"); // hacerrrr
-            exit;
-        }
-
-        // el indez ya lo estoy aumentando en submitAnswer
+        // el indez ya lo aumenté en submitAnswer
         $index = $_SESSION['currentGame']['currentQuestionIndex'];
         $playableQuestions = $_SESSION['currentGame']['playableQuestions'];
+        // si me quede sin preguntas busco mas.
+        if (!isset($playableQuestions[$index])) {
+            $currentGameId = $_SESSION["gameId"];
+            $userId = $_SESSION["userId"];
+            $this->getPlayableQuestionsAndSetGameData($currentGameId, $userId);
+        }
         $activeQuestion = $playableQuestions[$index]->getIndividualPlayableQuestion(false);
         $_SESSION['currentGame']["activeQuestion"]['id'] = $activeQuestion['questionId'];
         $_SESSION['currentGame']['activeQuestion']['time'] = time();
-
         $this->renderer->render("displayGame", $activeQuestion);
+    }
+
+    public function resetUserProgressIfNoQuestions() {
+        $this->model->resetUserQuestionHistory();
+        $this->renderer->render("noMoreQuestions");
+        exit;
     }
 }
