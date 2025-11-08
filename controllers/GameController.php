@@ -22,7 +22,6 @@ class GameController
             $_SESSION["currentGame"]["questionDisplayNumber"] = 1;
         }
 
-        // aca voy a setear el numero de preg que. seria el questionNumber que muestro en la vista
         if (!isset($_SESSION["currentGame"]["questionDisplayNumber"])) {
             $_SESSION["currentGame"]["questionDisplayNumber"] = 1;
         }
@@ -41,6 +40,8 @@ class GameController
         ];
         $_SESSION["currentGame"] = $currentGameData;
 
+        $this->model->registerQuestionAssignment($userId, $currentGameData["activeQuestion"]["id"], $currentGameId);
+
         $activeQuestion = $playableQuestions[0]->getIndividualPlayableQuestion(false);
         $activeQuestion['questionNumber'] = $_SESSION["currentGame"]["questionDisplayNumber"];
         $this->renderer->render("displayGame", $activeQuestion);
@@ -49,58 +50,74 @@ class GameController
     public function startGame()
     {
         $userId = $_SESSION["userId"];
-
-        // creo objeto currentGame con todos los atributos necesarios para la partida
         $currentGame = $this->model->createGame($userId);
         $this->getPlayableQuestionsAndSetGameData($userId, $currentGame->id);
     }
 
     public function submitAnswer() {
-        // si la pregunta que nos responde no es la que le mandamos, #hicisteTrampa, se cierra la partida
         $questionId = $_POST["questionId"];
-        $submittedAnswer = $_POST['answer'];
+        $submittedAnswer = isset($_POST['answer']) ? $_POST['answer'] : 'NO_ANSWER';
+        $timing = $this->hasTimeRunOut();
+        $timeout = $timing["timeout"];
+        $elapsedTime = $timing["elapsedTime"];
+
+        if ($timeout) {
+            $this->endGame($submittedAnswer);
+            $this->renderWrongAnswer($submittedAnswer, true, $elapsedTime);
+            exit;
+        }
+
         if (!$this->isSameQuestion($questionId)) {
             $this->endGame($submittedAnswer);
             $this->renderer->render("differentQuestionError"); // mejorar interfaz
             exit;
         }
-        // si la respuesta no es correcta muestro error
+
         if (!$this->isCorrectAnswer($submittedAnswer)) {
             $this->endGame($submittedAnswer);
-            $this->renderWrongAnswer($submittedAnswer);
-        } else { // si es correcta...
-            // 1. acumular el puntaje en score,
-            $_SESSION["currentGame"]["score"] = $_SESSION["currentGame"]["score"] + 1;
-            $_SESSION["currentGame"]["questionDisplayNumber"] += 1;
-            // 2. actualizar el ratio de aciertos de la preg,
-            $this->updateQuestionRatio($questionId, true);
-            // 3. guardar resp de usuario,
-            $this->updateUserResponse($submittedAnswer, $questionId, true);
-            // 4. cambiar el indice de la pregunta activa
-            $_SESSION['currentGame']['currentQuestionIndex']++;
-            // 5. obtener siguiente pregunta y mandarla a la vista
-            $this->getAndDisplayNextQuestion($submittedAnswer);
+            $this->renderWrongAnswer($submittedAnswer, false, $elapsedTime);
+            exit;
         }
+
+        $_SESSION["currentGame"]["score"] = $_SESSION["currentGame"]["score"] + 1;
+        $_SESSION["currentGame"]["questionDisplayNumber"] += 1;
+        $this->updateQuestionRatio($questionId, true);
+        $this->updateUserResponse($submittedAnswer, $questionId, true);
+        $_SESSION['currentGame']['currentQuestionIndex']++;
+        $this->getAndDisplayNextQuestion($submittedAnswer);
+
     }
 
-    private function renderWrongAnswer($submittedAnswer) {
+    private function renderWrongAnswer($submittedAnswer, $timeout, $elapsedTime) {
         $index = $_SESSION["currentGame"]["currentQuestionIndex"];
         $payedQuestion = $_SESSION["currentGame"]["playableQuestions"][$index];
         $completePayedQuestion = $payedQuestion->getIndividualPlayableQuestion(true);
-        $flags = [
-            "isUserA" => $submittedAnswer === "A",
-            "isUserB" => $submittedAnswer === "B",
-            "isUserC" => $submittedAnswer === "C",
-            "isUserD" => $submittedAnswer === "D",
-            "isCorrectA" => $completePayedQuestion['correctAnswer'] === "A",
-            "isCorrectB" => $completePayedQuestion['correctAnswer'] === "B",
-            "isCorrectC" => $completePayedQuestion['correctAnswer'] === "C",
-            "isCorrectD" => $completePayedQuestion['correctAnswer'] === "D",
-        ];
+        if ($timeout) {
+            $flags = [
+                "isCorrectA" => $completePayedQuestion['correctAnswer'] === "A",
+                "isCorrectB" => $completePayedQuestion['correctAnswer'] === "B",
+                "isCorrectC" => $completePayedQuestion['correctAnswer'] === "C",
+                "isCorrectD" => $completePayedQuestion['correctAnswer'] === "D",
+                "wrongDueToTimeOut" => true
+            ];
+        } else {
+            $flags = [
+                "isUserA" => $submittedAnswer === "A",
+                "isUserB" => $submittedAnswer === "B",
+                "isUserC" => $submittedAnswer === "C",
+                "isUserD" => $submittedAnswer === "D",
+                "isCorrectA" => $completePayedQuestion['correctAnswer'] === "A",
+                "isCorrectB" => $completePayedQuestion['correctAnswer'] === "B",
+                "isCorrectC" => $completePayedQuestion['correctAnswer'] === "C",
+                "isCorrectD" => $completePayedQuestion['correctAnswer'] === "D",
+                "wrongDueToTimeOut" => false
+            ];
+        }
         $this->renderer->render("wrongAnswer", array_merge($completePayedQuestion, $flags, [
-            "respuesta_usuario" => $submittedAnswer,
+            "user_response" => $submittedAnswer,
             "questionId" => $completePayedQuestion['questionId'],
-            "yaReportada" => isset($_SESSION["reportedQuestionId"])
+            "reported" => isset($_SESSION["reportedQuestionId"]),
+            "responseTime" => $elapsedTime
         ]));
         exit;
     }
@@ -117,6 +134,15 @@ class GameController
         return ($submittedAnswer === $correctAnswer);
     }
 
+    private function hasTimeRunOut() {
+        $start = $_SESSION["currentGame"]["activeQuestion"]["timestamp"];
+        $now = time();
+        $elapsedTime = $now - $start;
+
+        $timeout = $elapsedTime >= 15;
+        return ["timeout" => $timeout, "elapsedTime" => $elapsedTime];
+    }
+
     private function updateQuestionRatio($questionId, $wasCorrect) {
         $this->model->saveResponseRelatedData($questionId, $wasCorrect);
     }
@@ -126,32 +152,31 @@ class GameController
     }
 
     private function storeResults() {
-        $this->model->storeGameResults();
+        $this->model->storeGameResults($_SESSION["currentGame"]["gameId"]);
     }
 
     private function endGame($submittedAnswer) {
         $activeQuestionId = $_SESSION['currentGame']['activeQuestion']['id'];
-        // actualizar el ratio de la preg (tabla pregunta)
         $this->updateQuestionRatio($activeQuestionId, false);
-        // guardar resp de usuario (tabla usuario)
         $this->updateUserResponse($submittedAnswer, $activeQuestionId, false);
-        // guardar puntaje jugador/es (tabla partida), por ahora solo un jugador
         $this->storeResults();
     }
 
     public function getAndDisplayNextQuestion($submittedAnswer) {
-        // el indez ya lo aumenté en submitAnswer
         $index = $_SESSION['currentGame']['currentQuestionIndex'];
         $playableQuestions = $_SESSION['currentGame']['playableQuestions'];
-        // si me quede sin preguntas busco mas.
+        $currentGameId = $_SESSION["currentGame"]["gameId"];
+        $userId = $_SESSION["userId"];
         if (!isset($playableQuestions[$index])) {
-            $currentGameId = $_SESSION["gameId"];
-            $userId = $_SESSION["userId"];
             $this->getPlayableQuestionsAndSetGameData($currentGameId, $userId);
         }
+
         $activeQuestion = $playableQuestions[$index]->getIndividualPlayableQuestion(false);
         $_SESSION['currentGame']["activeQuestion"]['id'] = $activeQuestion['questionId'];
-        $_SESSION['currentGame']['activeQuestion']['time'] = time();
+        $_SESSION['currentGame']['activeQuestion']['timestamp'] = time();
+
+        $this->model->registerQuestionAssignment($userId, $activeQuestion['questionId'], $currentGameId);
+
         $this->renderer->render("displayGame", $activeQuestion);
     }
 

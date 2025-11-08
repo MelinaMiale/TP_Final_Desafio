@@ -6,6 +6,14 @@
     </div>
 
     <h2 class="title">¡Respuesta incorrecta!</h2>
+    <p><strong>Tiempo de respuesta:</strong> {{responseTime}} segundos</p>
+    {{#wrongDueToTimeOut}}
+        <p class="warning">No respondiste a tiempo. Se consideró incorrecta.</p>
+    {{/wrongDueToTimeOut}}
+
+    {{^wrongDueToTimeOut}}
+        <p><strong>Tu respuesta:</strong> {{user_response}}</p>
+    {{/wrongDueToTimeOut}}
 
     <div class="question-block">
         <p class="question-text">{{text}}</p>
@@ -31,16 +39,16 @@
             <button type="submit" class="btn">Empezar nueva partida</button>
         </form>
 
-        {{^yaReportada}}
+        {{^reported}}
             <form action="../index.php?controller=Question&method=reportQuestion" method="POST">
                 <input type="hidden" name="questionId" value="{{questionId}}">
                 <button type="submit" class="btn">Reportar esta pregunta</button>
             </form>
-        {{/yaReportada}}
+        {{/reported}}
 
-        {{#yaReportada}}
+        {{#reported}}
             <p class="form-footer">Ya reportaste una pregunta en esta partida.</p>
-        {{/yaReportada}}
+        {{/reported}}
     </div>
 </div>
 {{> footer }}

@@ -113,39 +113,40 @@ class GameSessionModel {
 
     public function updateUserResponseData($submittedAnswer, $questionId, $wasCorrect) {
         $userId = $_SESSION["userId"];
-        $puntosTotales = $_SESSION["totalScore"] + $_SESSION["currentGame"]["score"];
-        $sqlUserPoints = "UPDATE USUARIO
-            SET puntos_totales = $puntosTotales
-            WHERE id = $userId";
-        $this->connection->query($sqlUserPoints);
-
         $currentGameId = $_SESSION["currentGame"]["gameId"];
         $wasCorrect = $wasCorrect ? 1 : 0;
-        $sqlUserResponse = "INSERT INTO RESPUESTA_USUARIO (
-            id_usuario,
-            id_pregunta,
-            id_partida,
-            opcion_elegida,
-            fue_correcta
-        ) VALUES (
-            $userId,
-            $questionId,
-            $currentGameId,
-            '$submittedAnswer',
-            $wasCorrect
-        )";
-        $this->connection->query($sqlUserResponse);
+
+        $puntosTotales = $_SESSION["totalScore"] + $_SESSION["currentGame"]["score"];
+        $sqlUserPoints = "UPDATE USUARIO
+        SET puntos_totales = $puntosTotales
+        WHERE id = $userId";
+        $this->connection->query($sqlUserPoints);
+
+        $sqlUpdateResponse = "UPDATE RESPUESTA_USUARIO
+        SET opcion_elegida = '$submittedAnswer',
+            fue_correcta = $wasCorrect
+        WHERE id_usuario = $userId
+          AND id_partida = $currentGameId
+          AND id_pregunta = $questionId";
+        $this->connection->query($sqlUpdateResponse);
     }
 
-    public function storeGameResults() {
-        // HAGO UN QUERY DIFERENTE DEL saveResponseRelatedData porque esto esta relacionado con el final de la partida y los puntajes finales
+    public function registerQuestionAssignment($userId, $questionId, $gameId) {
+        $sql = "INSERT INTO RESPUESTA_USUARIO (id_usuario, id_pregunta, id_partida, opcion_elegida, fue_correcta) VALUES ( $userId, $questionId, $gameId, NULL, NULL)";
+        $this->connection->query($sql);
+    }
+
+
+    public function storeGameResults($currentGameId) {
+        // HAGO UNA QUERY DIFERENTE DEL saveResponseRelatedData porque esto esta relacionado con el final de la partida y los puntajes finales
         $gameScore = $_SESSION["currentGame"]["score"];
 
-        // sobre el resultado de la partida: de manera PROVISORIA la partida la ganamos o perdemos comparando con el puntaje del bot.
-        $result = $this->generateBotScore() > $gameScore ? GameResult::LOST : GameResult::WON;
+        // sobre el resultado de la partida: cuando implementemos lo del bot retomaremos esta parte, por ahora las partidas se pierden.
+        $result = GameResult::LOST;// $this->generateBotScore() > $gameScore ? GameResult::LOST : GameResult::WON;
         $sql = "UPDATE PARTIDA
             SET puntaje_jugador1 = $gameScore,
-                id_resultado = $result";
+                id_resultado = $result
+                WHERE id = $currentGameId";
 
         $this->connection->query($sql);
     }
@@ -163,14 +164,14 @@ class GameSessionModel {
         $this->connection->query($sqlResetPoints);
     }
 
-    public function generateBotScore() {
-        $minCorrectAnswers = 2;
-        $maxCorrectAnswers = 8;
-
-        $botCorrectAnswers = rand($minCorrectAnswers, $maxCorrectAnswers);
-        $pointsPerCorrectAnswer = 10;
-
-        return $botCorrectAnswers * $pointsPerCorrectAnswer;
-    }
+//    public function generateBotScore() {
+//        $minCorrectAnswers = 2;
+//        $maxCorrectAnswers = 8;
+//
+//        $botCorrectAnswers = rand($minCorrectAnswers, $maxCorrectAnswers);
+//        $pointsPerCorrectAnswer = 10;
+//
+//        return $botCorrectAnswers * $pointsPerCorrectAnswer;
+//    }
 
 }
