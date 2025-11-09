@@ -46,8 +46,15 @@ class GameController
     }
 
     public function submitAnswer() {
-        $questionId = $_POST["questionId"];
+        $index = $_SESSION["currentGame"]["currentQuestionIndex"];
+        $currentQuestion = $_SESSION["currentGame"]["playableQuestions"][$index];
         $submittedAnswer = isset($_POST['answer']) ? $_POST['answer'] : 'NO_ANSWER';
+        $wasCorrect = $this->isCorrectAnswer($submittedAnswer);
+
+        $difficultyManager = new DifficultyManager($this->model->getConnection());
+        $difficultyManager->updateQuestionDifficulty($currentQuestion, $wasCorrect);
+
+        $questionId = $_POST["questionId"];
         $timing = $this->hasTimeRunOut();
         $timeout = $timing["timeout"];
         $elapsedTime = $timing["elapsedTime"];
@@ -64,14 +71,14 @@ class GameController
             exit;
         }
 
-        if (!$this->isCorrectAnswer($submittedAnswer)) {
+        if (!$wasCorrect) {
             $this->endGame($submittedAnswer);
             $this->renderWrongAnswer($submittedAnswer, false, $elapsedTime);
             exit;
         }
 
         $_SESSION["currentGame"]["score"] = $_SESSION["currentGame"]["score"] + 1;
-        $this->updateQuestionRatio($questionId, true);
+       // $this->updateQuestionRatio($questionId, true);
         $this->updateUserResponse($submittedAnswer, $questionId, true);
         $_SESSION['currentGame']['currentQuestionIndex']++;
         $this->getAndDisplayNextQuestion($submittedAnswer);
@@ -133,10 +140,6 @@ class GameController
         return ["timeout" => $timeout, "elapsedTime" => $elapsedTime];
     }
 
-    private function updateQuestionRatio($questionId, $wasCorrect) {
-        $this->model->saveResponseRelatedData($questionId, $wasCorrect);
-    }
-
     private function updateUserResponse($submittedAnswer, $questionId, $wasCorrect) {
         $this->model->updateUserResponseData($submittedAnswer, $questionId, $wasCorrect);
     }
@@ -147,7 +150,6 @@ class GameController
 
     private function endGame($submittedAnswer) {
         $activeQuestionId = $_SESSION['currentGame']['activeQuestion']['id'];
-        $this->updateQuestionRatio($activeQuestionId, false);
         $this->updateUserResponse($submittedAnswer, $activeQuestionId, false);
         $this->storeResults();
     }

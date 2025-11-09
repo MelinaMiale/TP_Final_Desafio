@@ -4,6 +4,9 @@ require_once __DIR__ . '/../enums/GameType.php';
 require_once __DIR__ . '/../enums/GameResult.php';
 require_once __DIR__ . '/PlayableQuestion.php';
 require_once __DIR__ . '/../enums/QuestionStatus.php';
+require_once __DIR__ . '/DifficultyManager.php';
+require_once __DIR__ . '/../enums/QuestionDifficulty.php';
+
 
 class GameSessionModel {
     private $connection;
@@ -19,6 +22,10 @@ class GameSessionModel {
 
     public function __construct($connection) {
         $this->connection = $connection;
+    }
+
+    public function getConnection() {
+        return $this->connection;
     }
 
     public function createGame($userId) {
@@ -51,7 +58,11 @@ class GameSessionModel {
         r.respuesta_correcta,
         c.nombre AS nombreCategoria,
         c.color AS colorCategoria,
-        p.id_categoria AS id_categoria
+        p.id_categoria AS id_categoria,
+        p.respuestas_correctas,
+        p.respuestas_totales,
+        p.ratio_aciertos,
+        p.dificultad_actual
         FROM PREGUNTA p
         JOIN RESPUESTA r ON p.id_respuesta = r.id
         JOIN CATEGORIA c ON p.id_categoria = c.id
@@ -78,29 +89,16 @@ class GameSessionModel {
                 $row['colorCategoria'],
                 $row['id_categoria'],
                 $numero++,
-                $row['respuesta_correcta']
+                $row['respuesta_correcta'],
+                $row['respuestas_correctas'],
+                $row['respuestas_totales'],
+                $row['ratio_aciertos'],
+                $row['dificultad_actual']
             );
         }
 
         $this->questions = $questions;
         return $questions;
-    }
-
-    public function saveResponseRelatedData($questionId, $wasCorrect) {
-        $sqlSelect = "SELECT respuestas_totales, respuestas_correctas FROM PREGUNTA WHERE id = $questionId";
-        $result = $this->connection->query($sqlSelect)[0];
-
-        $totalResponses = $result['respuestas_totales'] + 1;
-        $correctAnswers = $wasCorrect ? $result['respuestas_correctas'] + 1 : $result['respuestas_correctas'];
-        $ratio = $correctAnswers / $totalResponses;
-
-        $sqlUpdate = "UPDATE PREGUNTA
-            SET respuestas_totales = $totalResponses,
-                respuestas_correctas = $correctAnswers,
-                ratio_aciertos = $ratio
-            WHERE id = $questionId";
-
-        $this->connection->query($sqlUpdate);
     }
 
     public function updateUserResponseData($submittedAnswer, $questionId, $wasCorrect) {
