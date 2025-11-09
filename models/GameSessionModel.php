@@ -10,7 +10,7 @@ class GameSessionModel {
     private $currentGameId;
     private $player1Id;
     private $player2Id = null;
-    private $questions = []; // array de PlayableQuestion
+    private $questions = [];
     private $player1Score = 0;
     private $player2Score = 0;
     private $currentQuestionIndex = 0;
@@ -22,9 +22,6 @@ class GameSessionModel {
     }
 
     public function createGame($userId) {
-        // devuelve objeto currentGame con todos los atributos necesarios para la partida
-        // además hay que persistir en la tabla Partida los campos: fecha, idJugador1, id_tipo_partida
-        // Devuelve la partida creada
         $this->player1Id = $userId;
 
         $gameType = GameType::VS_BOT;
@@ -44,7 +41,6 @@ class GameSessionModel {
 
     public function getPlayableQuestionsForUser($userId) {
         $approvedStatus = QuestionStatus::APPROVED;
-        // busco en la base 10 preguntas que el usuario no haya respondido nunca
         $sql = "SELECT 
         p.id AS idPregunta,
         p.enunciado,
@@ -68,9 +64,6 @@ class GameSessionModel {
 
         $result = $this->connection->query($sql);
 
-        // creo objeto PreguntaCompleta o PlayableQuestion (necesito un modelo para esto)
-        // creo un array del objeto anterior cruzando tablas pregunta, respuesta, categoria, respuesta_usuario(?)
-        //devuelvo array
         $questions = [];
         $numero = 1;
         foreach ($result as $row) {
@@ -101,7 +94,6 @@ class GameSessionModel {
         $correctAnswers = $wasCorrect ? $result['respuestas_correctas'] + 1 : $result['respuestas_correctas'];
         $ratio = $correctAnswers / $totalResponses;
 
-        // Luego, actualizar con los valores ya calculados
         $sqlUpdate = "UPDATE PREGUNTA
             SET respuestas_totales = $totalResponses,
                 respuestas_correctas = $correctAnswers,
@@ -138,7 +130,6 @@ class GameSessionModel {
 
 
     public function storeGameResults($currentGameId) {
-        // HAGO UNA QUERY DIFERENTE DEL saveResponseRelatedData porque esto esta relacionado con el final de la partida y los puntajes finales
         $gameScore = $_SESSION["currentGame"]["score"];
 
         // sobre el resultado de la partida: cuando implementemos lo del bot retomaremos esta parte, por ahora las partidas se pierden.
