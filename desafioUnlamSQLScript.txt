@@ -1183,3 +1183,18 @@ INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta,
 INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Política fiscal', 'Política monetaria', 'Política comercial', 'Política industrial', 'A');
 SET @idRespEco10 = LAST_INSERT_ID();
 INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué política utiliza el gobierno para influir en la economía mediante gastos e impuestos?', @idRespEco10, 19, 1, 1, 'dificil');
+
+
+
+-- actualizacion por logica de dificultad_pregunta
+use desafio_unlam;
+
+ALTER TABLE PREGUNTA ADD COLUMN dificultad_num TINYINT;
+UPDATE PREGUNTA 
+SET dificultad_num = CASE dificultad_actual
+    WHEN 'facil' THEN 1
+    WHEN 'media' THEN 2
+    WHEN 'dificil' THEN 3
+END;
+ALTER TABLE PREGUNTA DROP COLUMN dificultad_actual;
+ALTER TABLE PREGUNTA CHANGE dificultad_num dificultad_actual TINYINT NOT NULL DEFAULT 2;

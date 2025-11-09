@@ -12,8 +12,12 @@ class PlayableQuestion {
     public $categoryId;
     public $questionNumber;
     public $correctAnswer; // solo para uso interno, me permite usar la misma clase tanto para la logica del negocio como para mostrar en la vista.
+    public $numCorrectAnswers;
+    public $numTotalAnswers;
+    public $ratio;
+    public $difficultyLevel;
 
-    public function __construct($questionId, $text, $optionA, $optionB, $optionC, $optionD, $categoryName, $categoryColor, $categoryId, $questionNumber, $correctAnswer = null) {
+    public function __construct($questionId, $text, $optionA, $optionB, $optionC, $optionD, $categoryName, $categoryColor, $categoryId, $questionNumber, $correctAnswer = null, $numCorrectAnswers, $numTotalAnswers, $ratio, $difficultyLevel) {
         $this->questionId = $questionId;
         $this->text = $text;
         $this->optionA = $optionA;
@@ -25,6 +29,10 @@ class PlayableQuestion {
         $this->categoryId = $categoryId;
         $this->questionNumber = $questionNumber;
         $this->correctAnswer = $correctAnswer;
+        $this->numCorrectAnswers = $numCorrectAnswers;
+        $this->numTotalAnswers = $numTotalAnswers;
+        $this->ratio = $ratio;
+        $this->difficultyLevel = $difficultyLevel;
     }
 
     public function getIndividualPlayableQuestion($includeCorrectAnswer = false) {
@@ -44,6 +52,10 @@ class PlayableQuestion {
 
         if ($includeCorrectAnswer) {
             $data['correctAnswer'] = $this->correctAnswer;
+            $data['numCorrectAnswers'] = $this->numCorrectAnswers;
+            $data['numTotalAnswers'] = $this->numTotalAnswers;
+            $data['ratio'] = $this->ratio;
+            $data['difficultyLevel'] = $this->difficultyLevel;
         }
 
         return $data;
