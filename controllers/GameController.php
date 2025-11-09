@@ -18,21 +18,12 @@ class GameController
             $this->resetUserProgressIfNoQuestions();
         }
 
-        if (!isset($_SESSION["currentGame"]["questionDisplayNumber"])) {
-            $_SESSION["currentGame"]["questionDisplayNumber"] = 1;
-        }
-
-        if (!isset($_SESSION["currentGame"]["questionDisplayNumber"])) {
-            $_SESSION["currentGame"]["questionDisplayNumber"] = 1;
-        }
-
         $score = $_SESSION["currentGame"]["score"] ?? 0;
         $currentGameData = [
             "gameId" => $currentGameId,
             "playableQuestions" => $playableQuestions,
             "currentQuestionIndex" => 0,
             "score" => $score,
-            "questionDisplayNumber" => $_SESSION["currentGame"]["questionDisplayNumber"],
             "activeQuestion" => [
                 "id" => $playableQuestions[0]->questionId,
                 "timestamp" => time()
@@ -43,7 +34,7 @@ class GameController
         $this->model->registerQuestionAssignment($userId, $currentGameData["activeQuestion"]["id"], $currentGameId);
 
         $activeQuestion = $playableQuestions[0]->getIndividualPlayableQuestion(false);
-        $activeQuestion['questionNumber'] = $_SESSION["currentGame"]["questionDisplayNumber"];
+        $activeQuestion['questionNumber'] = 1;
         $this->renderer->render("displayGame", $activeQuestion);
     }
 
@@ -80,7 +71,6 @@ class GameController
         }
 
         $_SESSION["currentGame"]["score"] = $_SESSION["currentGame"]["score"] + 1;
-        $_SESSION["currentGame"]["questionDisplayNumber"] += 1;
         $this->updateQuestionRatio($questionId, true);
         $this->updateUserResponse($submittedAnswer, $questionId, true);
         $_SESSION['currentGame']['currentQuestionIndex']++;
@@ -176,6 +166,7 @@ class GameController
         $_SESSION['currentGame']['activeQuestion']['timestamp'] = time();
 
         $this->model->registerQuestionAssignment($userId, $activeQuestion['questionId'], $currentGameId);
+        $activeQuestion['questionNumber'] = $index + 1;
 
         $this->renderer->render("displayGame", $activeQuestion);
     }
