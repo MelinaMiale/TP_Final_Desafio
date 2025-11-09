@@ -108,8 +108,8 @@ CREATE TABLE PREGUNTA(
 
 CREATE TABLE RESPUESTA_USUARIO(
     id INT PRIMARY KEY AUTO_INCREMENT,
-    fue_correcta BIT NOT NULL,
-    opcion_elegida CHAR(1) NOT NULL,
+    fue_correcta BIT NULL,
+    opcion_elegida CHAR(1) NULL,
     id_partida INT NOT NULL,
     id_pregunta INT NOT NULL,
     id_usuario INT NOT NULL,

@@ -9,11 +9,14 @@
 
     <div class="question-block">
         <p class="question-text">{{text}}</p>
-
+        <div id="timer" class="timer">Tiempo restante: <span id="time">15</span>s</div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
         <form action="../index.php?controller=Game&method=submitAnswer" method="POST" class="options-form">
             <input type="hidden" name="questionId" value="{{questionId}}">
             <div class="option">
-                <label><input type="radio" name="answer" value="A" required> A) {{optionA}}</label>
+                <label><input type="radio" name="answer" value="A"> A) {{optionA}}</label>
             </div>
             <div class="option">
                 <label><input type="radio" name="answer" value="B"> B) {{optionB}}</label>
@@ -29,5 +32,52 @@
         </form>
     </div>
 </div>
+
+<script>
+    let timeLeft = 15;
+    const timerDisplay = document.getElementById("time");
+    const progressBar = document.getElementById("progressBar");
+    const form = document.querySelector(".options-form");
+
+    let alreadySubmitted = false;
+    const countdown = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = timeLeft;
+        progressBar.style.width = (timeLeft / 15 * 100) + "%";
+
+
+        if (timeLeft > 10) {
+            progressBar.style.backgroundColor = "#28a745";
+            progressBar.classList.remove("pulse");
+        } else if (timeLeft > 5) {
+            progressBar.style.backgroundColor = "#ffc107";
+            progressBar.classList.remove("pulse");
+        } else {
+            progressBar.style.backgroundColor = "#ff0000";
+        }
+
+        if (timeLeft <= 0 && !alreadySubmitted) {
+            alreadySubmitted = true;
+            clearInterval(countdown);
+
+            form.querySelectorAll("input").forEach(input => input.disabled = true);
+
+            const timeoutField = document.createElement("input");
+            timeoutField.type = "hidden";
+            timeoutField.name = "timeout";
+            timeoutField.value = "true";
+            form.appendChild(timeoutField);
+
+            const elapsedField = document.createElement("input");
+            elapsedField.type = "hidden";
+            elapsedField.name = "elapsedTime";
+            elapsedField.value = 15;
+            form.appendChild(elapsedField);
+
+            setTimeout(() => form.submit(), 300);
+        }
+    }, 1000);
+</script>
+
 {{> footer }}
 
