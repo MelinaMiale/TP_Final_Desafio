@@ -264,10 +264,14 @@ td:last-child {
 .rank-3 .material-symbols-outlined { color: #cd7f32; }
 
 /* Player column */
-.player-cell {
+.player-cell, .player-link {
     display: flex;
     align-items: center;
     gap: 1rem;
+}
+.player-link{
+    text-decoration: none;
+    color: inherit;
 }
 
 .player-avatar {

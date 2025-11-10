@@ -15,7 +15,9 @@ class ProfileController {
             exit;
         }
 
-        $username = $_SESSION['user_name'];
+        $currentUser = $_SESSION['user_name'];
+        $username = $_GET['user'] ?? $currentUser;
+
         $userData = $this->model->getUserByUsername($username);
 
         if (!$userData) {
@@ -39,8 +41,48 @@ class ProfileController {
             ? $baseUrl . $userData['foto']
             : null;
 
+        $userData['es_propietario'] = ($currentUser === $username);
 
         // Renderizar la vista
         $this->renderer->render("profile", $userData);
+    }
+
+    public function actualizarPerfil() {
+        session_start();
+        if (!isset($_SESSION['user_name'])) {
+            header("Location: /index.php?controller=Login&method=loginForm");
+            exit;
+        }
+
+        $nombre_usuario = $_SESSION['user_name'];
+        $ciudad = $_POST['ciudad'];
+        $pais = $_POST['pais'];
+        $password = $_POST['password'] ?? null;
+        $fotoNueva = $this->validateImg();
+
+        $this->model->updatePerfil($nombre_usuario, $ciudad, $pais, $password, $fotoNueva);
+
+        header("Location: /index.php?controller=Perfil&method=perfil");
+        exit;
+    }
+
+    private function validateImg() {
+        if (!isset($_FILES['fotoPerfil']) || $_FILES['fotoPerfil']['error'] !== 0) {
+            return null;
+        }
+
+        $img = $_FILES['fotoPerfil'];
+
+        if ($img['size'] > 10 * 1024 * 1024) return null;
+        $typesallowed = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!in_array($img['type'], $typesallowed)) return null;
+
+        $extension = pathinfo($img['name'], PATHINFO_EXTENSION);
+        $nameImg = uniqid('avatar_') . '.' . $extension;
+
+        $root = __DIR__ . '/../public/subidos/avatars/' . $nameImg;
+        if (!move_uploaded_file($img['tmp_name'], $root)) return null;
+
+        return $nameImg;
     }
 }

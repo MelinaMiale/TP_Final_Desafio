@@ -81,7 +81,25 @@ class ProfileModel {
         return $partidas;
     }
 
+    private function getOrCreatePais($pais) {
+        $sql = "SELECT id FROM pais WHERE nombre = '$pais'";
+        $result = $this->connection->query($sql);
+        if ($result && count($result) > 0) return $result[0]['id'];
 
+        $sql = "INSERT INTO pais (nombre) VALUES ('$pais')";
+        $this->connection->query($sql);
+        return $this->connection->getLastInsertId();
+    }
+
+    private function getOrCreateCiudad($ciudad, $id_pais) {
+        $sql = "SELECT id FROM ciudad WHERE nombre = '$ciudad' AND id_pais = $id_pais";
+        $result = $this->connection->query($sql);
+        if ($result && count($result) > 0) return $result[0]['id'];
+
+        $sql = "INSERT INTO ciudad (nombre, id_pais) VALUES ('$ciudad', $id_pais)";
+        $this->connection->query($sql);
+        return $this->connection->getLastInsertId();
+    }
 
 
 }

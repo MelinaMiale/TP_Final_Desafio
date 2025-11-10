@@ -1,7 +1,8 @@
 {{> header }}
 <div class="profile-container">
 
-    <div class="profile-card">
+    <!-- ✅ Carta del perfil -->
+    <div class="profile-card" id="profile-view">
         <div class="profile-header">
             <div class="profile-image">
                 {{#foto_perfil}}
@@ -10,12 +11,12 @@
                 {{^foto_perfil}}
                     <div class="default-avatar">{{inicial}}</div>
                 {{/foto_perfil}}
-
             </div>
 
             <div class="profile-info">
                 <h2 class="username">{{nombre_usuario}}</h2>
                 <p class="user-details">{{ciudad}} • {{puntos_totales}} pts</p>
+                <p class="user-details">{{pais}}</p>
             </div>
 
             <div class="profile-qr">
@@ -23,9 +24,51 @@
                 <p class="qr-text">Escaneá para ver mi perfil</p>
             </div>
         </div>
+
+        {{#es_propietario}}
+            <button id="btnEditarPerfil" class="btn btn-primary mt-3">Editar perfil</button>
+        {{/es_propietario}}
     </div>
 
-    <div class="history-card">
+    <!-- ✅ Formulario de edición oculto -->
+    {{#es_propietario}}
+        <div class="history-card perfil-editar mt-4" id="edit-view" style="display: none;">
+            <h2>Editar perfil</h2>
+            <form action="/index.php?controller=Perfil&method=actualizarPerfil" method="POST" enctype="multipart/form-data" class="edit-form">
+
+                <div class="form-group">
+                    <label for="ciudad">Ciudad:</label>
+                    <input type="text" id="ciudad" name="ciudad" value="{{ciudad}}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="pais">País:</label>
+                    <input type="text" id="pais" name="pais" value="{{pais}}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="fotoPerfil">Foto de perfil:</label>
+                    <input type="file" id="fotoPerfil" name="fotoPerfil" accept="image/jpeg,image/jpg,image/png">
+                    {{#foto_perfil}}
+                        <p>Actual: <img src="{{foto_perfil}}" alt="foto actual" width="80"></p>
+                    {{/foto_perfil}}
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Nueva contraseña (opcional):</label>
+                    <input type="password" id="password" name="password" minlength="6" placeholder="Dejar en blanco para mantener la actual">
+                </div>
+
+                <div class="form-buttons">
+                    <button type="submit" class="btn btn-success">Guardar cambios</button>
+                    <button type="button" id="btnCancelar" class="btn btn-secondary">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    {{/es_propietario}}
+
+    <!-- ✅ Partidas recientes -->
+    <div class="history-card mt-4">
         <h3>Partidas recientes</h3>
 
         {{#partidas}}
@@ -49,9 +92,30 @@
         {{/partidas}}
     </div>
 
-
-
-    <a href="/index.php?controller=home&method=displayHome" class="btn">⬅ Volver al inicio</a>
+    <a href="/index.php?controller=home&method=displayHome" class="btn mt-3">⬅ Volver al inicio</a>
 </div>
 
 {{> footer }}
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const btnEditar = document.getElementById('btnEditarPerfil');
+        const btnCancelar = document.getElementById('btnCancelar');
+        const profileView = document.getElementById('profile-view');
+        const editView = document.getElementById('edit-view');
+
+        if (btnEditar) {
+            btnEditar.addEventListener('click', () => {
+                profileView.style.display = 'none';
+                editView.style.display = 'block';
+            });
+        }
+
+        if (btnCancelar) {
+            btnCancelar.addEventListener('click', () => {
+                editView.style.display = 'none';
+                profileView.style.display = 'block';
+            });
+        }
+    });
+</script>
