@@ -1,29 +1,47 @@
 <?php
-require_once __DIR__ . '/../enums/Role.php';
 
 class RankingModel {
     private $connection;
-    private $playerRole;
 
     public function __construct($connection) {
         $this->connection = $connection;
-        $this->playerRole = Role::PLAYER;
     }
 
-    public function getPlayers($page = 1, $perPage = 4) {
+    public function getPlayers($page = 1, $perPage = 4, $search = '') {
         $offset = ($page - 1) * $perPage;
-        $sql = "SELECT u.nombre_usuario AS username, 
+        $searchCondition = '';
+
+        if (!empty($search)) {
+            $searchEscaped = $this->connection->real_escape_string($search);
+            $searchCondition = "AND username LIKE '%{$searchEscaped}%'";
+        }
+
+        $sql = "SELECT ranked.* FROM (
+                SELECT u.nombre_usuario AS username, 
                        u.puntos_totales AS total_score,
-                       u.foto AS avatar
-                FROM usuario u 
-                WHERE u.id_rol = {$this->playerRole}
+                       u.foto AS avatar,
+                       @rank := @rank + 1 AS rank
+                FROM usuario u, (SELECT @rank := 0) r
+                WHERE u.id_rol = 3
                 ORDER BY u.puntos_totales DESC, u.nombre_usuario ASC
-                LIMIT $perPage OFFSET $offset";
+            ) ranked
+            WHERE 1=1 {$searchCondition}
+            LIMIT $perPage OFFSET $offset";
+
         return $this->connection->query($sql);
     }
 
-    public function countPlayers() {
-        $sql = "SELECT COUNT(*) as total FROM usuario WHERE id_rol = {$this->playerRole}";
+    public function countPlayers($search = '') {
+        $searchCondition = '';
+        if (!empty($search)) {
+            $searchEscaped = $this->connection->real_escape_string($search);
+            $searchCondition = "AND nombre_usuario LIKE '%{$searchEscaped}%'";
+        }
+        $sql = "SELECT COUNT(*) as total 
+            FROM usuario 
+            WHERE id_rol = 3
+            {$searchCondition}";
+
         $result = $this->connection->query($sql);
         return $result[0]['total'];
     }
@@ -31,18 +49,18 @@ class RankingModel {
     public function getUserRank($username) {
         $sql = "SELECT COUNT(*) + 1 as rank 
                 FROM usuario 
-                WHERE id_rol = {$this->playerRole} 
+                WHERE id_rol = 3
                 AND (
                     puntos_totales > (
                         SELECT puntos_totales 
                         FROM usuario 
-                        WHERE nombre_usuario = '$username' AND id_rol = {$this->playerRole}
+                        WHERE nombre_usuario = '$username' AND id_rol = 3
                     )
                     OR (
                         puntos_totales = (
                             SELECT puntos_totales 
                             FROM usuario 
-                            WHERE nombre_usuario = '$username' AND id_rol = {$this->playerRole}
+                            WHERE nombre_usuario = '$username' AND id_rol = 3
                         )
                         AND nombre_usuario < '$username'
                     )
@@ -50,9 +68,30 @@ class RankingModel {
         $result = $this->connection->query($sql);
         return $result[0]['rank'] ?? null;
     }
+
     public function getUserAvatar($username) {
         $sql = "SELECT foto FROM usuario WHERE nombre_usuario = '$username'";
         $result = $this->connection->query($sql);
-        return $result[0]['foto'] ?? null;
+
+        if (isset($result[0]['foto'])) {
+            return $result[0]['foto'];
+        } else {
+            return null;
+        }
+    }
+
+    public function getAllCountries() {
+        $sql = "SELECT id, nombre FROM pais ORDER BY nombre ASC";
+        return $this->connection->query($sql);
+    }
+    public function getUserScore($username) {
+        $sql = "SELECT puntos_totales FROM usuario WHERE nombre_usuario = '$username'";
+        $result = $this->connection->query($sql);
+
+        if (isset($result[0]['puntos_totales'])) {
+            return $result[0]['puntos_totales'];
+        } else {
+            return 0;
+        }
     }
 }
