@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <head>
+    {{> header }}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Ranking</title>
@@ -12,7 +13,6 @@
 <div class="container">
     <div class="row">
         <div class="col-main">
-
             <div class="header">
                 <a href="/home/displayHome" class="btn-back">
                     <span class="material-symbols-outlined">arrow_back</span>
@@ -26,7 +26,32 @@
                         <span class="input-icon">
                             <span class="material-symbols-outlined">search</span>
                         </span>
-                        <input type="text" class="input-field" placeholder="Search player...">
+                        <input type="text" class="input-field" placeholder="Buscar jugador...">
+                    </div>
+                </div>
+            </div>
+            <div class="button-pais-container">
+                <div class="button-tiempo">
+                    <button id="btnTiempo">
+                        <span>Tiempo</span>
+                        <span class="material-symbols-outlined">expand_more</span>
+                    </button>
+                    <div class="desplegable" id="desplegable">
+                        <div class="opcion">Histórico</div>
+                        <div class="opcion">Mes</div>
+                        <div class="opcion">Semana</div>
+                        <div class="opcion">Día</div>
+                    </div>
+                </div>
+                <div class="button-pais">
+                    <button id="btnPais">
+                        <span>País</span>
+                        <span class="material-symbols-outlined">expand_more</span>
+                    </button>
+                    <div class="desplegable2" id="desplegable2">
+                        {{#countries}}
+                            <div class="opcion2" data-pais-id="{{id}}">{{nombre}}</div>
+                        {{/countries}}
                     </div>
                 </div>
             </div>
@@ -61,7 +86,6 @@
                             </tr>
                         {{/ranking}}
 
-                        <!-- Current user row -->
                         <tr class="player-row">
                             <td>
                                 <div class="rank-cell">
@@ -128,5 +152,66 @@
         </div>
     </div>
 </div>
+<script>
+    const btn = document.getElementById('btnTiempo');
+    const desplegable = document.getElementById('desplegable');
+
+    btn.addEventListener('click', () => {
+        desplegable.classList.toggle('activo');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.button-tiempo')) {
+            desplegable.classList.remove('activo');
+        }
+    });
+
+    document.querySelectorAll('.opcion').forEach(opcion => {
+        opcion.addEventListener('click', () => {
+            console.log('Seleccionado:', opcion.textContent);
+            desplegable.classList.remove('activo');
+        });
+    });
+
+    const btn2 = document.getElementById('btnPais');
+    const desplegable2 = document.getElementById('desplegable2');
+
+    btn2.addEventListener('click', () => {
+        desplegable2.classList.toggle('activo');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.button-pais')) {
+            desplegable2.classList.remove('activo');
+        }
+    });
+
+    document.querySelectorAll('.opcion2').forEach(opcion => {
+        opcion.addEventListener('click', () => {
+            console.log('Seleccionado:', opcion.textContent);
+            desplegable2.classList.remove('activo');
+        });
+    });
+
+    //
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.querySelector('.input-field');
+
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const searchTerm = this.value.trim();
+                if (searchTerm) {
+                    window.location.href = '/ranking/display?search=' + encodeURIComponent(searchTerm);
+                } else {
+                    window.location.href = '/ranking/display';
+                }
+            }
+        });
+    });
+
+
+</script>
 </body>
+
 </html>

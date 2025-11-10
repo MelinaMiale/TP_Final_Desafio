@@ -24,4 +24,8 @@ class MyConnection{
     public function getLastInsertId() {
         return $this->connection->insert_id;
     }
+
+    public function real_escape_string($string) {
+        return $this->connection->real_escape_string($string);
+    }
 }

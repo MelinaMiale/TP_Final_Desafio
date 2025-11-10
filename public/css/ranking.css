@@ -71,8 +71,95 @@ body {
 .search-container {
     display: flex;
     justify-content: center;
-    margin-bottom: 1rem;
+    margin-bottom: 10px;
     padding: 0 1rem;
+}
+.button-pais-container{
+    display: flex;
+    justify-content: flex-start;
+    padding: 0 1rem;
+    margin-bottom: 1rem;
+}
+.button-tiempo button{
+    background-color: #242447;
+    border: 1px solid #343465;
+    border-radius: 0.5rem;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-bottom: 2px;
+}
+.button-pais button{
+    margin-left: 10px;
+    background-color: #242447;
+    border: 1px solid #343465;
+    border-radius: 0.5rem;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-bottom: 2px;
+}
+.button-tiempo {
+    position: relative;
+}
+.button-pais {
+    position: relative;
+}
+.desplegable {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #242447;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    min-width: 150px;
+    z-index: 1000;
+}
+
+.desplegable2 {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #242447;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    min-width: 150px;
+    z-index: 1000;
+}
+.desplegable.activo {
+    display: block;
+}
+
+.desplegable2.activo {
+    display: block;
+}
+
+.opcion {
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.opcion:hover {
+    background: #f5f5f5;
+    color: #1a1a2e;
+}
+
+.opcion2 {
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.opcion2:hover {
+    background: #f5f5f5;
+    color: #1a1a2e;
 }
 
 .search-wrapper {
