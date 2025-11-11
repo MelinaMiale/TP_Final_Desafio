@@ -6,6 +6,7 @@ require_once __DIR__ . '/PlayableQuestion.php';
 require_once __DIR__ . '/../enums/QuestionStatus.php';
 require_once __DIR__ . '/DifficultyManager.php';
 require_once __DIR__ . '/../enums/QuestionDifficulty.php';
+require_once __DIR__ . '/UserLevelManager.php';
 
 
 class GameSessionModel {
@@ -29,6 +30,7 @@ class GameSessionModel {
     }
 
     public function createGame($userId) {
+        $this->setUserLevel($userId);
         $this->player1Id = $userId;
 
         $gameType = GameType::VS_BOT;
@@ -43,7 +45,12 @@ class GameSessionModel {
         return (object)[
             'id' => $this->currentGameId
         ];
+    }
 
+    private function setUserLevel($userId) {
+        $userLevelManager = new UserLevelManager($this->getConnection());
+        $userLevelData = $userLevelManager->calculateAndSetUserLevel($userId);
+        $_SESSION["userLevel"] = $userLevelData;
     }
 
     public function getPlayableQuestionsForUser($userId) {
