@@ -160,7 +160,7 @@ class GameController
         $currentGameId = $_SESSION["currentGame"]["gameId"];
         $userId = $_SESSION["userId"];
         if (!isset($playableQuestions[$index])) {
-            $this->getPlayableQuestionsAndSetGameData($currentGameId, $userId);
+            $this->getPlayableQuestionsAndSetGameData($userId, $currentGameId);
         }
 
         $activeQuestion = $playableQuestions[$index]->getIndividualPlayableQuestion(false);

@@ -16,6 +16,7 @@ class UserLevelManager {
 
     public function calculateAndSetUserLevel($userId) {
         $userResponseData = $this->getUserResponseData($userId);
+        $userResponseData = $userResponseData ? $userResponseData[0] : ["totalResponses" => 0, "correctResponses" => 0];
 
         $totalResponses = $userResponseData['totalResponses'];
         $correctResponses = $userResponseData['correctResponses'];
@@ -28,18 +29,41 @@ class UserLevelManager {
 
         // todo: si persistiera este valor en la tabla usuario, y utilizaría este bloque de codigo para detectar el cambio y avisarselo. incentivarlo a que siga jugando. reveer! por lo pronto no se usa.
         if ($ratio >= 0.7) {
-            $level = "superSayayin";
+            $level = UserLevel::SUPER_SAYAYIN;
         } elseif ($ratio >= 0.3 && $ratio < 0.7) {
-            $level = "guerrero";
+            $level = UserLevel::WARRIOR;
         } else {
-            $level = "pocoKi";
+            $level = UserLevel::LOW_KI;
         }
 
         return [
             "ratio" => $ratio,
             "user_level" => $level
-//            "totalResponses" => $totalResponses,
-//            "correctResponses" => $correctResponses
         ];
     }
+
+    public function getQuestionDistributionByUserLevel($userLevel) {
+        switch ($userLevel) {
+            case UserLevel::LOW_KI:
+                return [
+                    ["difficulty" => QuestionDifficulty::EASY, "count" => 6],
+                    ["difficulty" => QuestionDifficulty::MEDIUM, "count" => 2],
+                    ["difficulty" => QuestionDifficulty::HARD, "count" => 2],
+                ];
+            case UserLevel::WARRIOR:
+                return [
+                    ["difficulty" => QuestionDifficulty::MEDIUM, "count" => 6],
+                    ["difficulty" => QuestionDifficulty::EASY, "count" => 2],
+                    ["difficulty" => QuestionDifficulty::HARD, "count" => 2],
+                ];
+            case UserLevel::SUPER_SAYAYIN:
+                return [
+                    ["difficulty" => QuestionDifficulty::HARD, "count" => 6],
+                    ["difficulty" => QuestionDifficulty::MEDIUM, "count" => 2],
+                    ["difficulty" => QuestionDifficulty::EASY, "count" => 2],
+                ];
+        }
+    }
+
+
 }

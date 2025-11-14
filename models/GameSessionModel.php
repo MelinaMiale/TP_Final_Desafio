@@ -7,6 +7,7 @@ require_once __DIR__ . '/../enums/QuestionStatus.php';
 require_once __DIR__ . '/DifficultyManager.php';
 require_once __DIR__ . '/../enums/QuestionDifficulty.php';
 require_once __DIR__ . '/UserLevelManager.php';
+require_once __DIR__ . '/../enums/UserLevel.php';
 
 
 class GameSessionModel {
@@ -55,55 +56,69 @@ class GameSessionModel {
 
     public function getPlayableQuestionsForUser($userId) {
         $approvedStatus = QuestionStatus::APPROVED;
-        $sql = "SELECT 
-        p.id AS idPregunta,
-        p.enunciado,
-        r.opcion_a,
-        r.opcion_b,
-        r.opcion_c,
-        r.opcion_d,
-        r.respuesta_correcta,
-        c.nombre AS nombreCategoria,
-        c.color AS colorCategoria,
-        p.id_categoria AS id_categoria,
-        p.respuestas_correctas,
-        p.respuestas_totales,
-        p.ratio_aciertos,
-        p.dificultad_actual
-        FROM PREGUNTA p
-        JOIN RESPUESTA r ON p.id_respuesta = r.id
-        JOIN CATEGORIA c ON p.id_categoria = c.id
-        LEFT JOIN AUDITORIA_PREGUNTA ap ON p.id = ap.id_pregunta
-        WHERE p.id NOT IN (
-            SELECT id_pregunta FROM RESPUESTA_USUARIO WHERE id_usuario = $userId
-        ) AND (ap.id_estado_pregunta = $approvedStatus OR ap.id_pregunta IS NULL)
-        ORDER BY RAND()
-        LIMIT 30";
+        $userLevel = $_SESSION["userLevel"]["user_level"];
 
-        $result = $this->connection->query($sql);
+        $userLevelManager = new UserLevelManager($this->getConnection());
+        $questionDistribution = $userLevelManager->getQuestionDistributionByUserLevel($userLevel);
 
         $questions = [];
         $numero = 1;
-        foreach ($result as $row) {
-            $questions[] = new PlayableQuestion(
-                $row['idPregunta'],
-                $row['enunciado'],
-                $row['opcion_a'],
-                $row['opcion_b'],
-                $row['opcion_c'],
-                $row['opcion_d'],
-                $row['nombreCategoria'],
-                $row['colorCategoria'],
-                $row['id_categoria'],
-                $numero++,
-                $row['respuesta_correcta'],
-                $row['respuestas_correctas'],
-                $row['respuestas_totales'],
-                $row['ratio_aciertos'],
-                $row['dificultad_actual']
-            );
+
+        foreach ($questionDistribution as $questionBlock) {
+            $difficulty = $questionBlock['difficulty'];
+            $count = $questionBlock['count'];
+
+            $sql = "SELECT 
+                    p.id AS idPregunta,
+                    p.enunciado,
+                    r.opcion_a,
+                    r.opcion_b,
+                    r.opcion_c,
+                    r.opcion_d,
+                    r.respuesta_correcta,
+                    c.nombre AS nombreCategoria,
+                    c.color AS colorCategoria,
+                    p.id_categoria AS id_categoria,
+                    p.respuestas_correctas,
+                    p.respuestas_totales,
+                    p.ratio_aciertos,
+                    p.dificultad_actual
+                FROM PREGUNTA p
+                JOIN RESPUESTA r ON p.id_respuesta = r.id
+                JOIN CATEGORIA c ON p.id_categoria = c.id
+                LEFT JOIN AUDITORIA_PREGUNTA ap ON p.id = ap.id_pregunta
+                WHERE p.dificultad_actual = $difficulty
+                  AND p.id NOT IN (
+                      SELECT id_pregunta FROM RESPUESTA_USUARIO WHERE id_usuario = $userId
+                  )
+                  AND (ap.id_estado_pregunta = $approvedStatus OR ap.id_pregunta IS NULL)
+                ORDER BY RAND()
+                LIMIT $count";
+
+            $result = $this->connection->query($sql);
+
+            foreach ($result as $row) {
+                $questions[] = new PlayableQuestion(
+                    $row['idPregunta'],
+                    $row['enunciado'],
+                    $row['opcion_a'],
+                    $row['opcion_b'],
+                    $row['opcion_c'],
+                    $row['opcion_d'],
+                    $row['nombreCategoria'],
+                    $row['colorCategoria'],
+                    $row['id_categoria'],
+                    $numero++,
+                    $row['respuesta_correcta'],
+                    $row['respuestas_correctas'],
+                    $row['respuestas_totales'],
+                    $row['ratio_aciertos'],
+                    $row['dificultad_actual']
+                );
+            }
         }
 
+        shuffle($questions);
         $this->questions = $questions;
         return $questions;
     }
@@ -132,7 +147,6 @@ class GameSessionModel {
         $sql = "INSERT INTO RESPUESTA_USUARIO (id_usuario, id_pregunta, id_partida, opcion_elegida, fue_correcta) VALUES ( $userId, $questionId, $gameId, NULL, NULL)";
         $this->connection->query($sql);
     }
-
 
     public function storeGameResults($currentGameId) {
         $gameScore = $_SESSION["currentGame"]["score"];
