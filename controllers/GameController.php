@@ -18,11 +18,12 @@ class GameController
             $this->resetUserProgressIfNoQuestions();
         }
 
+        $currentIndex = 0;
         $score = $_SESSION["currentGame"]["score"] ?? 0;
         $currentGameData = [
             "gameId" => $currentGameId,
             "playableQuestions" => $playableQuestions,
-            "currentQuestionIndex" => 0,
+            "currentQuestionIndex" => $currentIndex,
             "score" => $score,
             "activeQuestion" => [
                 "id" => $playableQuestions[0]->questionId,
@@ -34,14 +35,17 @@ class GameController
         $this->model->registerQuestionAssignment($userId, $currentGameData["activeQuestion"]["id"], $currentGameId);
 
         $activeQuestion = $playableQuestions[0]->getIndividualPlayableQuestion(false);
-        $activeQuestion['questionNumber'] = 1;
+        $activeQuestion['questionNumber'] = $_SESSION['currentGame']['currentQuestionIndex'] + 1;
         $this->renderer->render("displayGame", $activeQuestion);
     }
 
-    public function startGame()
-    {
+    public function startGame() {
+        unset($_SESSION["currentGame"]);
         $userId = $_SESSION["userId"];
         $currentGame = $this->model->createGame($userId);
+
+        $_SESSION["currentGame"]["currentQuestionIndex"] = 0;
+
         $this->getPlayableQuestionsAndSetGameData($userId, $currentGame->id);
     }
 
@@ -78,7 +82,7 @@ class GameController
         }
 
         $_SESSION["currentGame"]["score"] = $_SESSION["currentGame"]["score"] + 1;
-       // $this->updateQuestionRatio($questionId, true);
+        // $this->updateQuestionRatio($questionId, true);
         $this->updateUserResponse($submittedAnswer, $questionId, true);
         $_SESSION['currentGame']['currentQuestionIndex']++;
         $this->getAndDisplayNextQuestion($submittedAnswer);
@@ -86,8 +90,16 @@ class GameController
     }
 
     private function renderWrongAnswer($submittedAnswer, $timeout, $elapsedTime) {
-        $index = $_SESSION["currentGame"]["currentQuestionIndex"];
-        $payedQuestion = $_SESSION["currentGame"]["playableQuestions"][$index];
+        //$index = $_SESSION["currentGame"]["currentQuestionIndex"];
+        //$payedQuestion = $_SESSION["currentGame"]["playableQuestions"][$index];
+        $index = $_SESSION["currentGame"]["activeQuestion"]["id"];
+        $payedQuestion = null;
+        foreach ($_SESSION["currentGame"]["playableQuestions"] as $pq) {
+            if ($pq->questionId == $index) {
+                $payedQuestion = $pq;
+                break;
+            }
+        }
         $completePayedQuestion = $payedQuestion->getIndividualPlayableQuestion(true);
         if ($timeout) {
             $flags = [
@@ -161,14 +173,16 @@ class GameController
         $userId = $_SESSION["userId"];
         if (!isset($playableQuestions[$index])) {
             $this->getPlayableQuestionsAndSetGameData($userId, $currentGameId);
+            $playableQuestions = $_SESSION['currentGame']['playableQuestions'];
         }
 
+        $_SESSION["currentGame"]["currentQuestionIndex"] = $index;
         $activeQuestion = $playableQuestions[$index]->getIndividualPlayableQuestion(false);
         $_SESSION['currentGame']["activeQuestion"]['id'] = $activeQuestion['questionId'];
         $_SESSION['currentGame']['activeQuestion']['timestamp'] = time();
 
         $this->model->registerQuestionAssignment($userId, $activeQuestion['questionId'], $currentGameId);
-        $activeQuestion['questionNumber'] = $index + 1;
+        $activeQuestion['questionNumber'] = $_SESSION['currentGame']['currentQuestionIndex'] + 1;
 
         $this->renderer->render("displayGame", $activeQuestion);
     }
