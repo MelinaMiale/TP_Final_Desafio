@@ -8,7 +8,7 @@ class LoginModel {
     }
 
     public function getUserByUserNameAndPassword($user, $password) {
-        $sql = "SELECT * FROM usuario WHERE nombre_usuario = '$user' AND contrasenia = '$password'";
+        $sql = "SELECT * FROM USUARIO WHERE nombre_usuario = '$user' AND contrasenia = '$password'";
         $result = $this->connection->query($sql);
         return $result ? $result[0] : null;
     }

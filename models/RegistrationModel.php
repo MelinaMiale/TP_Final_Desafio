@@ -8,29 +8,29 @@ class RegistrationModel {
     }
 
     public function getUserByName($nombre_usuario) {
-        $sql = "SELECT * FROM usuario WHERE nombre_usuario = '$nombre_usuario'";
+        $sql = "SELECT * FROM USUARIO WHERE nombre_usuario = '$nombre_usuario'";
         $result = $this->connection->query($sql);
         return $result ? $result[0] : null;
     }
 
     function getOrCreatePais($pais) {
-        $sql = "SELECT id FROM pais WHERE nombre = '$pais'";
+        $sql = "SELECT id FROM PAIS WHERE nombre = '$pais'";
         $result = $this->connection->query($sql);
         if ($result && count($result) > 0) {
             return $result[0]['id'];
         }
-        $sql = "INSERT INTO pais (nombre) VALUES ('$pais')";
+        $sql = "INSERT INTO PAIS (nombre) VALUES ('$pais')";
         $this->connection->query($sql);
         return $this->connection->getLastInsertId();
     }
 
     function getOrCreateCiudad($ciudad, $id_pais) {
-        $sql = "SELECT id FROM ciudad WHERE nombre = '$ciudad' AND id_pais = $id_pais";
+        $sql = "SELECT id FROM CIUDAD WHERE nombre = '$ciudad' AND id_pais = $id_pais";
         $result = $this->connection->query($sql);
         if ($result && count($result) > 0) {
             return $result[0]['id'];
         }
-        $sql = "INSERT INTO ciudad (nombre, id_pais) VALUES ('$ciudad', $id_pais)";
+        $sql = "INSERT INTO CIUDAD (nombre, id_pais) VALUES ('$ciudad', $id_pais)";
         $this->connection->query($sql);
         return $this->connection->getLastInsertId();
     }
@@ -50,13 +50,13 @@ class RegistrationModel {
     }
 
     public function validateUser($confirmationCode) {
-        $sql = "SELECT id FROM usuario WHERE codigo_verificacion = '$confirmationCode'";
+        $sql = "SELECT id FROM USUARIO WHERE codigo_verificacion = '$confirmationCode'";
         $result = $this->connection->query($sql);
 
         if ($result && count($result) > 0) {
             $userId = $result[0]['id'];
 
-            $updateSql = "UPDATE usuario 
+            $updateSql = "UPDATE USUARIO 
                       SET cuenta_verificada = 1, codigo_verificacion = NULL 
                       WHERE id = $userId";
             $this->connection->query($updateSql);

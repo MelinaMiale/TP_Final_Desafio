@@ -19,9 +19,9 @@ class ProfileModel {
             c.nombre AS ciudad,
             p.nombre AS pais,
             u.puntos_totales
-        FROM usuario u
-        JOIN ciudad c ON u.id_ciudad = c.id
-        JOIN pais p ON c.id_pais = p.id
+        FROM USUARIO u
+        JOIN CIUDAD c ON u.id_ciudad = c.id
+        JOIN PAIS p ON c.id_pais = p.id
         WHERE u.nombre_usuario = '$username'
     ";
 
@@ -45,11 +45,11 @@ class ProfileModel {
             u2.nombre_usuario AS jugador2,
             r.nombre AS resultado,
             t.nombre AS tipo_partida
-        FROM partida p
-        JOIN usuario u1 ON p.id_jugador1 = u1.id
-        LEFT JOIN usuario u2 ON p.id_jugador2 = u2.id
-        JOIN resultado r ON p.id_resultado = r.id
-        JOIN tipo_partida t ON p.id_tipo_partida = t.id
+        FROM PARTIDA p
+        JOIN USUARIO u1 ON p.id_jugador1 = u1.id
+        LEFT JOIN USUARIO u2 ON p.id_jugador2 = u2.id
+        JOIN RESULTADO r ON p.id_resultado = r.id
+        JOIN TIPO_PARTIDA t ON p.id_tipo_partida = t.id
         WHERE p.id_jugador1 = $userId OR p.id_jugador2 = $userId
         ORDER BY p.fecha DESC
         LIMIT 5
@@ -82,21 +82,21 @@ class ProfileModel {
     }
 
     private function getOrCreatePais($pais) {
-        $sql = "SELECT id FROM pais WHERE nombre = '$pais'";
+        $sql = "SELECT id FROM PAIS WHERE nombre = '$pais'";
         $result = $this->connection->query($sql);
         if ($result && count($result) > 0) return $result[0]['id'];
 
-        $sql = "INSERT INTO pais (nombre) VALUES ('$pais')";
+        $sql = "INSERT INTO PAIS (nombre) VALUES ('$pais')";
         $this->connection->query($sql);
         return $this->connection->getLastInsertId();
     }
 
     private function getOrCreateCiudad($ciudad, $id_pais) {
-        $sql = "SELECT id FROM ciudad WHERE nombre = '$ciudad' AND id_pais = $id_pais";
+        $sql = "SELECT id FROM CIUDAD WHERE nombre = '$ciudad' AND id_pais = $id_pais";
         $result = $this->connection->query($sql);
         if ($result && count($result) > 0) return $result[0]['id'];
 
-        $sql = "INSERT INTO ciudad (nombre, id_pais) VALUES ('$ciudad', $id_pais)";
+        $sql = "INSERT INTO CIUDAD (nombre, id_pais) VALUES ('$ciudad', $id_pais)";
         $this->connection->query($sql);
         return $this->connection->getLastInsertId();
     }
