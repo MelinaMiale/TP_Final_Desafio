@@ -21,7 +21,7 @@ class RankingModel {
                        u.puntos_totales AS total_score,
                        u.foto AS avatar,
                        @rank := @rank + 1 AS rank
-                FROM usuario u, (SELECT @rank := 0) r
+                FROM USUARIO u, (SELECT @rank := 0) r
                 WHERE u.id_rol = 3
                 ORDER BY u.puntos_totales DESC, u.nombre_usuario ASC
             ) ranked
@@ -38,7 +38,7 @@ class RankingModel {
             $searchCondition = "AND nombre_usuario LIKE '%{$searchEscaped}%'";
         }
         $sql = "SELECT COUNT(*) as total 
-            FROM usuario 
+            FROM USUARIO 
             WHERE id_rol = 3
             {$searchCondition}";
 
@@ -48,18 +48,18 @@ class RankingModel {
 
     public function getUserRank($username) {
         $sql = "SELECT COUNT(*) + 1 as rank 
-                FROM usuario 
+                FROM USUARIO 
                 WHERE id_rol = 3
                 AND (
                     puntos_totales > (
                         SELECT puntos_totales 
-                        FROM usuario 
+                        FROM USUARIO 
                         WHERE nombre_usuario = '$username' AND id_rol = 3
                     )
                     OR (
                         puntos_totales = (
                             SELECT puntos_totales 
-                            FROM usuario 
+                            FROM USUARIO 
                             WHERE nombre_usuario = '$username' AND id_rol = 3
                         )
                         AND nombre_usuario < '$username'
@@ -70,7 +70,7 @@ class RankingModel {
     }
 
     public function getUserAvatar($username) {
-        $sql = "SELECT foto FROM usuario WHERE nombre_usuario = '$username'";
+        $sql = "SELECT foto FROM USUARIO WHERE nombre_usuario = '$username'";
         $result = $this->connection->query($sql);
 
         if (isset($result[0]['foto'])) {
@@ -81,11 +81,11 @@ class RankingModel {
     }
 
     public function getAllCountries() {
-        $sql = "SELECT id, nombre FROM pais ORDER BY nombre ASC";
+        $sql = "SELECT id, nombre FROM PAIS ORDER BY nombre ASC";
         return $this->connection->query($sql);
     }
     public function getUserScore($username) {
-        $sql = "SELECT puntos_totales FROM usuario WHERE nombre_usuario = '$username'";
+        $sql = "SELECT puntos_totales FROM USUARIO WHERE nombre_usuario = '$username'";
         $result = $this->connection->query($sql);
 
         if (isset($result[0]['puntos_totales'])) {
