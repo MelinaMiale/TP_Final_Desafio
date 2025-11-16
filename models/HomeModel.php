@@ -65,5 +65,15 @@ class HomeModel {
             'games' => $games
         ];
     }
-    
+
+    public function getAdminStats() {
+
+        $sqlTotalUsers = "SELECT COUNT(*) as total FROM USUARIO";
+        $totalUsers = $this->connection->query($sqlTotalUsers)[0]['total'];
+        return [
+            'total_users' => $totalUsers,
+        ];
+
+    }
+
 }

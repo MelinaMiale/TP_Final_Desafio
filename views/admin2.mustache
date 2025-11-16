@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafío UNLaM</title>
+</head>
+<style>
+    .cuadradote{
+        display: flex;
+    }
+    .cuadrado{
+        display: block;
+        border: 1px solid black;
+        max-width: 200px;
+        padding: 20px;
+    }
+    #total_jugadores:hover{
+        cursor: pointer;
+    }
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+
+    .modal-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        min-width: 500px;
+        max-width: 700px;
+        text-align: center;
+        color: black;
+    }
+
+    .modal-buttons {
+        margin-top: 1rem;
+    }
+
+    .btn-primary {
+        background: #3498db;
+        margin-right: 10px;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .btn-secondary {
+        background: #95a5a6;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .chart-container {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background: #f9f9f9;
+    }.filter-buttons {
+         margin: 15px 0;
+         display: flex;
+         justify-content: center;
+         gap: 10px;
+     }
+
+    .filter-btn {
+        padding: 8px 16px;
+        border: 2px solid #3498db;
+        background: white;
+        color: #3498db;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .filter-btn:hover {
+        background: #ecf0f1;
+    }
+
+    .filter-btn.active {
+        background: #3498db;
+        color: white;
+    }
+</style>
+<body>
+<div class="container admin-container">
+    <h2 class="title">Panel de Administración</h2>
+    <a href="">Usuarios</a>
+    <p class="welcome">Bienvenido , {{admin_name}}</p>
+
+    <div class="cuadradote">
+
+        <a id="total_jugadores">
+            <div class="cuadrado">
+                <h3>Cantidad total de jugadores</h3>
+                <p class="stat-number">{{total_users}}</p>
+            </div>
+        </a>
+
+        <div class="cuadrado">
+            <h3>Cantidad de partidas jugadas.</h3>
+            <p class="stat-number">{{total_users}}</p>
+        </div>
+        <div class="cuadrado">
+            <h3>Cantidad total de preguntas del juego.</h3>
+            <p class="stat-number">{{total_users}}</p>
+        </div>
+        <div class="cuadrado">
+            <h3>Cantidad total de preguntas creadas.</h3>
+            <p class="stat-number">{{total_users}}</p>
+            <!-- definir si queremos que sea preguntas creadas igual que total de jugadores osea cantidad de preguntas totales o solo cantidad de preguntas por usuario -->
+        </div>
+    </div>
+    <a id="total_jugadores">
+        <div class="cuadrado">
+            <h3>Cantidad total de jugadores Nuevos Este Mes</h3>
+            <p class="stat-number">+15</p>
+        </div>
+    </a>
+    <!-- Modal -->
+    <div id="modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Información de Jugadores</h3>
+            <p>Cantidad total de jugadores: <strong>{{total_users}}</strong></p>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-period="day">Día</button>
+                <button class="filter-btn" data-period="week">Semana</button>
+                <button class="filter-btn" data-period="month">Mes</button>
+                <button class="filter-btn" data-period="year">Año</button>
+            </div>
+            <!-- Gráfico -->
+            <div class="chart-container">
+                <h4 id="chart-title">Crecimiento de Usuarios - Últimos 7 días</h4>
+                <canvas id="userChart" width="400" height="200"></canvas>
+            </div>
+
+            <div class="modal-buttons">
+                <button id="btn-imprimir" class="btn btn-primary">Imprimir</button>
+                <button id="btn-salir" class="btn btn-secondary">Salir</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="close-sesion">
+        <a href="?controller=login&method=logout" class="btn">Cerrar Sesión</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let totalJugadores = document.getElementById('total_jugadores');
+        let modal = document.getElementById('modal');
+        let btnSalir = document.getElementById('btn-salir');
+        let btnImprimir = document.getElementById('btn-imprimir');
+
+        // Datos hardcodeados para diferentes períodos
+        const chartDatasets = {
+            day: {
+                labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+                data: [1, 2, 4, 1, 2, 3, {{total_users}}],
+                title: 'Crecimiento de Usuarios - Último día'
+            },
+            week: {
+                labels: ['Nov 10', 'Nov 11', 'Nov 12', 'Nov 13', 'Nov 14', 'Nov 15', 'Nov 16'],
+                data: [15, 18, 22, 25, 28, 30, {{total_users}}],
+                title: 'Crecimiento de Usuarios - Última semana'
+            },
+            month: {
+                labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+                data: [50, 75, 90, {{total_users}}],
+                title: 'Crecimiento de Usuarios - Último mes'
+            },
+            year: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                data: [10, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, {{total_users}}],
+                title: 'Crecimiento de Usuarios - Último año'
+            }
+        };
+
+        let chart = null;
+
+        function updateChart(period) {
+            const dataset = chartDatasets[period];
+            chart.data.labels = dataset.labels;
+            chart.data.datasets[0].data = dataset.data;
+            chart.update();
+
+            // Actualizar título
+            document.getElementById('chart-title').textContent = dataset.title;
+        }
+
+        // Abrir modal y crear gráfico
+        totalJugadores.addEventListener('click', function() {
+            modal.style.display = 'block';
+
+            // Crear gráfico solo una vez
+            if (!chart) {
+                const ctx = document.getElementById('userChart').getContext('2d');
+                chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: chartDatasets.day.labels,
+                        datasets: [{
+                            label: 'Usuarios Registrados',
+                            data: chartDatasets.day.data,
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.3)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Evolución de Usuarios Registrados'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Número de Usuarios'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Fecha'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        // Event listeners para los botones de filtro
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remover clase active de todos los botones
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+
+                // Agregar clase active al botón clickeado
+                this.classList.add('active');
+
+                // Actualizar gráfico
+                const period = this.getAttribute('data-period');
+                updateChart(period);
+            });
+        });
+
+        // Resto de eventos...
+        btnSalir.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        btnImprimir.addEventListener('click', function() {
+            window.print();
+        });
+
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    });
+</script>
+

@@ -22,7 +22,19 @@ class LoginController {
             $_SESSION["user_name"] = $user_name;
             $_SESSION["userId"] = $result["id"];
             $_SESSION["totalScore"] = $result["puntos_totales"];
-            header("Location: ?controller=home&method=displayHome");
+
+            $_SESSION["user_role"] = $result["id_rol"];
+            switch ($result["id_rol"]) {
+                case 1:
+                    header("Location: ?controller=home&method=displayAdmin");
+                    break;
+                case 2:
+                    header("Location: ?controller=home&method=displayHome");
+                    break;
+                case 3:
+                    header("Location: ?controller=home&method=displayHome");
+                    break;
+            }
             exit;
         } else {
             $message = $result
