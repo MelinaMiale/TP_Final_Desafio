@@ -22,6 +22,9 @@ class DifficultyManager {
     }
 
     public function updateQuestionDifficulty($question, $wasCorrect) {
+        if ($question === null) {
+            return;
+        }
         $numCorrectAnswers = $wasCorrect ? $question->numCorrectAnswers + 1 : $question->numCorrectAnswers;
         $numTotalAnswers = $question->numTotalAnswers + 1;
         $ratio = $this->calculateRatio($numCorrectAnswers, $numTotalAnswers);
