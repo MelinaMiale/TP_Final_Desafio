@@ -16,6 +16,8 @@ include_once(__DIR__ . '/../models/ProfileModel.php');
 include_once(__DIR__ . '/../vendor/mustache/src/Mustache/Autoloader.php');
 include_once(__DIR__ . '/../controllers/RankingController.php');
 include_once(__DIR__ . '/../models/RankingModel.php');
+include_once(__DIR__ . '/../controllers/ReportquestionController.php');
+include_once(__DIR__ . '/../models/ReportQuestionModel.php');
 
 
 class ConfigFactory {
@@ -54,6 +56,9 @@ class ConfigFactory {
 
         $this->objects["ProfileController"] =
             new ProfileController(new ProfileModel($this->connection), $this->renderer);
+
+        $this->objects["ReportquestionController"] =
+            new ReportquestionController(new ReportQuestionModel($this->connection), $this->renderer);
 
     }
 

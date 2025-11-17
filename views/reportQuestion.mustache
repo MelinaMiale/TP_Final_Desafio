@@ -1,0 +1,176 @@
+{{> header }}
+
+<form action="../index.php?controller=ReportQuestion&method=submitReport" method="POST">
+    <div class="rq-container" style="--category-color: {{categoryColor}};">
+        <div class="rq-category-header">
+            <img src="../public/img/{{categoryIcon}}.png" alt="Category icon" class="rq-category-icon">
+            <span class="rq-category-name">{{categoryName}}</span>
+        </div>
+
+        <h2 class="rq-title">Reportar pregunta</h2>
+        <p class="rq-subtitle">Elegí qué querés reportar:</p>
+
+        <div class="rq-columns">
+            <!-- Enunciado -->
+            <div id="colStatement" class="rq-column">
+                <h3>Enunciado</h3>
+                <p class="rq-question-text">{{questionText}}</p>
+                <textarea id="inputStatement" name="proposedStatement" placeholder="Proponé el enunciado correcto..." rows="3"></textarea>
+                <p id="msgStatement" class="rq-message rq-hidden">Has elegido reportar el enunciado</p>
+            </div>
+
+            <!-- Respuestas -->
+            <div id="colAnswers" class="rq-column">
+                <h3>Respuestas</h3>
+                <p class="rq-subtitle-small">Elegí la respuesta correcta o “Proponer respuesta manual”:</p>
+                <div class="rq-options-form" id="optionsGroup">
+                    <label><input type="checkbox" name="selectedOption" value="A"> A) {{optionA}}</label>
+                    <label><input type="checkbox" name="selectedOption" value="B"> B) {{optionB}}</label>
+                    <label><input type="checkbox" name="selectedOption" value="C"> C) {{optionC}}</label>
+                    <label><input type="checkbox" name="selectedOption" value="D"> D) {{optionD}}</label>
+                    <label><input type="checkbox" name="selectedOption" value="manual"> Proponer respuesta manual</label>
+                </div>
+
+                <textarea id="inputAnswer" name="proposedAnswer" placeholder="Escribí la respuesta correcta..." rows="3" disabled></textarea>
+                <p id="msgAnswers" class="rq-message rq-hidden"></p>
+            </div>
+        </div>
+
+        <!-- Hidden fields -->
+        <input type="hidden" name="questionId" value="{{questionId}}">
+        <input type="hidden" id="issueType" name="issueType" value="">
+        <input type="hidden" id="selectedAnswer" name="selectedAnswer" value="">
+
+        <!-- Acciones -->
+        <div class="rq-actions">
+            <button type="submit" class="rq-btn rq-report-btn" title="Solo podrás reportar una pregunta por partida. Luego la partida continúa normalmente.">Reportar</button>
+            <a href="../index.php?controller=game&method=resumeAfterReport" class="rq-btn">Cancelar</a>
+        </div>
+    </div>
+</form>
+
+<script>
+    const colStatement = document.getElementById("colStatement");
+    const colAnswers = document.getElementById("colAnswers");
+    const inputStatement = document.getElementById("inputStatement");
+    const msgStatement = document.getElementById("msgStatement");
+
+    const optionsGroup = document.getElementById("optionsGroup");
+    const checkboxes = optionsGroup.querySelectorAll('input[name="selectedOption"]');
+    const inputAnswer = document.getElementById("inputAnswer");
+    const msgAnswers = document.getElementById("msgAnswers");
+
+    const issueTypeField = document.getElementById("issueType");
+    const selectedAnswerField = document.getElementById("selectedAnswer");
+
+    function uncheckAllExcept(target) {
+        checkboxes.forEach(cb => { if (cb !== target) cb.checked = false; });
+    }
+    function anyAnswerChecked() {
+        return [...checkboxes].some(cb => cb.checked);
+    }
+    function clearAnswersState() {
+        checkboxes.forEach(cb => { cb.checked = false; cb.disabled = false; });
+        inputAnswer.disabled = true;
+        inputAnswer.value = "";
+        msgAnswers.classList.add("rq-hidden");
+        selectedAnswerField.value = "";
+    }
+    function clearStatementState() {
+        inputStatement.disabled = false;
+        msgStatement.classList.add("rq-hidden");
+    }
+    function setNeutralIfEmpty() {
+        const statementHasText = inputStatement.value.trim().length > 0;
+        const manualHasText = inputAnswer.value.trim().length > 0;
+        const answerChecked = anyAnswerChecked();
+
+        if (!statementHasText && !manualHasText && !answerChecked) {
+            colStatement.classList.remove("disabled");
+            colAnswers.classList.remove("disabled");
+            clearStatementState();
+            checkboxes.forEach(cb => cb.disabled = false);
+            msgAnswers.classList.add("rq-hidden");
+            msgStatement.classList.add("rq-hidden");
+            issueTypeField.value = "";
+            selectedAnswerField.value = "";
+            inputAnswer.disabled = true;
+            inputAnswer.value = "";
+        }
+    }
+
+    function activateStatementMode() {
+        colAnswers.classList.add("disabled");
+        colStatement.classList.remove("disabled");
+        msgStatement.classList.remove("rq-hidden");
+        msgAnswers.classList.add("rq-hidden");
+
+        issueTypeField.value = "statement";
+
+        checkboxes.forEach(cb => { cb.disabled = true; cb.checked = false; });
+        inputAnswer.readOnly = true;
+        inputAnswer.value = "";
+        selectedAnswerField.value = "";
+    }
+
+    function activateAnswersMode(option) {
+        colStatement.classList.add("disabled");
+        colAnswers.classList.remove("disabled");
+        msgStatement.classList.add("rq-hidden");
+        msgAnswers.classList.remove("rq-hidden");
+
+        issueTypeField.value = "answers";
+
+        if (option === "manual") {
+            inputAnswer.disabled = false;
+            msgAnswers.textContent = "Has elegido proponer una respuesta manual";
+            selectedAnswerField.value = "";
+        } else {
+            inputAnswer.disabled = true;
+            inputAnswer.value = "";
+            msgAnswers.textContent = `Has elegido la opción ${option}`;
+            selectedAnswerField.value = option;
+        }
+    }
+
+    inputStatement.addEventListener("input", () => {
+        if (inputStatement.value.trim().length > 0) {
+            activateStatementMode();
+        } else {
+            colAnswers.classList.remove("disabled");
+            checkboxes.forEach(cb => cb.disabled = false);
+            msgStatement.classList.add("rq-hidden");
+            setNeutralIfEmpty();
+        }
+    });
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener("change", () => {
+            if (cb.checked) {
+                uncheckAllExcept(cb);
+                activateAnswersMode(cb.value);
+            } else {
+                if (!anyAnswerChecked() && inputAnswer.value.trim().length === 0) {
+                    colStatement.classList.remove("disabled");
+                    msgAnswers.classList.add("rq-hidden");
+                    issueTypeField.value = "";
+                    selectedAnswerField.value = "";
+                    setNeutralIfEmpty();
+                }
+            }
+        });
+    });
+
+    inputAnswer.addEventListener("input", () => {
+        const manualChecked = [...checkboxes].find(cb => cb.value === "manual" && cb.checked);
+        if (manualChecked) {
+            issueTypeField.value = "answers";
+            msgAnswers.textContent = "Has elegido proponer una respuesta manual";
+            msgAnswers.classList.remove("rq-hidden");
+        } else if (inputAnswer.value.trim().length === 0 && !anyAnswerChecked()) {
+            setNeutralIfEmpty();
+        }
+    });
+</script>
+{{> footer }}
+

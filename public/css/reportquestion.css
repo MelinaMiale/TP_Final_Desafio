@@ -1,0 +1,187 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&family=Rubik:wght@400;500;700&display=swap');
+
+.rq-container {
+    background: linear-gradient(135deg, #f72585, #7209b7, #3a0ca3);
+    padding: 3rem 2rem;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 900px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    margin: 2rem auto;
+    color: white;
+}
+
+.rq-title {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    font-family: 'Rubik', sans-serif;
+    letter-spacing: 0.5px;
+}
+
+.rq-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+    color: #e9c46a;
+}
+
+.rq-category-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.rq-category-icon {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.rq-category-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+
+.rq-columns {
+    display: flex;
+    gap: 2rem;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.rq-column {
+    flex: 1;
+    background: rgba(255,255,255,0.1);
+    padding: 1rem;
+    border-radius: 10px;
+    min-width: 280px;
+    text-align: left;
+}
+
+.rq-column h3 {
+    margin-bottom: 0.8rem;
+    font-size: 1.2rem;
+    color: #e9c46a;
+}
+
+.rq-column.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.rq-question-text {
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.rq-column textarea {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: none;
+    resize: vertical;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+}
+
+.rq-options-form label {
+    display: block;
+    margin: 0.5rem 0;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.rq-message {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #e9c46a;
+}
+
+.rq-hidden {
+    display: none;
+}
+
+
+.rq-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.rq-btn {
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-family: 'Rubik', sans-serif;
+    transition: background 0.3s, transform 0.2s;
+    background: #e9c46a;
+    color: #ef476f;
+    text-decoration: none;
+}
+
+.rq-btn:hover {
+    transform: scale(1.05);
+}
+
+.rq-report-btn {
+    background: #e63946;
+    color: white;
+}
+
+.rq-report-btn:hover {
+    background: #ef476f;
+}
+
+.rq-report-btn[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    background: #e9c46a;
+    color: #ef476f;
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+
+@media (max-width: 600px) {
+    .rq-container {
+        padding: 2rem 1rem;
+        width: 95%;
+    }
+
+    .rq-title {
+        font-size: 1.6rem;
+    }
+
+    .rq-subtitle {
+        font-size: 1rem;
+    }
+
+    .rq-columns {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .rq-actions {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .rq-btn {
+        width: 100%;
+    }
+}

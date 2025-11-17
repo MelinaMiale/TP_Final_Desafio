@@ -40,7 +40,7 @@
         </form>
 
         {{^reported}}
-            <form action="../index.php?controller=Question&method=reportQuestion" method="POST">
+            <form action="../index.php?controller=ReportQuestion&method=reportQuestion" method="POST">
                 <input type="hidden" name="questionId" value="{{questionId}}">
                 <button type="submit" class="btn">Reportar esta pregunta</button>
             </form>

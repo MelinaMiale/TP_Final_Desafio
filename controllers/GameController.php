@@ -85,7 +85,7 @@ class GameController
         // $this->updateQuestionRatio($questionId, true);
         $this->updateUserResponse($submittedAnswer, $questionId, true);
         $_SESSION['currentGame']['currentQuestionIndex']++;
-        $this->getAndDisplayNextQuestion($submittedAnswer);
+        $this->getAndDisplayNextQuestion();
 
     }
 
@@ -166,7 +166,7 @@ class GameController
         $this->storeResults();
     }
 
-    public function getAndDisplayNextQuestion($submittedAnswer) {
+    private function getAndDisplayNextQuestion() {
         $index = $_SESSION['currentGame']['currentQuestionIndex'];
         $playableQuestions = $_SESSION['currentGame']['playableQuestions'];
         $currentGameId = $_SESSION["currentGame"]["gameId"];
@@ -183,7 +183,6 @@ class GameController
 
         $this->model->registerQuestionAssignment($userId, $activeQuestion['questionId'], $currentGameId);
         $activeQuestion['questionNumber'] = $_SESSION['currentGame']['currentQuestionIndex'] + 1;
-
         $this->renderer->render("displayGame", $activeQuestion);
     }
 
@@ -191,5 +190,10 @@ class GameController
         $this->model->resetUserQuestionHistory();
         $this->renderer->render("noMoreQuestions");
         exit;
+    }
+
+    public function resumeAfterReport() {
+        $_SESSION['currentGame']['currentQuestionIndex'] = $_SESSION['currentGame']['currentQuestionIndex'] + 1;
+        $this->getAndDisplayNextQuestion();
     }
 }
