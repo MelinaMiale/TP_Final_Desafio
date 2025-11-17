@@ -5,6 +5,7 @@ class MyConnection{
 
     public function __construct($server, $user, $pass, $database) {
         $this->connection = new mysqli($server, $user, $pass, $database);
+        $this->connection->set_charset("utf8mb4");
         if ($this->connection->error) { die("Error en la conexión: " . $this->connection->error); }
     }
     public function query($sql) {

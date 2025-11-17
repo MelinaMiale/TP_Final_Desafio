@@ -3,12 +3,6 @@
 class HomeController {
     private $model;
     private $renderer;
-    /* necesito un modelo con los siguientes datos:
-          * el nombre del usuario, que ya está guardado en la sesión.
-          * el historial de partidas
-          * (FALTA) cantidad de preguntas correctas de esa partida
-          * mi posición en el ranking?
-    */
 
     public function __construct($model, $renderer) {
         $this->model = $model;
