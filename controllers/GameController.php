@@ -64,7 +64,7 @@ class GameController
         $elapsedTime = $timing["elapsedTime"];
 
         if ($timeout) {
-            $this->endGame($submittedAnswer);
+            // $this->endGame($submittedAnswer);
             $this->renderWrongAnswer($submittedAnswer, true, $elapsedTime);
             exit;
         }
@@ -76,7 +76,7 @@ class GameController
         }
 
         if (!$wasCorrect) {
-            $this->endGame($submittedAnswer);
+            //$this->endGame($submittedAnswer);
             $this->renderWrongAnswer($submittedAnswer, false, $elapsedTime);
             exit;
         }
@@ -90,8 +90,7 @@ class GameController
     }
 
     private function renderWrongAnswer($submittedAnswer, $timeout, $elapsedTime) {
-        //$index = $_SESSION["currentGame"]["currentQuestionIndex"];
-        //$payedQuestion = $_SESSION["currentGame"]["playableQuestions"][$index];
+        $this->updateUserResponse($submittedAnswer, $_SESSION['currentGame']['activeQuestion']['id'], true);
         $index = $_SESSION["currentGame"]["activeQuestion"]["id"];
         $payedQuestion = null;
         foreach ($_SESSION["currentGame"]["playableQuestions"] as $pq) {
@@ -193,7 +192,15 @@ class GameController
     }
 
     public function resumeAfterReport() {
-        $_SESSION['currentGame']['currentQuestionIndex'] = $_SESSION['currentGame']['currentQuestionIndex'] + 1;
-        $this->getAndDisplayNextQuestion();
+        $hasUserAlreadyReportedQuestionInGame = $_SESSION['reported'] ?? false;
+        if($hasUserAlreadyReportedQuestionInGame) {
+            $this->storeResults();
+            $this->renderer->render("alreadyReported");
+            unset($_SESSION['reported']);
+            exit;
+        } else {
+            $_SESSION['currentGame']['currentQuestionIndex'] = $_SESSION['currentGame']['currentQuestionIndex'] + 1;
+            $this->getAndDisplayNextQuestion();
+        }
     }
 }

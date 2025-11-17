@@ -24,4 +24,23 @@ class ReportQuestionModel {
         $this->connection->query($sql);
     }
 
+    public function hasAlreadyReportedQuestionInGame($userId, $gameId) {
+        $sql = "SELECT EXISTS(
+                SELECT 1
+                FROM AUDITORIA_PREGUNTA a
+                JOIN RESPUESTA_USUARIO r 
+                  ON a.id_pregunta = r.id_pregunta 
+                 AND a.id_solicitante = r.id_usuario
+                WHERE r.id_partida = $gameId
+                  AND r.id_usuario = $userId
+            ) AS reported";
+
+        $result = $this->connection->query($sql);
+        if ($result && isset($result[0]['reported'])) {
+            return (bool)$result[0]['reported'];
+        }
+
+        return false;
+    }
+
 }
