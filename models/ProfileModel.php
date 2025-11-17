@@ -33,50 +33,29 @@ class ProfileModel {
 
     // Trae todas las partidas donde el usuario participó
     public function getPartidasByUser($userId) {
-        $sql = "
-        SELECT 
-            p.id,
-            p.fecha,
-            p.puntaje_jugador1,
-            p.puntaje_jugador2,
-            p.id_resultado,
-            p.id_tipo_partida,
-            u1.nombre_usuario AS jugador1,
-            u2.nombre_usuario AS jugador2,
-            r.nombre AS resultado,
-            t.nombre AS tipo_partida
-        FROM PARTIDA p
-        JOIN USUARIO u1 ON p.id_jugador1 = u1.id
-        LEFT JOIN USUARIO u2 ON p.id_jugador2 = u2.id
-        JOIN RESULTADO r ON p.id_resultado = r.id
-        JOIN TIPO_PARTIDA t ON p.id_tipo_partida = t.id
-        WHERE p.id_jugador1 = $userId OR p.id_jugador2 = $userId
-        ORDER BY p.fecha DESC
-        LIMIT 5
-    ";
 
-        $partidas = $this->connection->query($sql);
+        $sqlGames = "SELECT fecha, puntaje_jugador1 AS points, id 
+            FROM PARTIDA WHERE id_jugador1 = $userId 
+                         ORDER BY fecha DESC LIMIT 5";
 
-        if (!$partidas) {
-            return [];
-        }
+        $gamesRaw = $this->connection->query($sqlGames) ?? [];
 
-        foreach ($partidas as &$p) {
-            // Si la partida es contra la IA
-            if ($p['id_tipo_partida'] == 1) {
-                $p['jugador2'] = 'IA';
-                $p['jugador2_iniciales'] = 'IA';
-            } else {
-                $p['jugador2_iniciales'] = $p['jugador2'] ? strtoupper(substr($p['jugador2'], 0, 2)) : '??';
+        $partidas = [];
+        foreach ($gamesRaw as $game) {
+            $gameId = $game['id'];
+
+            $sqlCorrect = "SELECT COUNT(*) AS correct FROM RESPUESTA_USUARIO 
+                           WHERE id_partida = $gameId AND id_usuario = $userId AND fue_correcta = 1";
+
+            $correct = $this->connection->query($sqlCorrect)[0]['correct'] ?? 0;
+
+            $partidas[] = [
+                'date' => date("d M Y",
+                    strtotime($game['fecha'])),
+                'correct' => $correct,
+                'points' => $game['points'] ];
+
             }
-
-            // Iniciales del jugador 1
-            $p['jugador1_iniciales'] = strtoupper(substr($p['jugador1'], 0, 2));
-
-            // Determinar ganadores
-            $p['es_ganador_j1'] = ($p['id_resultado'] == 2);
-            $p['es_ganador_j2'] = ($p['id_resultado'] == 3);
-        }
 
         return $partidas;
     }
