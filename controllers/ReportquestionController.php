@@ -22,6 +22,12 @@ class ReportquestionController {
         }
 
         $completeQuestion = $payedQuestion->getIndividualPlayableQuestion(true);
+        if ($this->model->hasAlreadyReportedQuestionInGame($_SESSION["userId"], $_SESSION["currentGame"]["gameId"])) {
+            $_SESSION['reported'] = true;
+            echo "<p>Ya has reportado una pregunta en la partida, has perdido.</p>";
+            header("Location: ?controller=game&method=resumeAfterReport");
+            exit;
+        }
         $this->renderer->render("reportQuestion", $completeQuestion);
     }
 
