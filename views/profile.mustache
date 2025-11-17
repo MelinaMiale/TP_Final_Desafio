@@ -66,30 +66,30 @@
             </form>
         </div>
     {{/es_propietario}}
-
-    <!-- ✅ Partidas recientes -->
     <div class="history-card mt-4">
-        <h3>Partidas recientes</h3>
 
-        {{#partidas}}
-            <div class="match">
-                <div class="player {{#es_ganador_j1}}winner{{/es_ganador_j1}}">
-                    <div class="player-image">{{jugador1_iniciales}}</div>
-                    <div class="player-name">{{jugador1}}</div>
-                </div>
 
-                <div class="match-icon">🏆</div>
 
-                <div class="player {{#es_ganador_j2}}winner{{/es_ganador_j2}}">
-                    <div class="player-image">{{jugador2_iniciales}}</div>
-                    <div class="player-name">{{jugador2}}</div>
-                </div>
-            </div>
-        {{/partidas}}
+            <h3 class="subtitle">Historial de Partidas</h3>
+            <table class="game-history">
+                <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Correctas</th>
+                    <th>Puntos</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#partidas}}
+                    <tr>
+                        <td>{{date}}</td>
+                        <td>{{correct}}/10</td>
+                        <td>{{points}} pts</td>
+                    </tr>
+                {{/partidas}}
+                </tbody>
+            </table>
 
-        {{^partidas}}
-            <p>No se encontraron partidas recientes.</p>
-        {{/partidas}}
     </div>
 
     <a href="/index.php?controller=home&method=displayHome" class="btn mt-3">⬅ Volver al inicio</a>
