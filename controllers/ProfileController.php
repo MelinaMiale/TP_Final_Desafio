@@ -52,7 +52,9 @@ class ProfileController {
     }
 
     public function actualizarPerfil() {
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         if (!isset($_SESSION['user_name'])) {
             header("Location: /index.php?controller=Login&method=loginForm");
             exit;
@@ -66,7 +68,8 @@ class ProfileController {
 
         $this->model->updatePerfil($nombre_usuario, $ciudad, $pais, $password, $fotoNueva);
 
-        header("Location: /index.php?controller=Perfil&method=perfil");
+        header("Location: /index.php?controller=profile&method=showProfile&user=" . $nombre_usuario);
+
         exit;
     }
 

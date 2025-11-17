@@ -80,5 +80,33 @@ class ProfileModel {
         return $this->connection->getLastInsertId();
     }
 
+    public function updatePerfil($username, $ciudad, $pais, $password, $fotoNueva) {
+
+        // 1) Conseguir o crear país
+        $idPais = $this->getOrCreatePais($pais);
+
+        // 2) Conseguir o crear ciudad dentro del país
+        $idCiudad = $this->getOrCreateCiudad($ciudad, $idPais);
+
+        // 3) Armar SQL dinámico
+        $sets = [];
+        $sets[] = "id_ciudad = $idCiudad";
+
+        if ($password) {
+            $passwordSegura = password_hash($password, PASSWORD_DEFAULT);
+            $sets[] = "contrasenia = '$passwordSegura'";
+        }
+
+        if ($fotoNueva) {
+            $sets[] = "foto = '$fotoNueva'";
+        }
+
+        $sql = "UPDATE USUARIO SET " . implode(", ", $sets) . " 
+            WHERE nombre_usuario = '$username'";
+
+        return $this->connection->query($sql);
+    }
+
+
 
 }
