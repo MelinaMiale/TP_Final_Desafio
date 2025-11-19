@@ -18,6 +18,7 @@ include_once(__DIR__ . '/../controllers/RankingController.php');
 include_once(__DIR__ . '/../models/RankingModel.php');
 include_once(__DIR__ . '/../controllers/ReportquestionController.php');
 include_once(__DIR__ . '/../models/ReportQuestionModel.php');
+include_once(__DIR__ . '/../helper/AuthorizationManager.php');
 
 
 class ConfigFactory {
@@ -37,7 +38,10 @@ class ConfigFactory {
 
         $this->renderer = new MustacheRenderer("views");
 
-        $this->objects["router"] = new Router($this, "LoginController", "loginForm");
+        $permissions = include(__DIR__ . "/../config/permissions.php");
+        $authorizationManager = new AuthorizationManager($permissions);
+        $this->objects["auth"] = $authorizationManager;
+        $this->objects["router"] = new Router($this, "LoginController", "loginForm", $authorizationManager);
 
         $this->objects["LoginController"] =
             new LoginController(new LoginModel($this->connection), $this->renderer);

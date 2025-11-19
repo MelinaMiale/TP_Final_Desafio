@@ -1,30 +1,45 @@
 <?php
 
-class Router
-{
-
-
+class Router {
     private $configFactory;
     private $defaultController;
     private $defaultMethod;
+    private $authorizationManager;
 
-    public function __construct($configFactory, $defaultController,$defaultMethod) {
-
+    public function __construct($configFactory, $defaultController,$defaultMethod, $authorizationManager) {
         $this->configFactory = $configFactory;
         $this->defaultController = $defaultController;
         $this->defaultMethod = $defaultMethod;
+        $this->authorizationManager = $authorizationManager;
     }
 
     public function executeController($controllerParam, $methodParam) {
         // Normalizo el nombre del controlador porque a veces se rompe el registro. y necesitamos que siemppre venga en minuscula
         $controllerParam = strtolower($controllerParam);
-        if ($_SESSION["user_name"] || in_array($controllerParam, ["login", "registration"])) {
+
+        if (in_array($controllerParam, ["login", "registration"])) {
             $controller = $this->getControllerFrom($controllerParam);
             $this->executeMethodFromController($controller, $methodParam);
-        } else {
-            header("location: /index.php?controller=login&method=loginForm");
+            return;
+        }
+
+        if (!isset($_SESSION["user_name"])) {
+            header("Location: /index.php?controller=login&method=loginForm");
             exit;
         }
+
+        $role = $_SESSION["user_role"] ?? null;
+        $normalizedControllerForAuth = $controllerParam
+            ? $controllerParam . 'controller'
+            : strtolower($this->defaultController);
+
+        if (!$this->authorizationManager->isUserAuthorized($role, $normalizedControllerForAuth)) {
+            header("Location: /index.php?controller=login&method=loginForm");
+            exit;
+        }
+
+        $controller = $this->getControllerFrom($controllerParam);
+        $this->executeMethodFromController($controller, $methodParam);
     }
 
     private function getControllerFrom($controllerName) {
