@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../enums/Role.php';
-class HomeModel {
+class PlayerHomeModel {
     private $connection;
 
     public function __construct($connection) {
@@ -66,14 +66,5 @@ class HomeModel {
         ];
     }
 
-    public function getAdminStats() {
-
-        $sqlTotalUsers = "SELECT COUNT(*) as total FROM USUARIO";
-        $totalUsers = $this->connection->query($sqlTotalUsers)[0]['total'];
-        return [
-            'total_users' => $totalUsers,
-        ];
-
-    }
 
 }

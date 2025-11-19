@@ -26,13 +26,13 @@ class LoginController {
             $_SESSION["user_role"] = $result["id_rol"];
             switch ($result["id_rol"]) {
                 case 1:
-                    header("Location: ?controller=home&method=displayAdmin");
+                    header("Location: ?controller=admin&method=displayAdmin");
                     break;
                 case 2:
-                    header("Location: ?controller=home&method=displayHome");
+                    header("Location: ?controller=editor&method=displayHome");
                     break;
                 case 3:
-                    header("Location: ?controller=home&method=displayHome");
+                    header("Location: ?controller=playerhome&method=displayHome");
                     break;
             }
             exit;

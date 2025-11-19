@@ -2,7 +2,7 @@
 
 return [
     Role::PLAYER => [
-        "HomeController",
+        "PlayerhomeController",
         "GameController",
         "ProfileController",
         "RankingController",
