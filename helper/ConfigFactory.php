@@ -5,19 +5,22 @@ include_once("Router.php");
 include_once("helper/MailManager.php");
 include_once(__DIR__ . '/../controllers/LoginController.php');
 include_once(__DIR__ . '/../controllers/RegistrationController.php');
-include_once(__DIR__ . '/../controllers/HomeController.php');
+include_once(__DIR__ . '/../controllers/PlayerhomeController.php');
 include_once(__DIR__ . '/../controllers/GameController.php');
 include_once(__DIR__ . '/../controllers/ProfileController.php');
 include_once(__DIR__ . '/../models/LoginModel.php');
 include_once(__DIR__ . '/../models/RegistrationModel.php');
-include_once(__DIR__ . '/../models/HomeModel.php');
+include_once(__DIR__ . '/../models/PlayerHomeModel.php');
 include_once(__DIR__ . '/../models/GameSessionModel.php');
 include_once(__DIR__ . '/../models/ProfileModel.php');
 include_once(__DIR__ . '/../vendor/mustache/src/Mustache/Autoloader.php');
 include_once(__DIR__ . '/../controllers/RankingController.php');
 include_once(__DIR__ . '/../models/RankingModel.php');
 include_once(__DIR__ . '/../controllers/ReportquestionController.php');
+include_once(__DIR__ . '/../controllers/AdminController.php');
 include_once(__DIR__ . '/../models/ReportQuestionModel.php');
+include_once(__DIR__ . '/../helper/AuthorizationManager.php');
+include_once(__DIR__ . '/../models/AdminModel.php');
 
 
 class ConfigFactory {
@@ -37,7 +40,10 @@ class ConfigFactory {
 
         $this->renderer = new MustacheRenderer("views");
 
-        $this->objects["router"] = new Router($this, "LoginController", "loginForm");
+        $permissions = include(__DIR__ . "/../config/permissions.php");
+        $authorizationManager = new AuthorizationManager($permissions);
+        $this->objects["auth"] = $authorizationManager;
+        $this->objects["router"] = new Router($this, "LoginController", "loginForm", $authorizationManager);
 
         $this->objects["LoginController"] =
             new LoginController(new LoginModel($this->connection), $this->renderer);
@@ -48,8 +54,8 @@ class ConfigFactory {
         $this->objects["RankingController"] =
             new RankingController(new RankingModel($this->connection), $this->renderer);
       
-        $this->objects["HomeController"] =
-            new HomeController(new HomeModel($this->connection), $this->renderer);
+        $this->objects["PlayerhomeController"] =
+            new PlayerhomeController(new PlayerHomeModel($this->connection), $this->renderer);
 
         $this->objects["GameController"] =
             new GameController(new GameSessionModel($this->connection), $this->renderer);
@@ -59,6 +65,9 @@ class ConfigFactory {
 
         $this->objects["ReportquestionController"] =
             new ReportquestionController(new ReportQuestionModel($this->connection), $this->renderer);
+
+        $this->objects["AdminController"] =
+            new AdminController(new AdminModel($this->connection), $this->renderer);
 
     }
 
