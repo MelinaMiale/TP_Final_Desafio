@@ -1,0 +1,105 @@
+{{> header }}
+<div class="editor-container">
+    <div class="editor-header">
+        <div class="editor-title-box">Question Management</div>
+        <p class="editor-subtitle">Create, edit or delete questions</p>
+    </div>
+
+    <!-- KPIs -->
+    <div class="editor-kpis">
+        <div class="kpi">
+            <span class="kpi-label">Total Questions</span>
+            <span class="kpi-value">{{totalQuestions}}</span>
+        </div>
+        <div class="kpi">
+            <span class="kpi-label">Approved</span>
+            <span class="kpi-value">{{approvedCount}}</span>
+        </div>
+        <div class="kpi">
+            <span class="kpi-label">Pending</span>
+            <span class="kpi-value">{{pendingCount}}</span>
+        </div>
+    </div>
+
+    <!-- Add Question Form -->
+    <div class="editor-panel">
+        <div class="panel-title">Add New Question</div>
+        <form method="post" action="?controller=editor&method=addQuestion">
+            <label>Statement</label>
+            <input type="text" name="statement" required>
+
+            <label>Option A</label>
+            <input type="text" name="optionA" required>
+
+            <label>Option B</label>
+            <input type="text" name="optionB" required>
+
+            <label>Option C</label>
+            <input type="text" name="optionC" required>
+
+            <label>Option D</label>
+            <input type="text" name="optionD" required>
+
+            <label>Correct Answer</label>
+            <select name="correctAnswer" required>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+            </select>
+
+            <label>Category</label>
+            <select name="categoryId" required>
+                {{#categories}}
+                    <option value="{{id}}">{{nombre}}</option>
+                {{/categories}}
+            </select>
+
+            <button type="submit" class="btn-editor">Save Question</button>
+        </form>
+    </div>
+
+    <!-- Questions Table -->
+    <div class="editor-panel">
+        <div class="panel-title">Questions List</div>
+        {{#questions.length}}
+            <table class="editor-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Statement</th>
+                    <th>Category</th>
+                    <th>Correct Answer</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#questions}}
+                    <tr>
+                        <td>{{id}}</td>
+                        <td>{{enunciado}}</td>
+                        <td>{{categoria}}</td>
+                        <td>{{respuesta_correcta}}</td>
+                        <td>{{estado}}</td>
+                        <td>
+                            <form method="post" action="?controller=editor&method=editQuestion" style="display:inline;">
+                                <input type="hidden" name="id" value="{{id}}">
+                                <button type="submit" class="btn-editor">Edit</button>
+                            </form>
+                            <form method="post" action="?controller=editor&method=deleteQuestion" style="display:inline;">
+                                <input type="hidden" name="id" value="{{id}}">
+                                <button type="submit" class="btn-editor">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {{/questions}}
+                </tbody>
+            </table>
+        {{/questions.length}}
+        {{^questions.length}}
+            <div class="empty-state">No questions available</div>
+        {{/questions.length}}
+    </div>
+</div>
+{{> footer }}

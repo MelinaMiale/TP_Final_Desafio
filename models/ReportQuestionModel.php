@@ -7,20 +7,29 @@ class ReportQuestionModel {
         $this->connection = $connection;
     }
 
-    public function reportProposedStatement ($reason, $questionId) {
+    public function reportProposedStatement($reason, $questionId) {
         $userId = $_SESSION["userId"];
         $questionStatus = QuestionStatus::PENDING;
         $date = date("Y-m-d H:i:s");
         $reason = 'Se reporta el enunciado: ' . $reason;
-        $sql = "INSERT INTO AUDITORIA_PREGUNTA (id_solicitante, id_pregunta, id_estado_pregunta, fecha, motivo) VALUES ($userId, $questionId, $questionStatus, '$date', '$reason')";
+
+        $sql = "INSERT INTO AUDITORIA_PREGUNTA 
+        (id_solicitante, id_pregunta, comentario_usuario, estado_origen, estado_destino, fecha_reporte) 
+        VALUES ($userId, $questionId, '$reason', " . QuestionStatus::APPROVED . ", $questionStatus, '$date')";
+
         $this->connection->query($sql);
     }
+
     public function reportProposedAnswer ($proposedAnswer, $questionId) {
         $userId = $_SESSION["userId"];
         $questionStatus = QuestionStatus::PENDING;
         $date = date("Y-m-d H:i:s");
         $reason = 'Se reporta el la respuesta: ' . $proposedAnswer;
-        $sql = "INSERT INTO AUDITORIA_PREGUNTA (id_solicitante, id_pregunta, id_estado_pregunta, fecha, motivo) VALUES ($userId, $questionId, $questionStatus, '$date', '$reason')";
+
+        $sql = "INSERT INTO AUDITORIA_PREGUNTA 
+        (id_solicitante, id_pregunta, comentario_usuario, estado_origen, estado_destino, fecha_reporte) 
+        VALUES ($userId, $questionId, '$reason', " . QuestionStatus::APPROVED . ", $questionStatus, '$date')";
+
         $this->connection->query($sql);
     }
 

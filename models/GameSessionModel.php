@@ -91,7 +91,7 @@ class GameSessionModel {
                   AND p.id NOT IN (
                       SELECT id_pregunta FROM RESPUESTA_USUARIO WHERE id_usuario = $userId
                   )
-                  AND (ap.id_estado_pregunta = $approvedStatus OR ap.id_pregunta IS NULL)
+                  AND (ap.id_pregunta IS NULL OR ap.estado_destino = $approvedStatus)
                 ORDER BY RAND()
                 LIMIT $count";
 
