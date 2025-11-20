@@ -81,12 +81,6 @@ class EditorModel {
             case 'rechazar':
                 $statusDestination = QuestionStatus::REJECTED;
                 break;
-            case 'dar_baja':
-                $statusDestination = QuestionStatus::DISABLED;
-                break;
-            case 'modificar':
-                $statusDestination = QuestionStatus::MODIFIED;
-                break;
             default:
                 $statusDestination = QuestionStatus::PENDING;
         }
@@ -101,4 +95,30 @@ class EditorModel {
 
         $this->connection->query($sql);
     }
+
+    public function rejectReport($reportId, $editorComment, $editorId) {
+        $date = date("Y-m-d H:i:s");
+        $statusDestination = QuestionStatus::REJECTED;
+
+        $sqlAudit = "UPDATE AUDITORIA_PREGUNTA
+            SET id_editor = $editorId,
+                accion = 'rechazar',
+                comentario_editor = '$editorComment',
+                fecha_revision = '$date',
+                estado_destino = $statusDestination
+            WHERE id = $reportId";
+        $this->connection->query($sqlAudit);
+
+        $sqlGetQuestion = "SELECT id_pregunta FROM AUDITORIA_PREGUNTA WHERE id = $reportId";
+        $result = $this->connection->query($sqlGetQuestion);
+        if ($result && isset($result[0]['id_pregunta'])) {
+            $questionId = $result[0]['id_pregunta'];
+
+            $sqlUpdateQuestionStatus = "UPDATE PREGUNTA 
+            SET id_estado_pregunta = " . QuestionStatus::APPROVED . "
+            WHERE id = $questionId";
+            $this->connection->query($sqlUpdateQuestionStatus);
+        }
+    }
+
 }

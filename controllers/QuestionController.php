@@ -26,8 +26,6 @@ class QuestionController {
 
     public function editQuestion() {
         $reportId = $_GET['reportId'] ?? null;
-//        var_dump("reporte id: " . $reportId);
-//        exit;
         if (!$reportId) {
             header("Location: ?controller=question&method=manageQuestions");
             exit;
@@ -64,7 +62,7 @@ class QuestionController {
         $questions = $this->model->getAllQuestions();
         $categories = $this->model->getAllCategories();
         $stats = $this->model->getQuestionStats();
-        $this->renderer->render("questionsCRUD", [
+        $this->renderer->render("questions", [
             'questions' => $questions,
             'categories' => $categories,
             'totalQuestions' => $stats['total'],

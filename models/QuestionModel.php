@@ -45,10 +45,19 @@ class QuestionModel {
     }
 
     public function getAllQuestions() {
-        $sql = "SELECT p.id, p.enunciado, p.respuesta_correcta, c.nombre AS categoria, e.nombre AS estado
+        $sql = "SELECT p.id, 
+                p.enunciado, 
+                r.respuesta_correcta,
+                r.opcion_a, 
+                r.opcion_b, 
+                r.opcion_c, 
+                r.opcion_d,
+                c.nombre AS categoria, 
+                e.nombre AS estado
                 FROM PREGUNTA p
+                JOIN RESPUESTA r ON p.id_respuesta = r.id
                 JOIN CATEGORIA c ON p.id_categoria = c.id
-                JOIN ESTADO_PREGUNTA e ON p.estado = e.id";
+                JOIN ESTADO_PREGUNTA e ON p.id_estado_pregunta = e.id";
         return $this->connection->query($sql);
     }
 
@@ -59,8 +68,8 @@ class QuestionModel {
 
     public function getQuestionStats() {
         $sqlTotal = "SELECT COUNT(*) AS total FROM PREGUNTA";
-        $sqlApproved = "SELECT COUNT(*) AS approved FROM PREGUNTA WHERE estado = " . QuestionStatus::APPROVED;
-        $sqlPending = "SELECT COUNT(*) AS pending FROM PREGUNTA WHERE estado = " . QuestionStatus::PENDING;
+        $sqlApproved = "SELECT COUNT(*) AS approved FROM PREGUNTA WHERE id_estado_pregunta = " . QuestionStatus::APPROVED;
+        $sqlPending = "SELECT COUNT(*) AS pending FROM PREGUNTA WHERE id_estado_pregunta = " . QuestionStatus::PENDING;
 
         $total = $this->connection->query($sqlTotal)[0]['total'] ?? 0;
         $approved = $this->connection->query($sqlApproved)[0]['approved'] ?? 0;

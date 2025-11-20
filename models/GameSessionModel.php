@@ -86,12 +86,11 @@ class GameSessionModel {
                 FROM PREGUNTA p
                 JOIN RESPUESTA r ON p.id_respuesta = r.id
                 JOIN CATEGORIA c ON p.id_categoria = c.id
-                LEFT JOIN AUDITORIA_PREGUNTA ap ON p.id = ap.id_pregunta
                 WHERE p.dificultad_actual = $difficulty
                   AND p.id NOT IN (
                       SELECT id_pregunta FROM RESPUESTA_USUARIO WHERE id_usuario = $userId
                   )
-                  AND (ap.id_pregunta IS NULL OR ap.estado_destino = $approvedStatus)
+                  AND p.id_estado_pregunta = $approvedStatus
                 ORDER BY RAND()
                 LIMIT $count";
 
