@@ -8,6 +8,7 @@ class PlayerHomeModel {
     }
 
     public function getUserStats($username) {
+        $playerRole = Role::PLAYER;
         $sqlUser = "SELECT id, puntos_totales FROM USUARIO WHERE nombre_usuario = '$username'";
         $userResult = $this->connection->query($sqlUser);
 
@@ -27,7 +28,7 @@ class PlayerHomeModel {
 
         $sqlRank = "SELECT COUNT(*) + 1 AS rank
                 FROM USUARIO
-                WHERE id_rol = 3
+                WHERE id_rol = $playerRole
                 AND (
                     puntos_totales > $score
                     OR (puntos_totales = $score AND nombre_usuario < '$username')

@@ -121,7 +121,7 @@ CREATE TABLE RESPUESTA_USUARIO(
 CREATE TABLE AUDITORIA_PREGUNTA (
     id INT PRIMARY KEY AUTO_INCREMENT,
     id_pregunta INT NOT NULL,
-    id_solicitante INT NOT NULL,
+    id_solicitante INT NULL,
     comentario_usuario VARCHAR(255) NULL, -- propuesta del jugador
     fecha_reporte DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

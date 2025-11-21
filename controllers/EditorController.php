@@ -77,7 +77,8 @@ class EditorController {
 
     public function resolvePlayerReport() {
         $reportId = $_POST['reportId'];
-        $action   = $_POST['action']; // 'rechazar' o 'aceptar'
+        $_SESSION["reportId"] = $reportId;
+        $action   = $_POST['action'];
         $editorComment = $_POST['editorComment'] ?? '';
         $editorId = $_SESSION['userId'];
 
@@ -89,9 +90,9 @@ class EditorController {
         }
 
         if ($action === 'aprobar') {
-            // Redirigir a pantalla de edición
-            header("Location: ?controller=question&method=editQuestion&reportId=$reportId");
+            header("Location: ?controller=question&method=editQuestion");
             exit;
         }
     }
+
 }

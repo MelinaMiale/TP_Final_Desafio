@@ -1,7 +1,6 @@
 {{> editorHeader }}
 <div class="editor-container">
 
-    <!-- Header de bienvenida -->
     <header class="editor-header">
         <p class="editor-subtitle">Editor · {{currentDate}}</p>
         <div class="editor-title-box">
@@ -9,7 +8,6 @@
         </div>
     </header>
 
-    <!-- KPIs -->
     <section class="editor-kpis">
         <div class="kpi">
             <span class="kpi-label">Reportes pendientes</span>
@@ -25,7 +23,6 @@
         </div>
     </section>
 
-    <!-- Panel de reportes pendientes -->
     <section class="editor-panel">
         <h2 class="panel-title">Reportes pendientes</h2>
         <table class="editor-table">
@@ -49,13 +46,12 @@
                     <td>{{estado_origen}}</td>
                     <td>
                         <form action="../index.php?controller=editor&method=resolvePlayerReport" method="POST">
-                            <input type="hidden" name="reportId" value="{{id}}">
+                            <input type="hidden" name="reportId" value="{{reportId}}">
                             <select name="action" required>
                                 <option value="">Seleccionar...</option>
                                 <option value="aprobar">Aprobar</option>
                                 <option value="rechazar">Rechazar</option>
                             </select>
-                            <input type="text" name="editorComment" placeholder="Comentario del editor" required>
                             <button type="submit" class="btn-editor">Resolver</button>
                         </form>
                     </td>
@@ -68,9 +64,8 @@
         </table>
     </section>
 
-    <!-- Historial de moderación -->
     <section class="editor-panel">
-        <h2 class="panel-title">Historial de moderación</h2>
+        <h2 class="panel-title">Historial de reportes moderados</h2>
         <table class="editor-table">
             <thead>
             <tr>

@@ -7,41 +7,175 @@ class QuestionModel {
         $this->connection = $connection;
     }
 
-    public function insertQuestion($data) {
-        $sql = "INSERT INTO PREGUNTA (enunciado, opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta, id_categoria, estado)
-                VALUES ('{$data['statement']}', '{$data['optionA']}', '{$data['optionB']}', '{$data['optionC']}', '{$data['optionD']}', '{$data['correctAnswer']}', {$data['categoryId']}, " . QuestionStatus::APPROVED . ")";
+    public function addQuestion($data) {
+        $approvedStatus = QuestionStatus::APPROVED;
+        $responseId = $data["responseId"];
+        $idCreator = $_SESSION["userId"];
+        $date = date("Y-m-d H:i:s");
+
+        $sql = "INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, fecha_creacion) VALUES ('{$data['statement']}', $responseId, {$data['categoryId']}, $approvedStatus,  $idCreator, '$date')";
+
         $this->connection->query($sql);
     }
 
-    public function getQuestionById($id) {
-        $sql = "SELECT * FROM PREGUNTA WHERE id = $id";
-        return $this->connection->query($sql)[0] ?? null;
+    public function addResponse($data) {
+        $optionA = $data['optionA'];
+        $optionB = $data['optionB'];
+        $optionC = $data['optionC'];
+        $optionD = $data['optionD'];
+        $correctAnswer = $data['correctAnswer'];
+
+        $sql = "INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
+            VALUES ('$optionA', '$optionB', '$optionC', '$optionD', '$correctAnswer')";
+
+        $this->connection->query($sql);
+        return $this->connection->getLastInsertId();
+    }
+
+
+    public function getQuestionById($questionId) {
+        $sql = "SELECT 
+                p.id,
+                p.enunciado,
+                r.id AS respuesta_id,
+                r.opcion_a,
+                r.opcion_b,
+                r.opcion_c,
+                r.opcion_d,
+                r.respuesta_correcta,
+                p.id_categoria,
+                c.nombre AS categoria_nombre
+            FROM PREGUNTA p
+            JOIN RESPUESTA r ON p.id_respuesta = r.id
+            JOIN CATEGORIA c ON p.id_categoria = c.id
+            WHERE p.id = $questionId";
+        $result = $this->connection->query($sql);
+        return $result ? $result[0] : null;
     }
 
     public function getQuestionByReportId($reportId) {
-        $sql = "SELECT p.* 
+        $sql = "SELECT 
+                p.id,
+                p.enunciado,
+                r.id AS respuesta_id,
+                r.opcion_a,
+                r.opcion_b,
+                r.opcion_c,
+                r.opcion_d,
+                r.respuesta_correcta,
+                p.id_categoria,
+                c.nombre AS categoria_nombre,
+                a.id AS reportId,
+                a.comentario_usuario,
+                a.comentario_editor,
+                a.fecha_reporte,
+                a.accion,
+                a.fecha_revision
             FROM PREGUNTA p
+            JOIN RESPUESTA r ON p.id_respuesta = r.id
             JOIN AUDITORIA_PREGUNTA a ON p.id = a.id_pregunta
+            JOIN CATEGORIA c ON p.id_categoria = c.id
             WHERE a.id = $reportId";
+
         return $this->connection->query($sql)[0] ?? null;
     }
 
-    public function updateQuestion($id, $data) {
+    public function updateResponse($responseId, $responseData) {
+            $sql = "UPDATE RESPUESTA SET 
+                opcion_a = '{$responseData['optionA']}',
+                opcion_b = '{$responseData['optionB']}',
+                opcion_c = '{$responseData['optionC']}',
+                opcion_d = '{$responseData['optionD']}',
+                respuesta_correcta = '{$responseData['correctAnswer']}'
+            WHERE id = $responseId";
+            $this->connection->query($sql);
+    }
+
+    public function updateQuestion($questionId, $questionData) {
+        $approved = QuestionStatus::APPROVED;
         $sql = "UPDATE PREGUNTA SET 
-                    enunciado = '{$data['statement']}',
-                    opcion_a = '{$data['optionA']}',
-                    opcion_b = '{$data['optionB']}',
-                    opcion_c = '{$data['optionC']}',
-                    opcion_d = '{$data['optionD']}',
-                    respuesta_correcta = '{$data['correctAnswer']}',
-                    id_categoria = {$data['categoryId']}
-                WHERE id = $id";
+                    enunciado = '{$questionData['statement']}',
+                    id_categoria = {$questionData['categoryId']},
+                    id_estado_pregunta = $approved
+                WHERE id = $questionId";
         $this->connection->query($sql);
     }
 
-    public function deleteQuestion($id) {
-        $sql = "DELETE FROM PREGUNTA WHERE id = $id";
+    public function finalizeReport($reportId, $editorComment, $editorId) {
+        $date = date("Y-m-d H:i:s");
+        $approved = QuestionStatus::APPROVED;
+
+        $sql = "UPDATE AUDITORIA_PREGUNTA SET 
+                accion = 'modificado',
+                comentario_editor = '$editorComment',
+                id_editor = $editorId,
+                fecha_revision = '$date',
+                estado_destino = $approved
+            WHERE id = $reportId";
         $this->connection->query($sql);
+    }
+
+    public function getResponseByQuestionId($questionId) {
+        $sql = "SELECT id_respuesta 
+            FROM PREGUNTA 
+            WHERE id = $questionId";
+        $result = $this->connection->query($sql);
+        return $result ? $result[0]['id_respuesta'] : null;
+    }
+
+    public function logEditorActivity($questionId, $editorComment, $editorId) {
+        $date = date("Y-m-d H:i:s");
+        $approved = QuestionStatus::APPROVED;
+
+        $sql = "INSERT INTO AUDITORIA_PREGUNTA 
+                (id_pregunta, accion, comentario_editor, id_editor, fecha_revision, estado_destino, estado_origen) 
+            VALUES 
+                ($questionId, 'modificado', '$editorComment', $editorId, '$date', $approved, $approved)";
+        $this->connection->query($sql);
+    }
+
+    public function disableQuestion($id) {
+        $disabledStatus = QuestionStatus::DISABLED;
+        $sql = "UPDATE PREGUNTA 
+            SET id_estado_pregunta = $disabledStatus
+            WHERE id = $id";
+        $this->connection->query($sql);
+    }
+
+    public function getQuestionsPaginated($limit = 10, $offset = 0, $categoryId = null, $statusId = null) {
+        $sql = "SELECT p.id, 
+                   p.enunciado, 
+                   r.respuesta_correcta,
+                   c.nombre AS categoria, 
+                   e.nombre AS estado
+            FROM PREGUNTA p
+            JOIN RESPUESTA r ON p.id_respuesta = r.id
+            JOIN CATEGORIA c ON p.id_categoria = c.id
+            JOIN ESTADO_PREGUNTA e ON p.id_estado_pregunta = e.id
+            WHERE 1=1";
+
+        if ($categoryId) {
+            $sql .= " AND p.id_categoria = " . (int)$categoryId;
+        }
+        if ($statusId) {
+            $sql .= " AND p.id_estado_pregunta = " . (int)$statusId;
+        }
+
+        $sql .= " LIMIT $limit OFFSET $offset";
+
+        return $this->connection->query($sql) ?? [];
+    }
+
+    public function getTotalQuestionsCount($categoryId = null, $statusId = null) {
+        $sql = "SELECT COUNT(*) AS total FROM PREGUNTA WHERE 1=1";
+        if ($categoryId) {
+            $sql .= " AND id_categoria = " . (int)$categoryId;
+        }
+        if ($statusId) {
+            $sql .= " AND id_estado_pregunta = " . (int)$statusId;
+        }
+        $result = $this->connection->query($sql);
+        return $result ? $result[0]['total'] : 0;
     }
 
     public function getAllQuestions() {
@@ -63,6 +197,11 @@ class QuestionModel {
 
     public function getAllCategories() {
         $sql = "SELECT * FROM CATEGORIA";
+        return $this->connection->query($sql);
+    }
+
+    public function getAllStatuses() {
+        $sql = "SELECT * FROM ESTADO_PREGUNTA";
         return $this->connection->query($sql);
     }
 

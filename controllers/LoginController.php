@@ -24,7 +24,7 @@ class LoginController {
             $_SESSION["userId"] = $result["id"];
             $_SESSION["totalScore"] = $result["puntos_totales"];
 
-            $_SESSION["user_role"] = $result["id_rol"];
+            $_SESSION["user_role"] = (int)$result["id_rol"];
             switch ($result["id_rol"]) {
                 case 1:
                     header("Location: ?controller=admin&method=displayAdmin");

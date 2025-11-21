@@ -34,7 +34,7 @@ class EditorModel {
 
     public function getPendingReports() {
         $pendingQuestionStatus = QuestionStatus::PENDING;
-        $sql = "SELECT a.id, 
+        $sql = "SELECT a.id AS reportId, 
                p.enunciado AS preguntaEnunciado,
                u.nombre_usuario AS usuarioNombre,
                a.comentario_usuario, 
@@ -73,7 +73,6 @@ class EditorModel {
     public function resolveReport($reportId, $action, $editorComment, $editorId) {
         $date = date("Y-m-d H:i:s");
 
-        // Determinar estado_destino según la acción
         switch ($action) {
             case 'aprobar':
                 $statusDestination = QuestionStatus::APPROVED;

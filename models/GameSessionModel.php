@@ -56,6 +56,7 @@ class GameSessionModel {
 
     public function getPlayableQuestionsForUser($userId) {
         $approvedStatus = QuestionStatus::APPROVED;
+        $modifiedStatus = QuestionStatus::MODIFIED;
         $userLevel = $_SESSION["userLevel"]["user_level"];
 
         $userLevelManager = new UserLevelManager($this->getConnection());
@@ -90,7 +91,7 @@ class GameSessionModel {
                   AND p.id NOT IN (
                       SELECT id_pregunta FROM RESPUESTA_USUARIO WHERE id_usuario = $userId
                   )
-                  AND p.id_estado_pregunta = $approvedStatus
+                  AND p.id_estado_pregunta in ($approvedStatus, $modifiedStatus) 
                 ORDER BY RAND()
                 LIMIT $count";
 
