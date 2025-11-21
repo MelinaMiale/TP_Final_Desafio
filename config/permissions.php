@@ -12,7 +12,8 @@ return [
         "AdminController"
     ],
     Role::EDITOR => [
-        "EditorController"
+        "EditorController",
+        "QuestionController"
     ],
     "guest" => [
         "LoginController",

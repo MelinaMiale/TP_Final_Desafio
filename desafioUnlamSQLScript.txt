@@ -118,16 +118,26 @@ CREATE TABLE RESPUESTA_USUARIO(
     FOREIGN KEY (id_usuario) REFERENCES USUARIO (id)
 );
 
-CREATE TABLE AUDITORIA_PREGUNTA(
+CREATE TABLE AUDITORIA_PREGUNTA (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    motivo VARCHAR(100) NOT NULL,
-    fecha DATETIME NOT NULL,
-    id_solicitante INT NOT NULL,
     id_pregunta INT NOT NULL,
-    id_estado_pregunta INT NOT NULL,
-    FOREIGN KEY (id_solicitante) REFERENCES USUARIO (id),
-    FOREIGN KEY (id_pregunta) REFERENCES PREGUNTA (id),
-    FOREIGN KEY (id_estado_pregunta) REFERENCES ESTADO_PREGUNTA (id)
+    id_solicitante INT NULL,
+    comentario_usuario VARCHAR(255) NULL, -- propuesta del jugador
+    fecha_reporte DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    id_editor INT NULL,
+    accion ENUM('aprobado','rechazado','borrado','modificado') NULL,
+    comentario_editor VARCHAR(255) NULL, -- explicación del editor
+    fecha_revision DATETIME NULL,
+
+    estado_origen INT NOT NULL,
+    estado_destino INT NULL,
+
+    FOREIGN KEY (id_pregunta) REFERENCES PREGUNTA(id),
+    FOREIGN KEY (id_solicitante) REFERENCES USUARIO(id),
+    FOREIGN KEY (id_editor) REFERENCES USUARIO(id),
+    FOREIGN KEY (estado_origen) REFERENCES ESTADO_PREGUNTA(id),
+    FOREIGN KEY (estado_destino) REFERENCES ESTADO_PREGUNTA(id)
 );
 
 -- ---------------------------------------------------------------------------------------------
@@ -238,7 +248,7 @@ INSERT INTO CATEGORIA (nombre, color) VALUES
 ('Política', '#36454F'),
 ('Economía', '#A2CC0D');
 
-INSERT INTO ESTADO_PREGUNTA (nombre) VALUES ('Aprobada'), ('Pendiente'), ('Rechazada');
+INSERT INTO ESTADO_PREGUNTA (nombre) VALUES ('Aprobada'), ('Pendiente'), ('Rechazada'), ('Deshabilitada'), ('Modificada');
 
 INSERT INTO RESULTADO (nombre) VALUES ('Ganada'),('Perdida');
 

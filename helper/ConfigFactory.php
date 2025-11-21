@@ -18,9 +18,13 @@ include_once(__DIR__ . '/../controllers/RankingController.php');
 include_once(__DIR__ . '/../models/RankingModel.php');
 include_once(__DIR__ . '/../controllers/ReportquestionController.php');
 include_once(__DIR__ . '/../controllers/AdminController.php');
+include_once(__DIR__ . '/../controllers/EditorController.php');
+include_once(__DIR__ . '/../controllers/QuestionController.php');
 include_once(__DIR__ . '/../models/ReportQuestionModel.php');
 include_once(__DIR__ . '/../helper/AuthorizationManager.php');
 include_once(__DIR__ . '/../models/AdminModel.php');
+include_once(__DIR__ . '/../models/EditorModel.php');
+include_once(__DIR__ . '/../models/QuestionModel.php');
 
 
 class ConfigFactory {
@@ -68,6 +72,12 @@ class ConfigFactory {
 
         $this->objects["AdminController"] =
             new AdminController(new AdminModel($this->connection), $this->renderer);
+
+        $this->objects["EditorController"] =
+            new EditorController(new EditorModel($this->connection), $this->renderer);
+
+        $this->objects["QuestionController"] =
+            new QuestionController(new QuestionModel($this->connection), $this->renderer);
 
     }
 
