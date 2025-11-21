@@ -20,7 +20,8 @@ CREATE TABLE PAIS(
 CREATE TABLE CATEGORIA(
     id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100) NOT NULL,
-    color VARCHAR(20) NOT NULL
+    color VARCHAR(20) NOT NULL,
+	estado ENUM('ACTIVO', 'DESHABILITADO') NOT NULL DEFAULT 'ACTIVO',
 );
 
 CREATE TABLE ESTADO_PREGUNTA(
@@ -138,6 +139,21 @@ CREATE TABLE AUDITORIA_PREGUNTA (
     FOREIGN KEY (id_editor) REFERENCES USUARIO(id),
     FOREIGN KEY (estado_origen) REFERENCES ESTADO_PREGUNTA(id),
     FOREIGN KEY (estado_destino) REFERENCES ESTADO_PREGUNTA(id)
+);
+
+CREATE TABLE AUDITORIA_CATEGORIA (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    id_categoria INT NOT NULL,
+    nombre_antiguo VARCHAR(100) NULL,
+    nombre_nuevo VARCHAR(100) NULL,
+    color_antiguo VARCHAR(7) NULL,
+    color_nuevo VARCHAR(7) NULL,
+    comentario_editor VARCHAR(255) NULL,
+    accion ENUM('CREAR','EDITAR','DESHABILITAR') NOT NULL,
+    fecha_cambio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id_editor INT NULL,
+    FOREIGN KEY (id_categoria) REFERENCES CATEGORIA(id),
+    FOREIGN KEY (id_editor) REFERENCES USUARIO(id)
 );
 
 -- ---------------------------------------------------------------------------------------------

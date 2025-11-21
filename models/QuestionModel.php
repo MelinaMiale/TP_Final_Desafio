@@ -221,4 +221,27 @@ class QuestionModel {
         ];
     }
 
+    public function reassignQuestions($oldCategoryId, $newCategoryId, $editorComment) {
+        $sql = "UPDATE PREGUNTA SET id_categoria = $newCategoryId WHERE id_categoria = $oldCategoryId";
+        $this->connection->query($sql);
+
+        //todo: ver esto.
+//        $date = date("Y-m-d H:i:s");
+//        $editorId = $_SESSION["userId"];
+//
+//        $sqlAudit = "INSERT INTO AUDITORIA_PREGUNTA (id_categoria_antigua, id_categoria_nueva, comentario_editor, id_editor, fecha_cambio)
+//                 VALUES ($oldCategoryId, $newCategoryId, '$editorComment', $editorId, '$date')";
+//        $this->connection->query($sqlAudit);
+    }
+
+    public function getQuestionsByCategoryId($categoryId) {
+        $categoryId = (int) $categoryId;
+        $sql = "SELECT id, enunciado 
+                FROM PREGUNTA 
+                WHERE id_categoria = $categoryId";
+
+        return $this->connection->query($sql);
+    }
+
+
 }

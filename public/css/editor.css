@@ -114,6 +114,7 @@
     border: none;
     cursor: pointer;
     transition: background-color 0.2s;
+    margin-left: 0.7rem;
 }
 
 .btn-editor:hover {
@@ -259,6 +260,42 @@
     transform: translateY(1px);
 }
 
+input[type="color"] {
+    width: 60px;
+    height: 34px;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.color-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.color-wrapper input[type="color"] {
+    width: 100px;
+    height: 40px;
+    border: none;
+    cursor: pointer;
+}
+
+#color-value {
+    font-family: monospace;
+    font-size: 1rem;
+    color: #333;
+}
+
+.btn-full {
+    display: block;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+
+
 /* Estilos para <details> */
 details summary {
     cursor: pointer;
@@ -275,6 +312,12 @@ details summary {
     border: 1px solid #cbd5e0;
     display: inline-block;
 }
+
+.color-bar-inline {
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
 
 .history-list {
     list-style: none;

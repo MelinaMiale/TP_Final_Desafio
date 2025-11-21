@@ -21,7 +21,9 @@
     <div class="editor-panel">
         <div class="panel-title">Filtros</div>
         <form method="get" action="index.php" class="filter-form">
-            <input type="hidden" name="controller" value="question"> <input type="hidden" name="method" value="manageQuestions"> <label for="category">Categoría:</label>
+            <input type="hidden" name="controller" value="question">
+            <input type="hidden" name="method" value="manageQuestions">
+            <label for="category">Categoría:</label>
             <select name="categoryId" id="category">
                 <option value="">Todas</option>
                 {{#categories}} <option value="{{id}}" {{#isSelected}}selected{{/isSelected}}>{{nombre}}</option> {{/categories}}
@@ -71,7 +73,9 @@
             {{/hasQuestions}} {{^hasQuestions}}
             <div class="empty-state">No hay preguntas disponibles</div>
         {{/hasQuestions}}
-            <div class="pagination"> {{#pages}} <a href="?controller=question&method=manageQuestions&page={{number}}{{#categoryId}}&categoryId={{categoryId}}{{/categoryId}}{{#statusId}}&statusId={{statusId}}{{/statusId}}" class="page-link {{#selected}}active{{/selected}}"> {{number}} </a> {{/pages}} </div>
+            <div class="pagination"> {{#pages}}
+                <a href="?controller=question&method=manageQuestions&page={{number}}{{#categoryId}}&categoryId={{categoryId}}{{/categoryId}}{{#statusId}}&statusId={{statusId}}{{/statusId}}" class="page-link {{#selected}}active{{/selected}}"> {{number}} </a>
+            {{/pages}} </div>
         </div>
     </details>
 
