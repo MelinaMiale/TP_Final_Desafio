@@ -67,5 +67,13 @@ class PlayerHomeModel {
         ];
     }
 
+    public function turnPlayerIntoEditor() {
+        $editorRole = Role::EDITOR;
+        $userId = $_SESSION['userId'];
+        $updateUserQuery = "UPDATE USUARIO
+            SET id_rol = $editorRole
+            WHERE id = $userId" ;
+        $this->connection->query($updateUserQuery);
+    }
 
 }

@@ -1,0 +1,35 @@
+{{> editorHeader }}
+
+<div class="welcome-editor-container">
+    <div class="welcome-panel">
+        <h1 class="welcome-title">¡Bienvenido, Editor!</h1>
+        <p class="welcome-subtitle">
+            Ahora formas parte del equipo de editores. Tu rol es clave para mantener la calidad del juego.
+        </p>
+
+        <div class="editor-importance">
+            <p>Como editor, tu responsabilidad es:</p>
+            <ul class="editor-tasks">
+                <li><img src="/public/img/icons/crear.png" alt="" class="icon-small">
+                    Crear nuevas preguntas para desafiar a los jugadores.
+                </li>
+                <li><img src="/public/img/icons/organizar.png" alt="" class="icon-small">
+                    Organizar y crear categorías que den coherencia al contenido.
+                </li>
+                <li><img src="/public/img/icons/moderar.png" alt="" class="icon-small">
+                    Moderar los reportes enviados por otros jugadores.
+                </li>
+            </ul>
+        </div>
+
+        <div class="editor-actions">
+            <form method="get" action="index.php">
+                <input type="hidden" name="controller" value="login">
+                <input type="hidden" name="method" value="loginForm">
+                <button type="submit" class="btn-editor">Ir al login</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{> footer }}
