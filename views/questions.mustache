@@ -21,7 +21,9 @@
     <div class="editor-panel">
         <div class="panel-title">Filtros</div>
         <form method="get" action="index.php" class="filter-form">
-            <input type="hidden" name="controller" value="question"> <input type="hidden" name="method" value="manageQuestions"> <label for="category">Categoría:</label>
+            <input type="hidden" name="controller" value="question">
+            <input type="hidden" name="method" value="manageQuestions">
+            <label for="category">Categoría:</label>
             <select name="categoryId" id="category">
                 <option value="">Todas</option>
                 {{#categories}} <option value="{{id}}" {{#isSelected}}selected{{/isSelected}}>{{nombre}}</option> {{/categories}}
@@ -35,7 +37,6 @@
         </form>
         <div class="action-buttons">
             <form method="post" action="?controller=question&method=newQuestion"> <button type="submit" class="btn-circle">+ Pregunta</button> </form>
-            <form method="post" action="?controller=category&method=newCategory"> <button type="submit" class="btn-circle">+ Categoría</button> </form>
         </div>
     </div>
     <details {{^questionToEdit}}open{{/questionToEdit}}>
@@ -72,30 +73,12 @@
             {{/hasQuestions}} {{^hasQuestions}}
             <div class="empty-state">No hay preguntas disponibles</div>
         {{/hasQuestions}}
-            <div class="pagination"> {{#pages}} <a href="?controller=question&method=manageQuestions&page={{number}}{{#categoryId}}&categoryId={{categoryId}}{{/categoryId}}{{#statusId}}&statusId={{statusId}}{{/statusId}}" class="page-link {{#selected}}active{{/selected}}"> {{number}} </a> {{/pages}} </div>
+            <div class="pagination"> {{#pages}}
+                <a href="?controller=question&method=manageQuestions&page={{number}}{{#categoryId}}&categoryId={{categoryId}}{{/categoryId}}{{#statusId}}&statusId={{statusId}}{{/statusId}}" class="page-link {{#selected}}active{{/selected}}"> {{number}} </a>
+            {{/pages}} </div>
         </div>
     </details>
-<!--    {{#questionToEdit}}-->
-<!--        <form method="post" action="index.php?controller=question&method=updateQuestion" class="edit-form">-->
-<!--            <input type="hidden" name="questionId" value="{{questionToEdit.id}}"> <input type="hidden" name="reportId" value="{{reportId}}">-->
-<!--            <div class="editor-panel">-->
-<!--                <div class="panel-title">Información del Reporte</div>-->
-<!--                <div class="report-info">-->
-<!--                    <p><strong>Comentario del jugador:</strong> {{comentario_usuario}}</p>-->
-<!--                    <p><strong>Fecha reporte:</strong> {{fecha_reporte}}</p>-->
-<!--                    {{#accion}}-->
-<!--                        <p><strong>Acción previa:</strong> {{accion}} ({{fecha_revision}})</p>-->
-<!--                    {{/accion}} <label for="editorComment">Comentario del editor:</label> <input type="text" name="editorComment" id="editorComment" value="{{comentario_editor}}">-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="editor-panel">-->
-<!--                <div class="panel-title">Edición de Pregunta</div>-->
-<!--                <label for="statement">Enunciado:</label>-->
-<!--                <textarea name="statement" id="statement">{{questionToEdit.enunciado}}</textarea>-->
-<!--                <label for="optionA">Opción A:</label> <input type="text" name="optionA" id="optionA" value="{{questionToEdit.opcion_a}}"> <label for="optionB">Opción B:</label> <input type="text" name="optionB" id="optionB" value="{{questionToEdit.opcion_b}}"> <label for="optionC">Opción C:</label> <input type="text" name="optionC" id="optionC" value="{{questionToEdit.opcion_c}}"> <label for="optionD">Opción D:</label> <input type="text" name="optionD" id="optionD" value="{{questionToEdit.opcion_d}}"> <label for="correctAnswer">Respuesta Correcta:</label> <input type="text" name="correctAnswer" id="correctAnswer" value="{{questionToEdit.respuesta_correcta}}"> <label for="categoryId">Categoría:</label> <select name="categoryId" id="categoryId"> {{#categories}} <option value="{{id}}" {{#isSelected}}selected{{/isSelected}}>{{nombre}}</option> {{/categories}} </select> <button type="submit" class="btn-editor">Guardar cambios</button>-->
-<!--            </div>-->
-<!--        </form>-->
-<!--    {{/questionToEdit}}-->
+
     {{#questionToEdit.id}}
         <form method="post" action="?controller=question&method=updateQuestion" class="edit-form">
             <input type="hidden" name="questionId" value="{{questionToEdit.id}}">
