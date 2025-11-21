@@ -13,7 +13,8 @@ return [
     ],
     Role::EDITOR => [
         "EditorController",
-        "QuestionController"
+        "QuestionController",
+        "CategoryController"
     ],
     "guest" => [
         "LoginController",

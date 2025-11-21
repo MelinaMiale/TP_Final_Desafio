@@ -1,0 +1,89 @@
+{{> editorHeader }}
+<div class="editor-container">
+    <div class="editor-header">
+        <div class="editor-title-box">Gestión de Categorías</div>
+    </div>
+
+    <div class="editor-kpis">
+        <div class="kpi">
+            <span class="kpi-label">Totales</span>
+            <span class="kpi-value">{{totalCategories}}</span>
+        </div>
+        <div class="kpi">
+            <span class="kpi-label">Activas</span>
+            <span class="kpi-value">{{activeCount}}</span>
+        </div>
+        <div class="kpi">
+            <span class="kpi-label">Deshabilitadas</span>
+            <span class="kpi-value">{{disabledCount}}</span>
+        </div>
+    </div>
+
+    <div class="editor-panel">
+        <div class="panel-title">Acciones</div>
+        <div class="action-buttons">
+            <form method="post" action="?controller=category&method=newCategory">
+                <button type="submit" class="btn-circle">+ Categoría</button>
+            </form>
+        </div>
+    </div>
+
+    <details open>
+        <summary>Listado de categorías</summary>
+        <div class="editor-panel">
+            {{#hasCategories}}
+                <table class="editor-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Color</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#categories}}
+                        <tr>
+                            <td>{{id}}</td>
+                            <td>{{nombre}}</td>
+                            <td>
+                                <div class="color-bar" style="background-color: {{color}};"></div>
+                            </td>
+                            <td>
+                                <form method="post" action="?controller=category&method=editCategory" style="display:inline;">
+                                    <input type="hidden" name="categoryId" value="{{id}}">
+                                    <button type="submit" class="btn-editor">Editar</button>
+                                </form>
+                                <form method="post" action="?controller=category&method=disableCategory" style="display:inline;">
+                                    <input type="hidden" name="categoryId" value="{{id}}">
+                                    <button type="submit" class="btn-editor">Deshabilitar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {{/categories}}
+                    </tbody>
+                </table>
+            {{/hasCategories}}
+            {{^hasCategories}}
+                <div class="empty-state">No hay categorías disponibles</div>
+            {{/hasCategories}}
+        </div>
+    </details>
+
+    <details>
+        <summary>Historial de cambios</summary>
+        <div class="editor-panel">
+            {{#hasHistory}}
+                <ul class="history-list">
+                    {{#history}}
+                        <li>{{fecha}} - {{accion}} - {{detalle}}</li>
+                    {{/history}}
+                </ul>
+            {{/hasHistory}}
+            {{^hasHistory}}
+                <div class="empty-state">No hay historial disponible</div>
+            {{/hasHistory}}
+        </div>
+    </details>
+</div>
+{{> footer }}
