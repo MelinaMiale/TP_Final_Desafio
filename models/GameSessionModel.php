@@ -128,11 +128,12 @@ class GameSessionModel {
         $currentGameId = $_SESSION["currentGame"]["gameId"];
         $wasCorrect = $wasCorrect ? 1 : 0;
 
-        $puntosTotales = $_SESSION["totalScore"] + $_SESSION["currentGame"]["score"];
-        $sqlUserPoints = "UPDATE USUARIO
-        SET puntos_totales = $puntosTotales
+        if ($wasCorrect) {
+            $sqlUserPoints = "UPDATE USUARIO
+        SET puntos_totales = puntos_totales + 1
         WHERE id = $userId";
-        $this->connection->query($sqlUserPoints);
+            $this->connection->query($sqlUserPoints);
+        }
 
         $sqlUpdateResponse = "UPDATE RESPUESTA_USUARIO
         SET opcion_elegida = '$submittedAnswer',

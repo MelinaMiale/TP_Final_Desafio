@@ -6,7 +6,7 @@
         <p class="games-played">Has jugado <strong>{{games_played}}</strong> partidas</p>
 
         <div class="lobby-actions">
-            <a href="../index.php?controller=game&method=startGame" class="btn">
+            <a href="/game/startGame" class="btn">
                 <img src="../public/img/icons/jugar.png" alt="" class="icon-small">
                 Iniciar Nueva Partida
             </a>
@@ -18,7 +18,7 @@
                 <img src="../public/img/icons/mas.png" alt="" class="icon-small">
                 Crear Pregunta
             </a>
-            <a href="/index.php?controller=profile&method=showProfile" class="btn">
+            <a href="profile/showProfile" class="btn">
                 <img src="../public/img/icons/perfil-del-usuario.png" alt="" class="icon-small">
                 Ver Perfil
             </a>
@@ -30,15 +30,13 @@
             <tr>
                 <th>Fecha</th>
                 <th>Correctas</th>
-                <th>Puntos</th>
             </tr>
             </thead>
             <tbody>
             {{#games}}
                 <tr>
                     <td>{{date}}</td>
-                    <td>{{correct}}/10</td>
-                    <td>{{points}} pts</td>
+                    <td>{{correct}}</td>
                 </tr>
             {{/games}}
             </tbody>
