@@ -330,6 +330,24 @@ details summary {
     color: #2d3748;
 }
 
+.filter-form input[type="text"] {
+    padding: 0.5rem 0.7rem;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #1a202c;
+    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    min-width: 220px; /* ancho mínimo para que no quede demasiado chico */
+}
+
+.filter-form input[type="text"]:focus {
+    outline: none;
+    border-color: #2b6cb0;
+    box-shadow: 0 0 0 2px rgba(43, 108, 176, 0.2);
+}
+
+
 /* Responsividad */
 @media (max-width: 768px) {
     .editor-kpis {

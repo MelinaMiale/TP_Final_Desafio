@@ -142,7 +142,7 @@ class QuestionModel {
         $this->connection->query($sql);
     }
 
-    public function getQuestionsPaginated($limit = 10, $offset = 0, $categoryId = null, $statusId = null) {
+    public function getQuestionsPaginated($limit = 10, $offset = 0, $categoryId = null, $statusId = null, $searchText = null) {
         $sql = "SELECT p.id, 
                    p.enunciado, 
                    r.respuesta_correcta,
@@ -160,13 +160,17 @@ class QuestionModel {
         if ($statusId) {
             $sql .= " AND p.id_estado_pregunta = " . (int)$statusId;
         }
+        if ($searchText) {
+            $searchText = $this->connection->real_escape_string($searchText);
+            $sql .= " AND p.enunciado LIKE '%$searchText%'";
+        }
 
         $sql .= " LIMIT $limit OFFSET $offset";
 
         return $this->connection->query($sql) ?? [];
     }
 
-    public function getTotalQuestionsCount($categoryId = null, $statusId = null) {
+    public function getTotalQuestionsCount($categoryId = null, $statusId = null, $searchText = null) {
         $sql = "SELECT COUNT(*) AS total FROM PREGUNTA WHERE 1=1";
         if ($categoryId) {
             $sql .= " AND id_categoria = " . (int)$categoryId;
@@ -174,6 +178,11 @@ class QuestionModel {
         if ($statusId) {
             $sql .= " AND id_estado_pregunta = " . (int)$statusId;
         }
+        if ($searchText) {
+            $searchText = $this->connection->real_escape_string($searchText);
+            $sql .= " AND enunciado LIKE '%$searchText%'";
+        }
+
         $result = $this->connection->query($sql);
         return $result ? $result[0]['total'] : 0;
     }

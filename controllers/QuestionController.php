@@ -161,12 +161,14 @@ class QuestionController {
 
         $categoryId = $_GET['categoryId'] ?? null;
         $statusId = $_GET['statusId'] ?? null;
+        $searchText = $_GET['searchText'] ?? null;
+
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $limit = 10;
         $offset = ($page - 1) * $limit;
 
-        $questions = $this->model->getQuestionsPaginated($limit, $offset, $categoryId, $statusId);
-        $totalQuestions = $this->model->getTotalQuestionsCount($categoryId, $statusId);
+        $questions = $this->model->getQuestionsPaginated($limit, $offset, $categoryId, $statusId, $searchText);
+        $totalQuestions = $this->model->getTotalQuestionsCount($categoryId, $statusId, $searchText);
         $totalPages = max(1, (int)ceil($totalQuestions / $limit));
 
         $pages = [];
@@ -175,7 +177,8 @@ class QuestionController {
                 'number' => $i,
                 'selected' => ($i === $page),
                 'categoryId' => $categoryId,
-                'statusId' => $statusId
+                'statusId' => $statusId,
+                'searchText' => $searchText
             ];
         }
 
@@ -193,7 +196,8 @@ class QuestionController {
             'pendingCount' => $stats['pending'],
             'currentPage' => $page,
             'totalPages' => $totalPages,
-            'pages' => $pages
+            'pages' => $pages,
+            'searchText'     => $searchText
         ]);
     }
 

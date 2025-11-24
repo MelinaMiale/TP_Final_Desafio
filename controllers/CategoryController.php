@@ -83,15 +83,17 @@ class CategoryController {
         $limit = 10;
         $offset = ($page - 1) * $limit;
 
-        $categories = $this->model->getCategoriesPaginated($limit, $offset);
-        $totalCategories = $this->model->getTotalCategoriesCount();
+        $searchCategory = $_GET['searchCategory'] ?? null;
+        $categories = $this->model->getCategoriesPaginated($limit, $offset, $searchCategory);
+        $totalCategories = $this->model->getTotalCategoriesCount($searchCategory);
         $totalPages = max(1, (int)ceil($totalCategories / $limit));
 
         $pages = [];
         for ($i = 1; $i <= $totalPages; $i++) {
             $pages[] = [
                 'number' => $i,
-                'selected' => ($i === $page)
+                'selected' => ($i === $page),
+                'searchCategory' => $searchCategory
             ];
         }
 
@@ -110,7 +112,8 @@ class CategoryController {
             'totalPages' => $totalPages,
             'pages' => $pages,
             'history' => $history,
-            'hasHistory' => $hasHistory
+            'hasHistory' => $hasHistory,
+            'searchCategory'  => $searchCategory
         ]);
     }
 

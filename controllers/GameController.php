@@ -15,6 +15,7 @@ class GameController
         $playableQuestions = $this->model->getPlayableQuestionsForUser($userId);
 
         if (empty($playableQuestions)) {
+        // if (true) {
             $this->resetUserProgressIfNoQuestions();
         }
 
@@ -90,7 +91,8 @@ class GameController
     }
 
     private function renderWrongAnswer($submittedAnswer, $timeout, $elapsedTime) {
-        $this->updateUserResponse($submittedAnswer, $_SESSION['currentGame']['activeQuestion']['id'], true);
+        $this->updateUserResponse($submittedAnswer, $_SESSION['currentGame']['activeQuestion']['id'], false);
+        $this->storeResults();
         $index = $_SESSION["currentGame"]["activeQuestion"]["id"];
         $payedQuestion = null;
         foreach ($_SESSION["currentGame"]["playableQuestions"] as $pq) {

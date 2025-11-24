@@ -6,7 +6,8 @@ return [
         "GameController",
         "ProfileController",
         "RankingController",
-        "ReportquestionController"
+        "ReportquestionController",
+        "SuggestedquestionsController"
     ],
     Role::ADMIN => [
         "AdminController"

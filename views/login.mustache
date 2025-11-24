@@ -2,7 +2,7 @@
     <div class="container login-container">
         <h1 class="title">Desafío UNLaM</h1>
         {{#error}}<div class="error-message" style="color: red; background: #ffe6e6; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid red;">{{error}}</div>{{/error}}
-        <form action="../index.php?controller=login&method=login" method="POST" class="login-form">
+        <form action="/login/login" method="POST" class="login-form">
             <div class="form-group">
                 <label for="user_name">Ingresá tu nombre</label>
                 <input type="text" id="user_name" name="user_name" placeholder="Tu nombre..." required>
@@ -14,7 +14,7 @@
             <button type="submit" class="btn">Comenzar</button>
         </form>
         <p class="form-footer">
-            ¿Aún no estás registrado? <a href="../index.php?controller=registration&method=registerForm">Crear cuenta</a>
+            ¿Aún no estás registrado? <a href="/registration/registerForm">Crear cuenta</a>
         </p>
     </div>
 {{> footer }}

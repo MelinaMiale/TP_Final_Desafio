@@ -22,7 +22,6 @@ class LoginController {
             $_SESSION["full_name"] = $result["nombre_completo"];
             $_SESSION["user_name"] = $user_name;
             $_SESSION["userId"] = $result["id"];
-            $_SESSION["totalScore"] = $result["puntos_totales"];
 
             $_SESSION["user_role"] = (int)$result["id_rol"];
             switch ($result["id_rol"]) {

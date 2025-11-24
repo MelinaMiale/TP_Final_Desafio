@@ -28,15 +28,20 @@
                 <option value="">Todas</option>
                 {{#categories}} <option value="{{id}}" {{#isSelected}}selected{{/isSelected}}>{{nombre}}</option> {{/categories}}
             </select>
+
             <label for="status">Estado:</label>
             <select name="statusId" id="status">
                 <option value="">Todos</option>
                 {{#statuses}} <option value="{{id}}" {{#isSelected}}selected{{/isSelected}}>{{nombre}}</option> {{/statuses}}
             </select>
+
+            <label for="searchText">Buscar por enunciado:</label>
+            <input type="text" name="searchText" id="searchText" value="{{searchText}}">
+
             <button type="submit" class="btn-editor">Filtrar</button>
         </form>
         <div class="action-buttons">
-            <form method="post" action="?controller=question&method=newQuestion"> <button type="submit" class="btn-circle">+ Pregunta</button> </form>
+            <form method="post" action="/question/newQuestion"> <button type="submit" class="btn-circle">+ Pregunta</button> </form>
         </div>
     </div>
     <details {{^questionToEdit}}open{{/questionToEdit}}>
@@ -74,7 +79,9 @@
             <div class="empty-state">No hay preguntas disponibles</div>
         {{/hasQuestions}}
             <div class="pagination"> {{#pages}}
-                <a href="?controller=question&method=manageQuestions&page={{number}}{{#categoryId}}&categoryId={{categoryId}}{{/categoryId}}{{#statusId}}&statusId={{statusId}}{{/statusId}}" class="page-link {{#selected}}active{{/selected}}"> {{number}} </a>
+                <a href="?controller=question&method=manageQuestions&page={{number}}{{#categoryId}}&categoryId={{categoryId}}{{/categoryId}}{{#statusId}}&statusId={{statusId}}{{/statusId}}{{#searchText}}&searchText={{searchText}}{{/searchText}}" class="page-link {{#selected}}active{{/selected}}">
+                {{number}}
+                </a>
             {{/pages}} </div>
         </div>
     </details>
@@ -87,22 +94,22 @@
                 <div class="panel-title">Editar Pregunta</div>
 
                 <label for="statement">Enunciado:</label>
-                <textarea name="statement" id="statement">{{questionToEdit.enunciado}}</textarea>
+                <textarea name="statement" id="statement" required>{{questionToEdit.enunciado}}</textarea>
 
                 <label for="optionA">Opción A:</label>
-                <input type="text" name="optionA" id="optionA" value="{{questionToEdit.opcion_a}}">
+                <input type="text" name="optionA" id="optionA" value="{{questionToEdit.opcion_a}}" required>
 
                 <label for="optionB">Opción B:</label>
-                <input type="text" name="optionB" id="optionB" value="{{questionToEdit.opcion_b}}">
+                <input type="text" name="optionB" id="optionB" value="{{questionToEdit.opcion_b}}" required>
 
                 <label for="optionC">Opción C:</label>
-                <input type="text" name="optionC" id="optionC" value="{{questionToEdit.opcion_c}}">
+                <input type="text" name="optionC" id="optionC" value="{{questionToEdit.opcion_c}}" required>
 
                 <label for="optionD">Opción D:</label>
-                <input type="text" name="optionD" id="optionD" value="{{questionToEdit.opcion_d}}">
+                <input type="text" name="optionD" id="optionD" value="{{questionToEdit.opcion_d}}" required>
 
                 <label for="correctAnswer">Respuesta Correcta:</label>
-                <input type="text" name="correctAnswer" id="correctAnswer" value="{{questionToEdit.respuesta_correcta}}">
+                <input type="text" name="correctAnswer" id="correctAnswer" value="{{questionToEdit.respuesta_correcta}}" required>
 
                 <label for="categoryId">Categoría:</label>
                 <select name="categoryId" id="categoryId">
@@ -122,22 +129,22 @@
                 <div class="panel-title">Nueva Pregunta</div>
 
                 <label for="statement">Enunciado:</label>
-                <textarea name="statement" id="statement"></textarea>
+                <textarea name="statement" id="statement" required></textarea>
 
                 <label for="optionA">Opción A:</label>
-                <input type="text" name="optionA" id="optionA">
+                <input type="text" name="optionA" id="optionA" required>
 
                 <label for="optionB">Opción B:</label>
-                <input type="text" name="optionB" id="optionB">
+                <input type="text" name="optionB" id="optionB" required>
 
                 <label for="optionC">Opción C:</label>
-                <input type="text" name="optionC" id="optionC">
+                <input type="text" name="optionC" id="optionC" required>
 
                 <label for="optionD">Opción D:</label>
-                <input type="text" name="optionD" id="optionD">
+                <input type="text" name="optionD" id="optionD" required>
 
                 <label for="correctAnswer">Respuesta Correcta:</label>
-                <input type="text" name="correctAnswer" id="correctAnswer">
+                <input type="text" name="correctAnswer" id="correctAnswer" required>
 
                 <label for="categoryId">Categoría:</label>
                 <select name="categoryId" id="categoryId">
