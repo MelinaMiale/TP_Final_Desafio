@@ -112,7 +112,8 @@ class QuestionModel {
                 comentario_editor = '$editorComment',
                 id_editor = $editorId,
                 fecha_revision = '$date',
-                estado_destino = $approved
+                estado_destino = $approved,
+                estado_origen = $approved
             WHERE id = $reportId";
         $this->connection->query($sql);
     }

@@ -33,7 +33,6 @@ class ReportquestionController {
 
     public function submitReport() {
         $questionId = $_POST["questionId"];
-
         if(!empty($_POST["proposedStatement"])){
             $proposedStatement = $_POST["proposedStatement"];
             $this->model->reportProposedStatement($proposedStatement, $questionId);
