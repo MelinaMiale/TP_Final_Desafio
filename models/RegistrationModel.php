@@ -1,7 +1,7 @@
 <?php
+require_once __DIR__ . "/CiudadPaisModel.php";
 
-class RegistrationModel {
-    private $connection;
+class RegistrationModel extends CiudadPaisModel {
 
     public function __construct($connection) {
         $this->connection = $connection;
@@ -11,28 +11,6 @@ class RegistrationModel {
         $sql = "SELECT * FROM USUARIO WHERE nombre_usuario = '$nombre_usuario'";
         $result = $this->connection->query($sql);
         return $result ? $result[0] : null;
-    }
-
-    function getOrCreatePais($pais) {
-        $sql = "SELECT id FROM PAIS WHERE nombre = '$pais'";
-        $result = $this->connection->query($sql);
-        if ($result && count($result) > 0) {
-            return $result[0]['id'];
-        }
-        $sql = "INSERT INTO PAIS (nombre) VALUES ('$pais')";
-        $this->connection->query($sql);
-        return $this->connection->getLastInsertId();
-    }
-
-    function getOrCreateCiudad($ciudad, $id_pais) {
-        $sql = "SELECT id FROM CIUDAD WHERE nombre = '$ciudad' AND id_pais = $id_pais";
-        $result = $this->connection->query($sql);
-        if ($result && count($result) > 0) {
-            return $result[0]['id'];
-        }
-        $sql = "INSERT INTO CIUDAD (nombre, id_pais) VALUES ('$ciudad', $id_pais)";
-        $this->connection->query($sql);
-        return $this->connection->getLastInsertId();
     }
 
     public function createUser($nombre_completo, $anio_nacimiento, $sexo, $nombre_usuario, $cleanEmail, $password, $ciudad, $pais, $nombreFoto) {

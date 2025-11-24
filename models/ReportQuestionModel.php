@@ -9,7 +9,7 @@ class ReportQuestionModel {
 
     public function reportProposedStatement($reason, $questionId) {
         $userId = $_SESSION["userId"];
-        $questionStatus = QuestionStatus::PENDING; // el estado_origen de la tabla auditoria_pregunta siempre debe coincidir con el id_estado_pregunta en la tabla pregunta, deberiamos cambiarle el nombre al campo para que sea: estado_actual
+        $questionStatus = QuestionStatus::PENDING;
         date_default_timezone_set('America/Argentina/Buenos_Aires');
         $date = date("Y-m-d H:i:s");
         $reason = 'Se reporta el enunciado: ' . $reason;
@@ -27,7 +27,7 @@ class ReportQuestionModel {
 
     public function reportProposedAnswer ($proposedAnswer, $questionId) {
         $userId = $_SESSION["userId"];
-        $questionStatus = QuestionStatus::PENDING; // el estado_origen de la tabla auditoria_pregunta siempre debe coincidir con el id_estado_pregunta en la tabla pregunta, deberiamos cambiarle el nombre al campo para que sea: estado_actual
+        $questionStatus = QuestionStatus::PENDING;
         date_default_timezone_set('America/Argentina/Buenos_Aires');
         $date = date("Y-m-d H:i:s");
         $reason = 'Se reporta la respuesta: ' . $proposedAnswer;

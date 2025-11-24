@@ -1,7 +1,7 @@
 <?php
+require_once __DIR__ . "/CiudadPaisModel.php";
 
 class ProfileModel {
-    private $connection;
 
     public function __construct($connection) {
         $this->connection = $connection;
@@ -30,8 +30,6 @@ class ProfileModel {
         return $result ? $result[0] : null;
     }
 
-
-    // Trae todas las partidas donde el usuario participó
     public function getPartidasByUser($userId) {
 
         $sqlGames = "SELECT fecha, puntaje_jugador1 AS points, id 
@@ -60,41 +58,17 @@ class ProfileModel {
         return $partidas;
     }
 
-    private function getOrCreatePais($pais) {
-        $sql = "SELECT id FROM PAIS WHERE nombre = '$pais'";
-        $result = $this->connection->query($sql);
-        if ($result && count($result) > 0) return $result[0]['id'];
-
-        $sql = "INSERT INTO PAIS (nombre) VALUES ('$pais')";
-        $this->connection->query($sql);
-        return $this->connection->getLastInsertId();
-    }
-
-    private function getOrCreateCiudad($ciudad, $id_pais) {
-        $sql = "SELECT id FROM CIUDAD WHERE nombre = '$ciudad' AND id_pais = $id_pais";
-        $result = $this->connection->query($sql);
-        if ($result && count($result) > 0) return $result[0]['id'];
-
-        $sql = "INSERT INTO CIUDAD (nombre, id_pais) VALUES ('$ciudad', $id_pais)";
-        $this->connection->query($sql);
-        return $this->connection->getLastInsertId();
-    }
-
     public function updatePerfil($username, $ciudad, $pais, $password, $fotoNueva) {
 
-        // 1) Conseguir o crear país
         $idPais = $this->getOrCreatePais($pais);
 
-        // 2) Conseguir o crear ciudad dentro del país
         $idCiudad = $this->getOrCreateCiudad($ciudad, $idPais);
 
-        // 3) Armar SQL dinámico
         $sets = [];
         $sets[] = "id_ciudad = $idCiudad";
 
         if ($password) {
-            $passwordSegura = password_hash($password, PASSWORD_DEFAULT);
-            $sets[] = "contrasenia = '$passwordSegura'";
+            $sets[] = "contrasenia = '$password'";
         }
 
         if ($fotoNueva) {

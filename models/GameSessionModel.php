@@ -152,8 +152,8 @@ class GameSessionModel {
     public function storeGameResults($currentGameId) {
         $gameScore = $_SESSION["currentGame"]["score"];
 
-        // sobre el resultado de la partida: cuando implementemos lo del bot retomaremos esta parte, por ahora las partidas se pierden.
-        $result = GameResult::LOST;// $this->generateBotScore() > $gameScore ? GameResult::LOST : GameResult::WON;
+
+        $result = GameResult::LOST;
         $sql = "UPDATE PARTIDA
             SET puntaje_jugador1 = $gameScore,
                 id_resultado = $result
@@ -175,14 +175,5 @@ class GameSessionModel {
         $this->connection->query($sqlResetPoints);
     }
 
-//    public function generateBotScore() {
-//        $minCorrectAnswers = 2;
-//        $maxCorrectAnswers = 8;
-//
-//        $botCorrectAnswers = rand($minCorrectAnswers, $maxCorrectAnswers);
-//        $pointsPerCorrectAnswer = 10;
-//
-//        return $botCorrectAnswers * $pointsPerCorrectAnswer;
-//    }
 
 }
