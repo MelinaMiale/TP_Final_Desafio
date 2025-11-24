@@ -16,9 +16,9 @@ class PlayerhomeController {
         }
 
         $username = $_SESSION["user_name"];
-        $datos = $this->model->getUserStats($username);
+        $data = $this->model->getUserStats($username);
 
-        $this->renderer->render("home", $datos);
+        $this->renderer->render("home", $data);
     }
 
     public function switchToEditorRole() {
