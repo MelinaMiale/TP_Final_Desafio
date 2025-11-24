@@ -6,13 +6,16 @@ return [
         "GameController",
         "ProfileController",
         "RankingController",
-        "ReportquestionController"
+        "ReportquestionController",
+        "SuggestedquestionsController"
     ],
     Role::ADMIN => [
         "AdminController"
     ],
     Role::EDITOR => [
-        "EditorController"
+        "EditorController",
+        "QuestionController",
+        "CategoryController"
     ],
     "guest" => [
         "LoginController",

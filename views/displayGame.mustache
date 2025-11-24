@@ -13,7 +13,7 @@
         <div class="progress-container">
             <div class="progress-bar" id="progressBar"></div>
         </div>
-        <form action="../index.php?controller=Game&method=submitAnswer" method="POST" class="options-form">
+        <form action="/game/submitAnswer" method="POST" class="options-form">
             <input type="hidden" name="questionId" value="{{questionId}}">
             <div class="option">
                 <label><input type="radio" name="answer" value="A"> A) {{optionA}}</label>

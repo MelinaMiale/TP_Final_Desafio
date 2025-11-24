@@ -1,0 +1,175 @@
+{{> editorHeader }}
+<div class="editor-container">
+    <div class="editor-header">
+        <div class="editor-title-box">Gestión de Categorías</div>
+    </div>
+
+    <div class="editor-kpis">
+        <div class="kpi">
+            <span class="kpi-label">Totales</span>
+            <span class="kpi-value">{{totalCategories}}</span>
+        </div>
+        <div class="kpi">
+            <span class="kpi-label">Activas</span>
+            <span class="kpi-value">{{activeCount}}</span>
+        </div>
+        <div class="kpi">
+            <span class="kpi-label">Deshabilitadas</span>
+            <span class="kpi-value">{{disabledCount}}</span>
+        </div>
+    </div>
+
+    <div class="editor-panel">
+        <div class="panel-title">Acciones</div>
+        <div class="action-buttons">
+            <form method="get" action="/category/manageCategories" class="filter-form">
+                <label for="searchCategory">Nombre:</label>
+                <input type="text" name="searchCategory" id="searchCategory" value="{{searchCategory}}">
+                <button type="submit" class="btn-editor">Filtrar</button>
+            </form>
+            <form method="post" action="/category/newCategory">
+                <button type="submit" class="btn-circle">+ Categoría</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Listado de categorías colapsable -->
+    <details {{^showNewCategoryForm}}{{^categoryToEdit}}open{{/categoryToEdit}}{{/showNewCategoryForm}}>
+        <summary>Listado de categorías</summary>
+        <div class="editor-panel">
+            {{#hasCategories}}
+                <table class="editor-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Color</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#categories}}
+                        <tr>
+                            <td>{{id}}</td>
+                            <td>{{nombre}}</td>
+                            <td>
+                                <div class="color-bar" style="background-color: {{color}};"></div>
+                            </td>
+                            <td>
+                                <form method="post" action="?controller=category&method=editCategory" style="display:inline;">
+                                    <input type="hidden" name="categoryId" value="{{id}}">
+                                    <button type="submit" class="btn-editor">Editar</button>
+                                </form>
+                                <form method="post" action="?controller=category&method=disableCategory" style="display:inline;">
+                                    <input type="hidden" name="categoryId" value="{{id}}">
+                                    <button type="submit" class="btn-editor">Deshabilitar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {{/categories}}
+                    </tbody>
+                </table>
+            {{/hasCategories}}
+            {{^hasCategories}}
+                <div class="empty-state">No hay categorías disponibles</div>
+            {{/hasCategories}}
+            <div class="pagination">
+                {{#pages}}
+                    <a href="?controller=category&method=manageCategories&page={{number}}{{#searchCategory}}&searchCategory={{searchCategory}}{{/searchCategory}}" class="page-link {{#selected}}active{{/selected}}">
+                    {{number}}
+                    </a>
+                {{/pages}}
+            </div>
+        </div>
+    </details>
+
+    <!-- Formulario de edición -->
+    {{#categoryToEdit.id}}
+        <form method="post" action="?controller=category&method=updateCategory" class="edit-form">
+            <input type="hidden" name="categoryId" value="{{categoryToEdit.id}}">
+            <div class="editor-panel">
+                <div class="panel-title">Editar Categoría</div>
+
+                <label for="name">Nombre:</label>
+                <input type="text" name="name" id="name" value="{{categoryToEdit.nombre}}">
+
+                <label for="color">Color:</label>
+                <input type="color" name="color" id="color" value="{{categoryToEdit.color}}">
+
+                <label for="editorComment">Comentario del editor:</label>
+                <textarea name="editorComment" id="editorComment" rows="3"></textarea>
+
+                <button type="submit" class="btn-editor">Guardar cambios</button>
+            </div>
+        </form>
+    {{/categoryToEdit.id}}
+
+    <!-- Formulario de creación -->
+    {{#showNewCategoryForm}}
+        <form method="post" action="?controller=category&method=addCategory" class="edit-form">
+            <div class="editor-panel">
+                <div class="panel-title">Nueva Categoría</div>
+                <label for="name">Nombre:</label>
+                <input type="text" name="name" id="name">
+                <label for="color">Color:</label>
+                <div class="color-wrapper">
+                    <input type="color" name="color" id="color" value="#ff0000">
+                    <span id="color-value">#ff0000</span>
+                </div>
+
+                <button type="submit" class="btn-editor btn-full">Crear categoría</button>
+            </div>
+        </form>
+    {{/showNewCategoryForm}}
+
+    <!-- Historial -->
+    <details>
+        <summary>Historial de cambios</summary>
+        <div class="editor-panel">
+            {{#hasHistory}}
+                <table class="editor-table">
+                    <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Acción</th>
+                        <th>Nombre antiguo</th>
+                        <th>Nombre nuevo</th>
+                        <th>Color antiguo</th>
+                        <th>Color nuevo</th>
+                        <th>Comentario editor</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#history}}
+                        <tr>
+                            <td>{{fecha_cambio}}</td>
+                            <td>{{accion}}</td>
+                            <td>{{nombre_antiguo}}</td>
+                            <td>{{nombre_nuevo}}</td>
+                            <td>
+                                <div class="color-bar color-bar-inline" style="background-color: {{color_antiguo}};"></div>
+                                {{color_antiguo}}
+                            </td>
+                            <td>
+                                <div class="color-bar color-bar-inline" style="background-color: {{color_nuevo}};"></div>
+                                {{color_nuevo}}
+                            </td>
+                            <td>{{comentario_editor}}</td>
+                        </tr>
+                    {{/history}}
+                    </tbody>
+                </table>
+            {{/hasHistory}}
+            {{^hasHistory}}
+                <div class="empty-state">No hay historial disponible</div>
+            {{/hasHistory}}
+        </div>
+    </details>
+</div>
+<script>
+    document.getElementById('color').addEventListener('input', function() {
+        document.getElementById('color-value').textContent = this.value;
+    });
+</script>
+
+{{> footer }}

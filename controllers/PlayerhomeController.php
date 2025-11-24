@@ -21,4 +21,8 @@ class PlayerhomeController {
         $this->renderer->render("home", $datos);
     }
 
+    public function switchToEditorRole() {
+        $this->model->turnPlayerIntoEditor();
+        $this->renderer->render("welcomeEditor");
+    }
 }

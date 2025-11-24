@@ -1,0 +1,45 @@
+{{> editorHeader }}
+
+<div class="disable-category-container">
+    <div class="disable-category-title">⚠️ La categoría tiene preguntas relacionadas</div>
+    <p>Categoria actual: <strong>{{currentCategory.nombre}}</strong></p>
+    <p>Esta categoría tiene {{relatedQuestionsCount}} preguntas asociadas.</p>
+
+    <ul class="disable-category-list">
+        {{#relatedQuestionsPreview}}
+            <li>{{enunciado}}</li>
+        {{/relatedQuestionsPreview}}
+    </ul>
+
+    {{#remainingCount}}
+        <p>... y {{remainingCount}} preguntas más.</p>
+    {{/remainingCount}}
+
+
+    <p>Antes de deshabilitar, decidí qué hacer:</p>
+
+    <form method="post" action="?controller=category&method=reassignAndDisableCategory" class="disable-category-form">
+        <input type="hidden" name="oldCategoryId" value="{{categoryId}}">
+
+        <label for="newCategoryId">Mover preguntas a:</label>
+        <select name="newCategoryId" id="newCategoryId">
+            {{#categories}}
+                <option value="{{id}}">{{nombre}}</option>
+            {{/categories}}
+        </select>
+
+        <label for="editorComment">Comentario del editor:</label>
+        <textarea name="editorComment" id="editorComment" rows="3"></textarea>
+
+        <div class="disable-category-actions">
+            <button type="submit" class="disable-btn disable-btn-confirm">
+                Reasignar y deshabilitar
+            </button>
+            <a href="?controller=category&method=manageCategories" class="disable-btn disable-btn-cancel">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+{{> footer }}

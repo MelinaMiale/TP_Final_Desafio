@@ -16,14 +16,17 @@
     <link rel="stylesheet" href="../../public/css/profile.css">
     <link rel="stylesheet" href="../../public/css/reportquestion.css">
     <link rel="stylesheet" href="../../public/css/editor.css">
+    <link rel="stylesheet" href="../../public/css/welcomeEditor.css">
+    <link rel="stylesheet" href="../../public/css/disableCategory.css">
 
 </head>
 <body>
 <header class="main-header">
-    <h1 class="logo">Desafío UNLaM</h1>
+    <h1 class="logo">Panel del Editor · Desafío UNLaM</h1>
     <nav class="nav-links">
-        <a href="/playerhome/displayHome">Inicio</a>
-        <a href="/ranking/display">Ranking</a>
-        <a href="/login/logout">Cerrar Sesión</a>
+        <a href="?controller=editor&method=displayEditorHome">Reportes y Métricas</a>
+        <a href="?controller=question&method=manageQuestions">Preguntas</a>
+        <a href="?controller=category&method=manageCategories">Categorías</a>
+        <a href="?controller=login&method=logout">Cerrar sesión</a>
     </nav>
 </header>

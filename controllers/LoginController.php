@@ -19,17 +19,17 @@ class LoginController {
         $result = $this->model->getUserByUserNameAndPassword($user_name, $password);
 
         if ($result && $result["cuenta_verificada"] == 1) {
+            $_SESSION["full_name"] = $result["nombre_completo"];
             $_SESSION["user_name"] = $user_name;
             $_SESSION["userId"] = $result["id"];
-            $_SESSION["totalScore"] = $result["puntos_totales"];
 
-            $_SESSION["user_role"] = $result["id_rol"];
+            $_SESSION["user_role"] = (int)$result["id_rol"];
             switch ($result["id_rol"]) {
                 case 1:
                     header("Location: ?controller=admin&method=displayAdmin");
                     break;
                 case 2:
-                    header("Location: ?controller=editor&method=displayHome");
+                    header("Location: ?controller=editor&method=displayEditorHome");
                     break;
                 case 3:
                     header("Location: ?controller=playerhome&method=displayHome");

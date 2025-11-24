@@ -56,6 +56,7 @@ class GameSessionModel {
 
     public function getPlayableQuestionsForUser($userId) {
         $approvedStatus = QuestionStatus::APPROVED;
+        $modifiedStatus = QuestionStatus::MODIFIED;
         $userLevel = $_SESSION["userLevel"]["user_level"];
 
         $userLevelManager = new UserLevelManager($this->getConnection());
@@ -86,12 +87,11 @@ class GameSessionModel {
                 FROM PREGUNTA p
                 JOIN RESPUESTA r ON p.id_respuesta = r.id
                 JOIN CATEGORIA c ON p.id_categoria = c.id
-                LEFT JOIN AUDITORIA_PREGUNTA ap ON p.id = ap.id_pregunta
                 WHERE p.dificultad_actual = $difficulty
                   AND p.id NOT IN (
                       SELECT id_pregunta FROM RESPUESTA_USUARIO WHERE id_usuario = $userId
                   )
-                  AND (ap.id_estado_pregunta = $approvedStatus OR ap.id_pregunta IS NULL)
+                  AND p.id_estado_pregunta in ($approvedStatus, $modifiedStatus) 
                 ORDER BY RAND()
                 LIMIT $count";
 
@@ -128,11 +128,12 @@ class GameSessionModel {
         $currentGameId = $_SESSION["currentGame"]["gameId"];
         $wasCorrect = $wasCorrect ? 1 : 0;
 
-        $puntosTotales = $_SESSION["totalScore"] + $_SESSION["currentGame"]["score"];
-        $sqlUserPoints = "UPDATE USUARIO
-        SET puntos_totales = $puntosTotales
+        if ($wasCorrect) {
+            $sqlUserPoints = "UPDATE USUARIO
+        SET puntos_totales = puntos_totales + 1
         WHERE id = $userId";
-        $this->connection->query($sqlUserPoints);
+            $this->connection->query($sqlUserPoints);
+        }
 
         $sqlUpdateResponse = "UPDATE RESPUESTA_USUARIO
         SET opcion_elegida = '$submittedAnswer',

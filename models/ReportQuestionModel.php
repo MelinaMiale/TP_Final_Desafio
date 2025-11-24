@@ -7,21 +7,41 @@ class ReportQuestionModel {
         $this->connection = $connection;
     }
 
-    public function reportProposedStatement ($reason, $questionId) {
+    public function reportProposedStatement($reason, $questionId) {
         $userId = $_SESSION["userId"];
         $questionStatus = QuestionStatus::PENDING;
         $date = date("Y-m-d H:i:s");
         $reason = 'Se reporta el enunciado: ' . $reason;
-        $sql = "INSERT INTO AUDITORIA_PREGUNTA (id_solicitante, id_pregunta, id_estado_pregunta, fecha, motivo) VALUES ($userId, $questionId, $questionStatus, '$date', '$reason')";
-        $this->connection->query($sql);
+
+        // todo: estado_origen ahora es siempre "approved" , si la pregunta estaba en otro estado (ej. MODIFIED), entonces deberia guardar el estado actual.
+        $sqlAudit = "INSERT INTO AUDITORIA_PREGUNTA 
+        (id_solicitante, id_pregunta, comentario_usuario, estado_origen, estado_destino, fecha_reporte) 
+        VALUES ($userId, $questionId, '$reason', " . QuestionStatus::APPROVED . ", $questionStatus, '$date')";
+        $this->connection->query($sqlAudit);
+
+        $sqlUpdateQuestionStatus = "UPDATE PREGUNTA 
+                SET id_estado_pregunta = $questionStatus
+                WHERE id = $questionId";
+        $this->connection->query($sqlUpdateQuestionStatus);
     }
+
     public function reportProposedAnswer ($proposedAnswer, $questionId) {
         $userId = $_SESSION["userId"];
         $questionStatus = QuestionStatus::PENDING;
         $date = date("Y-m-d H:i:s");
-        $reason = 'Se reporta el la respuesta: ' . $proposedAnswer;
-        $sql = "INSERT INTO AUDITORIA_PREGUNTA (id_solicitante, id_pregunta, id_estado_pregunta, fecha, motivo) VALUES ($userId, $questionId, $questionStatus, '$date', '$reason')";
-        $this->connection->query($sql);
+        $reason = 'Se reporta la respuesta: ' . $proposedAnswer;
+
+
+        // todo: estado_origen ahora es siempre "approved" , si la pregunta estaba en otro estado (ej. MODIFIED), entonces deberia guardar el estado actual.
+        $sqlAudit = "INSERT INTO AUDITORIA_PREGUNTA 
+        (id_solicitante, id_pregunta, comentario_usuario, estado_origen, estado_destino, fecha_reporte) 
+        VALUES ($userId, $questionId, '$reason', " . QuestionStatus::APPROVED . ", $questionStatus, '$date')";
+        $this->connection->query($sqlAudit);
+
+        $sqlUpdateQuestionStatus = "UPDATE PREGUNTA 
+                SET id_estado_pregunta = $questionStatus
+                WHERE id = $questionId";
+        $this->connection->query($sqlUpdateQuestionStatus);
     }
 
     public function hasAlreadyReportedQuestionInGame($userId, $gameId) {

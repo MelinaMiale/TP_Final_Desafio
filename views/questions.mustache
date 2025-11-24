@@ -1,0 +1,161 @@
+{{> editorHeader }}
+<div class="editor-container">
+    <div class="editor-header">
+        <div class="editor-title-box">Gestión de Preguntas</div>
+    </div>
+    <div class="editor-kpis">
+        <div class="kpi">
+            <span class="kpi-label">Totales</span>
+            <span class="kpi-value">{{totalQuestions}}</span>
+        </div>
+        <div class="kpi">
+            <span class="kpi-label">Aprobadas</span>
+            <span class="kpi-value">{{approvedCount}}</span>
+        </div>
+        <div class="kpi">
+            <span class="kpi-label">Pendientes</span>
+            <span class="kpi-value">{{pendingCount}}</span>
+        </div>
+    </div>
+
+    <div class="editor-panel">
+        <div class="panel-title">Filtros</div>
+        <form method="get" action="index.php" class="filter-form">
+            <input type="hidden" name="controller" value="question">
+            <input type="hidden" name="method" value="manageQuestions">
+            <label for="category">Categoría:</label>
+            <select name="categoryId" id="category">
+                <option value="">Todas</option>
+                {{#categories}} <option value="{{id}}" {{#isSelected}}selected{{/isSelected}}>{{nombre}}</option> {{/categories}}
+            </select>
+
+            <label for="status">Estado:</label>
+            <select name="statusId" id="status">
+                <option value="">Todos</option>
+                {{#statuses}} <option value="{{id}}" {{#isSelected}}selected{{/isSelected}}>{{nombre}}</option> {{/statuses}}
+            </select>
+
+            <label for="searchText">Buscar por enunciado:</label>
+            <input type="text" name="searchText" id="searchText" value="{{searchText}}">
+
+            <button type="submit" class="btn-editor">Filtrar</button>
+        </form>
+        <div class="action-buttons">
+            <form method="post" action="/question/newQuestion"> <button type="submit" class="btn-circle">+ Pregunta</button> </form>
+        </div>
+    </div>
+    <details {{^questionToEdit}}open{{/questionToEdit}}>
+        <summary>Listado de preguntas</summary>
+        <div class="editor-panel">
+            {{#hasQuestions}}
+                <table class="editor-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Enunciado</th>
+                        <th>Categoría</th>
+                        <th>Respuesta Correcta</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#questions}}
+                        <tr>
+                            <td>{{id}}</td>
+                            <td>{{enunciado}}</td>
+                            <td>{{categoria}}</td>
+                            <td>{{respuesta_correcta}}</td>
+                            <td>{{estado}}</td>
+                            <td>
+                                <form method="post" action="?controller=question&method=editQuestion" style="display:inline;"> <input type="hidden" name="questionId" value="{{id}}"> <button type="submit" class="btn-editor">Editar</button> </form>
+                                <form method="post" action="?controller=question&method=disableQuestion" style="display:inline;"> <input type="hidden" name="id" value="{{id}}"> <button type="submit" class="btn-editor">Eliminar</button> </form>
+                            </td>
+                        </tr>
+                    {{/questions}}
+                    </tbody>
+                </table>
+            {{/hasQuestions}} {{^hasQuestions}}
+            <div class="empty-state">No hay preguntas disponibles</div>
+        {{/hasQuestions}}
+            <div class="pagination"> {{#pages}}
+                <a href="?controller=question&method=manageQuestions&page={{number}}{{#categoryId}}&categoryId={{categoryId}}{{/categoryId}}{{#statusId}}&statusId={{statusId}}{{/statusId}}{{#searchText}}&searchText={{searchText}}{{/searchText}}" class="page-link {{#selected}}active{{/selected}}">
+                {{number}}
+                </a>
+            {{/pages}} </div>
+        </div>
+    </details>
+
+    {{#questionToEdit.id}}
+        <form method="post" action="?controller=question&method=updateQuestion" class="edit-form">
+            <input type="hidden" name="questionId" value="{{questionToEdit.id}}">
+
+            <div class="editor-panel">
+                <div class="panel-title">Editar Pregunta</div>
+
+                <label for="statement">Enunciado:</label>
+                <textarea name="statement" id="statement" required>{{questionToEdit.enunciado}}</textarea>
+
+                <label for="optionA">Opción A:</label>
+                <input type="text" name="optionA" id="optionA" value="{{questionToEdit.opcion_a}}" required>
+
+                <label for="optionB">Opción B:</label>
+                <input type="text" name="optionB" id="optionB" value="{{questionToEdit.opcion_b}}" required>
+
+                <label for="optionC">Opción C:</label>
+                <input type="text" name="optionC" id="optionC" value="{{questionToEdit.opcion_c}}" required>
+
+                <label for="optionD">Opción D:</label>
+                <input type="text" name="optionD" id="optionD" value="{{questionToEdit.opcion_d}}" required>
+
+                <label for="correctAnswer">Respuesta Correcta:</label>
+                <input type="text" name="correctAnswer" id="correctAnswer" value="{{questionToEdit.respuesta_correcta}}" required>
+
+                <label for="categoryId">Categoría:</label>
+                <select name="categoryId" id="categoryId">
+                    {{#categories}}
+                        <option value="{{id}}" {{#isSelected}}selected{{/isSelected}}>{{nombre}}</option>
+                    {{/categories}}
+                </select>
+
+                <button type="submit" class="btn-editor">Guardar cambios</button>
+            </div>
+        </form>
+    {{/questionToEdit.id}}
+
+    {{^questionToEdit.id}}
+        <form method="post" action="?controller=question&method=addQuestion" class="edit-form">
+            <div class="editor-panel">
+                <div class="panel-title">Nueva Pregunta</div>
+
+                <label for="statement">Enunciado:</label>
+                <textarea name="statement" id="statement" required></textarea>
+
+                <label for="optionA">Opción A:</label>
+                <input type="text" name="optionA" id="optionA" required>
+
+                <label for="optionB">Opción B:</label>
+                <input type="text" name="optionB" id="optionB" required>
+
+                <label for="optionC">Opción C:</label>
+                <input type="text" name="optionC" id="optionC" required>
+
+                <label for="optionD">Opción D:</label>
+                <input type="text" name="optionD" id="optionD" required>
+
+                <label for="correctAnswer">Respuesta Correcta:</label>
+                <input type="text" name="correctAnswer" id="correctAnswer" required>
+
+                <label for="categoryId">Categoría:</label>
+                <select name="categoryId" id="categoryId">
+                    {{#categories}}
+                        <option value="{{id}}">{{nombre}}</option>
+                    {{/categories}}
+                </select>
+
+                <button type="submit" class="btn-editor">Crear pregunta</button>
+            </div>
+        </form>
+    {{/questionToEdit.id}}
+</div>
+{{> footer }}
