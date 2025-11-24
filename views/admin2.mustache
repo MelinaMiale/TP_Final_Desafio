@@ -3,156 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desafío UNLaM</title>
+    <link rel="stylesheet" href="../public/css/admin2.css">
+    <title>Desafío UNLaM 2</title>
 </head>
-<style>
-    .cuadradote{
-        display: flex;
-    }
-    .cuadrado{
-        display: block;
-        border: 1px solid black;
-        max-width: 200px;
-        padding: 20px;
-    }
-    #total_jugadores:hover{
-        cursor: pointer;
-    }
-    .modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-    }
-
-    .modal-content {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: white;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        min-width: 500px;
-        max-width: 700px;
-        text-align: center;
-        color: black;
-    }
-
-    .modal-buttons {
-        margin-top: 1rem;
-    }
-
-    .btn-primary {
-        background: #3498db;
-        margin-right: 10px;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-    .btn-secondary {
-        background: #95a5a6;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-    .chart-container {
-        margin: 20px 0;
-        padding: 15px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        background: #f9f9f9;
-    }.filter-buttons {
-         margin: 15px 0;
-         display: flex;
-         justify-content: center;
-         gap: 10px;
-     }
-
-    .filter-btn {
-        padding: 8px 16px;
-        border: 2px solid #3498db;
-        background: white;
-        color: #3498db;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-    .filter-btn:hover {
-        background: #ecf0f1;
-    }
-
-    .filter-btn.active {
-        background: #3498db;
-        color: white;
-    }
-</style>
+<header class="main-header">
+    <h1 class="logo">Desafío UNLaM</h1>
+    <nav class="nav-links">
+        <a href="../../index.php?controller=playerhome&method=displayHome">Inicio</a>
+        <a href="/ranking/display">Ranking</a>
+        <a href="../../index.php?controller=login&method=logout">Cerrar Sesión</a>
+    </nav>
+</header>
 <body>
 <div class="container admin-container">
-    <h2 class="title">Panel de Administración</h2>
-    <a href="">Usuarios</a>
-    <p class="welcome">Bienvenido , {{admin_name}}</p>
-
-    <div class="cuadradote">
-
-        <a id="total_jugadores">
-            <div class="cuadrado">
-                <h3>Cantidad total de jugadores</h3>
-                <p class="stat-number">{{total_users}}</p>
-            </div>
-        </a>
-
-        <div class="cuadrado">
-            <h3>Cantidad de partidas jugadas.</h3>
-            <p class="stat-number">{{total_users}}</p>
-        </div>
-        <div class="cuadrado">
-            <h3>Cantidad total de preguntas del juego.</h3>
-            <p class="stat-number">{{total_users}}</p>
-        </div>
-        <div class="cuadrado">
-            <h3>Cantidad total de preguntas creadas.</h3>
-            <p class="stat-number">{{total_users}}</p>
-            <!-- definir si queremos que sea preguntas creadas igual que total de jugadores osea cantidad de preguntas totales o solo cantidad de preguntas por usuario -->
+    <h2 class="title">Panel de Administración - Usuarios</h2>
+    <div>
+        <p class="welcome">Bienvenido, {{admin_name}}</p>
+        <div class="navigation-links">
+            <a href="../../index.php?controller=Admin&method=displayAdmin">Partidas</a>
+            <a href="../../index.php?controller=Admin&method=displayAdminUsers">Usuarios</a>
         </div>
     </div>
-    <a id="total_jugadores">
-        <div class="cuadrado">
-            <h3>Cantidad total de jugadores Nuevos Este Mes</h3>
-            <p class="stat-number">+15</p>
-        </div>
-    </a>
-    <!-- Modal -->
-    <div id="modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h3>Información de Jugadores</h3>
-            <p>Cantidad total de jugadores: <strong>{{total_users}}</strong></p>
-            <div class="filter-buttons">
-                <button class="filter-btn active" data-period="day">Día</button>
-                <button class="filter-btn" data-period="week">Semana</button>
-                <button class="filter-btn" data-period="month">Mes</button>
-                <button class="filter-btn" data-period="year">Año</button>
-            </div>
-            <!-- Gráfico -->
-            <div class="chart-container">
-                <h4 id="chart-title">Crecimiento de Usuarios - Últimos 7 días</h4>
-                <canvas id="userChart" width="400" height="200"></canvas>
-            </div>
 
-            <div class="modal-buttons">
-                <button id="btn-imprimir" class="btn btn-primary">Imprimir</button>
-                <button id="btn-salir" class="btn btn-secondary">Salir</button>
+    <div>
+        <div class="tabla-container">
+            <div class="tabla-header">
+                <h3>Estadísticas de Usuarios</h3>
+                <div class="botones-ordenar">
+                    <button class="btn-ordenar" data-orden="id">Ordenar por ID</button>
+                    <button class="btn-ordenar" data-orden="nombre">Ordenar por Nombre</button>
+                    <button class="btn-ordenar active" data-orden="porcentaje">Ordenar por Porcentaje</button>
+                </div>
+            </div>
+            <table class="tabla-usuarios">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Nombre Completo</th>
+                    <th>Total Respuestas</th>
+                    <th>Respuestas Correctas</th>
+                    <th>Porcentaje Acierto</th>
+                </tr>
+                </thead>
+                <tbody id="tabla-body">
+                {{#usuarios_estadisticas}}
+                    <tr data-id="{{id}}" data-nombre="{{nombre_usuario}}" data-porcentaje="{{porcentaje_correctas}}">
+                        <td>{{id}}</td>
+                        <td>{{nombre_usuario}}</td>
+                        <td>{{nombre_completo}}</td>
+                        <td>{{total_respuestas}}</td>
+                        <td>{{respuestas_correctas}}</td>
+                        <td>
+                        <span class="porcentaje">
+                            {{porcentaje_correctas}}%
+                        </span>
+                        </td>
+                    </tr>
+                {{/usuarios_estadisticas}}
+                </tbody>
+            </table>
+        </div>
+        <div class="cuadradote">
+            <div class="cuadrado">
+                <h3>Usuarios por país</h3>
+                <button id="btn_pais">Ver Usuarios Por País</button>
+            </div>
+            <div class="cuadrado">
+                <h3>Usuarios por sexo</h3>
+                <button id="btn_sexo">Ver Usuarios Por Sexo</button>
+            </div>
+            <div class="cuadrado">
+                <h3>Usuarios por edad</h3>
+                <button id="btn_edad">Ver Usuarios Por Edad</button>
+            </div>
+        </div>
+        <!-- Después del cierre de .cuadradote, antes de .close-sesion -->
+        <!-- MODAL DE USUARIOS POR PAÍS -->
+        <div id="modal_pais" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h3>Usuarios por País</h3>
+                <p>Total de usuarios: <strong>{{total_users}}</strong></p>
+
+                <div class="filter-buttons">
+                    <button class="filter-btn-pais" data-period="day">Día</button>
+                    <button class="filter-btn-pais active" data-period="week">Semana</button>
+                    <button class="filter-btn-pais" data-period="month">Mes</button>
+                    <button class="filter-btn-pais" data-period="year">Año</button>
+                </div>
+
+                <div class="chart-container">
+                    <h4 id="chart-title-pais">Distribución de Usuarios por País - Últimos 7 días</h4>
+                    <canvas id="paisChart" width="400" height="200"></canvas>
+                </div>
+
+                <div class="modal-buttons">
+                    <button id="btn-imprimir-pais" class="btn btn-primary">Imprimir</button>
+                    <button id="btn-salir-pais" class="btn btn-secondary">Salir</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL DE USUARIOS POR SEXO -->
+        <div id="modal_sexo" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h3>Usuarios por Sexo</h3>
+                <p>Total de usuarios: <strong>{{total_users}}</strong></p>
+
+                <div class="filter-buttons">
+                    <button class="filter-btn-sexo" data-period="day">Día</button>
+                    <button class="filter-btn-sexo active" data-period="week">Semana</button>
+                    <button class="filter-btn-sexo" data-period="month">Mes</button>
+                    <button class="filter-btn-sexo" data-period="year">Año</button>
+                </div>
+
+                <div class="chart-container">
+                    <h4 id="chart-title-sexo">Distribución de Usuarios por Sexo - Últimos 7 días</h4>
+                    <canvas id="sexoChart" width="400" height="200"></canvas>
+                </div>
+
+                <div class="modal-buttons">
+                    <button id="btn-imprimir-sexo" class="btn btn-primary">Imprimir</button>
+                    <button id="btn-salir-sexo" class="btn btn-secondary">Salir</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL DE USUARIOS POR EDAD -->
+        <div id="modal_edad" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h3>Usuarios por Grupo de Edad</h3>
+                <p>Total de usuarios: <strong>{{total_users}}</strong></p>
+
+                <div class="filter-buttons">
+                    <button class="filter-btn-edad" data-period="day">Día</button>
+                    <button class="filter-btn-edad active" data-period="week">Semana</button>
+                    <button class="filter-btn-edad" data-period="month">Mes</button>
+                    <button class="filter-btn-edad" data-period="year">Año</button>
+                </div>
+
+                <div class="chart-container">
+                    <h4 id="chart-title-edad">Distribución de Usuarios por Edad - Últimos 7 días</h4>
+                    <canvas id="edadChart" width="400" height="200"></canvas>
+                </div>
+
+                <div class="modal-buttons">
+                    <button id="btn-imprimir-edad" class="btn btn-primary">Imprimir</button>
+                    <button id="btn-salir-edad" class="btn btn-secondary">Salir</button>
+                </div>
             </div>
         </div>
     </div>
@@ -163,124 +161,660 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        let totalJugadores = document.getElementById('total_jugadores');
-        let modal = document.getElementById('modal');
-        let btnSalir = document.getElementById('btn-salir');
-        let btnImprimir = document.getElementById('btn-imprimir');
+    // ========== FUNCIÓN MEJORADA PARA GENERAR PDF ==========
+    async function generarPDF(tipo) {
+        try {
+            let modalId, titulo, nombreArchivo, color;
 
-        // Datos hardcodeados para diferentes períodos
-        const chartDatasets = {
-            day: {
-                labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
-                data: [1, 2, 4, 1, 2, 3, {{total_users}}],
-                title: 'Crecimiento de Usuarios - Último día'
-            },
-            week: {
-                labels: ['Nov 10', 'Nov 11', 'Nov 12', 'Nov 13', 'Nov 14', 'Nov 15', 'Nov 16'],
-                data: [15, 18, 22, 25, 28, 30, {{total_users}}],
-                title: 'Crecimiento de Usuarios - Última semana'
-            },
-            month: {
-                labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
-                data: [50, 75, 90, {{total_users}}],
-                title: 'Crecimiento de Usuarios - Último mes'
-            },
-            year: {
-                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-                data: [10, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, {{total_users}}],
-                title: 'Crecimiento de Usuarios - Último año'
+            // Configuración según el tipo de reporte
+            switch(tipo) {
+                case 'pais':
+                    modalId = '#modal_pais';
+                    titulo = document.getElementById('chart-title-pais').textContent;
+                    nombreArchivo = 'reporte-usuarios-pais';
+                    color = '#3498db';
+                    break;
+                case 'sexo':
+                    modalId = '#modal_sexo';
+                    titulo = document.getElementById('chart-title-sexo').textContent;
+                    nombreArchivo = 'reporte-usuarios-sexo';
+                    color = '#e74c3c';
+                    break;
+                case 'edad':
+                    modalId = '#modal_edad';
+                    titulo = document.getElementById('chart-title-edad').textContent;
+                    nombreArchivo = 'reporte-usuarios-edad';
+                    color = '#2ecc71';
+                    break;
             }
-        };
 
-        let chart = null;
+            // Obtener solo el canvas del gráfico
+            const canvas = document.querySelector(`${modalId} canvas`);
+            const imgData = canvas.toDataURL('image/png', 3.0); // Calidad máxima
 
-        function updateChart(period) {
-            const dataset = chartDatasets[period];
-            chart.data.labels = dataset.labels;
-            chart.data.datasets[0].data = dataset.data;
-            chart.update();
+            // Crear PDF
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
 
-            // Actualizar título
-            document.getElementById('chart-title').textContent = dataset.title;
+            const pageWidth = 210;
+            const pageHeight = 297;
+            const margin = 20;
+
+            // ENCABEZADO
+            pdf.setFontSize(20);
+            pdf.setTextColor(44, 62, 80);
+            pdf.text('Desafío UNLaM', margin, margin);
+
+            // LÍNEA DECORATIVA
+            const r = parseInt(color.substring(1, 3), 16);
+            const g = parseInt(color.substring(3, 5), 16);
+            const b = parseInt(color.substring(5, 7), 16);
+            pdf.setDrawColor(r, g, b);
+            pdf.setLineWidth(1);
+            pdf.line(margin, margin + 5, pageWidth - margin, margin + 5);
+
+            // TÍTULO DEL REPORTE
+            pdf.setFontSize(16);
+            pdf.setTextColor(52, 73, 94);
+            pdf.text(titulo, margin, margin + 15);
+
+            // FECHA DE GENERACIÓN
+            pdf.setFontSize(10);
+            pdf.setTextColor(127, 140, 141);
+            const fecha = new Date().toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            pdf.text(`Generado el: ${fecha}`, margin, margin + 22);
+
+            // GRÁFICO
+            const imgWidth = pageWidth - (margin * 2);
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            const imgY = margin + 30;
+
+            pdf.addImage(imgData, 'PNG', margin, imgY, imgWidth, imgHeight, '', 'FAST');
+
+            // PIE DE PÁGINA
+            pdf.setFontSize(8);
+            pdf.setTextColor(149, 165, 166);
+            pdf.text('Panel de Administración - Desafío UNLaM', pageWidth / 2, pageHeight - 10, { align: 'center' });
+
+            // GUARDAR PDF
+            pdf.save(`${nombreArchivo}-${new Date().toISOString().split('T')[0]}.pdf`);
+
+        } catch (error) {
+            console.error('Error al generar PDF:', error);
+            alert('Hubo un error al generar el PDF. Por favor, intenta de nuevo.');
+        }
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        const tbody = document.getElementById('tabla-body');
+        const botonesOrdenar = document.querySelectorAll('.btn-ordenar');
+
+        let todasLasFilas = Array.from(tbody.querySelectorAll('tr'));
+        let paginaActual = 1;
+        const filasPorPagina = 5;
+
+        // Colorear porcentajes
+        function colorearPorcentajes() {
+            const porcentajes = document.querySelectorAll('.porcentaje');
+            porcentajes.forEach(function(elem) {
+                const texto = elem.textContent.trim();
+                const valor = parseFloat(texto.replace('%', ''));
+
+                if (valor >= 70) {
+                    elem.style.backgroundColor = '#2ecc71';
+                    elem.style.color = 'white';
+                } else if (valor >= 30) {
+                    elem.style.backgroundColor = '#f39c12';
+                    elem.style.color = 'white';
+                } else {
+                    elem.style.backgroundColor = '#ec564c';
+                    elem.style.color = 'white';
+                }
+            });
         }
 
-        // Abrir modal y crear gráfico
-        totalJugadores.addEventListener('click', function() {
-            modal.style.display = 'block';
+        function mostrarPagina(pagina) {
+            const inicio = (pagina - 1) * filasPorPagina;
+            const fin = inicio + filasPorPagina;
 
-            // Crear gráfico solo una vez
-            if (!chart) {
-                const ctx = document.getElementById('userChart').getContext('2d');
-                chart = new Chart(ctx, {
+            tbody.innerHTML = '';
+
+            const filasAMostrar = todasLasFilas.slice(inicio, fin);
+            filasAMostrar.forEach(function(fila) {
+                tbody.appendChild(fila.cloneNode(true));
+            });
+
+            colorearPorcentajes();
+            actualizarPaginacion();
+        }
+
+        // Función para crear controles de paginación
+        function actualizarPaginacion() {
+            const totalPaginas = Math.ceil(todasLasFilas.length / filasPorPagina);
+
+            let paginacionDiv = document.querySelector('.paginacion');
+            if (!paginacionDiv) {
+                paginacionDiv = document.createElement('div');
+                paginacionDiv.className = 'paginacion';
+                document.querySelector('.tabla-container').appendChild(paginacionDiv);
+            }
+
+            paginacionDiv.innerHTML = '';
+
+            // Botón anterior
+            const btnAnterior = document.createElement('button');
+            btnAnterior.textContent = '← Anterior';
+            btnAnterior.className = 'btn-pagina';
+            btnAnterior.disabled = paginaActual === 1;
+            btnAnterior.addEventListener('click', function() {
+                if (paginaActual > 1) {
+                    paginaActual--;
+                    mostrarPagina(paginaActual);
+                }
+            });
+            paginacionDiv.appendChild(btnAnterior);
+
+            // Lógica de páginas con elipsis
+            function agregarBotonPagina(numeroPagina) {
+                const btnPagina = document.createElement('button');
+                btnPagina.textContent = numeroPagina;
+                btnPagina.className = 'btn-pagina' + (numeroPagina === paginaActual ? ' active' : '');
+                btnPagina.addEventListener('click', function() {
+                    paginaActual = numeroPagina;
+                    mostrarPagina(paginaActual);
+                });
+                paginacionDiv.appendChild(btnPagina);
+            }
+
+            function agregarElipsis() {
+                const elipsis = document.createElement('span');
+                elipsis.textContent = '...';
+                elipsis.className = 'elipsis';
+                paginacionDiv.appendChild(elipsis);
+            }
+
+            // Lógica de qué páginas mostrar
+            if (totalPaginas <= 7) {
+                for (let i = 1; i <= totalPaginas; i++) {
+                    agregarBotonPagina(i);
+                }
+            } else {
+                agregarBotonPagina(1);
+
+                if (paginaActual <= 3) {
+                    for (let i = 2; i <= 4; i++) {
+                        agregarBotonPagina(i);
+                    }
+                    agregarElipsis();
+                    agregarBotonPagina(totalPaginas);
+                } else if (paginaActual >= totalPaginas - 2) {
+                    agregarElipsis();
+                    for (let i = totalPaginas - 3; i <= totalPaginas; i++) {
+                        agregarBotonPagina(i);
+                    }
+                } else {
+                    agregarElipsis();
+                    for (let i = paginaActual - 2; i <= paginaActual + 2; i++) {
+                        agregarBotonPagina(i);
+                    }
+                    agregarElipsis();
+                    agregarBotonPagina(totalPaginas);
+                }
+            }
+
+            // Botón siguiente
+            const btnSiguiente = document.createElement('button');
+            btnSiguiente.textContent = 'Siguiente →';
+            btnSiguiente.className = 'btn-pagina';
+            btnSiguiente.disabled = paginaActual === totalPaginas;
+            btnSiguiente.addEventListener('click', function() {
+                if (paginaActual < totalPaginas) {
+                    paginaActual++;
+                    mostrarPagina(paginaActual);
+                }
+            });
+            paginacionDiv.appendChild(btnSiguiente);
+        }
+
+        // Función para ordenar la tabla
+        function ordenarTabla(criterio) {
+            todasLasFilas.sort(function(a, b) {
+                let valorA, valorB;
+
+                if (criterio === 'id') {
+                    valorA = parseInt(a.dataset.id);
+                    valorB = parseInt(b.dataset.id);
+                } else if (criterio === 'nombre') {
+                    valorA = a.dataset.nombre.toLowerCase();
+                    valorB = b.dataset.nombre.toLowerCase();
+                    return valorA.localeCompare(valorB);
+                } else if (criterio === 'porcentaje') {
+                    valorA = parseFloat(a.dataset.porcentaje);
+                    valorB = parseFloat(b.dataset.porcentaje);
+                    return valorB - valorA;
+                }
+
+                return valorA - valorB;
+            });
+
+            paginaActual = 1;
+            mostrarPagina(paginaActual);
+        }
+
+        // Event listeners para los botones de ordenar
+        botonesOrdenar.forEach(function(boton) {
+            boton.addEventListener('click', function() {
+                botonesOrdenar.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const criterio = this.dataset.orden;
+                ordenarTabla(criterio);
+            });
+        });
+
+        // Inicializar
+        mostrarPagina(1);
+
+        // ========== DATOS PARA LOS MODALES ==========
+        const datosPais = {
+            day: JSON.parse('{{{paisDay}}}'),
+            week: JSON.parse('{{{paisWeek}}}'),
+            month: JSON.parse('{{{paisMonth}}}'),
+            year: JSON.parse('{{{paisYear}}}')
+        };
+
+        const datosSexo = {
+            day: JSON.parse('{{{sexoDay}}}'),
+            week: JSON.parse('{{{sexoWeek}}}'),
+            month: JSON.parse('{{{sexoMonth}}}'),
+            year: JSON.parse('{{{sexoYear}}}')
+        };
+
+        const datosEdad = {
+            day: JSON.parse('{{{edadDay}}}'),
+            week: JSON.parse('{{{edadWeek}}}'),
+            month: JSON.parse('{{{edadMonth}}}'),
+            year: JSON.parse('{{{edadYear}}}')
+        };
+
+        let chartPais = null;
+        let chartSexo = null;
+        let chartEdad = null;
+
+        // ========== MODAL DE PAÍS ==========
+        const btnPais = document.getElementById('btn_pais');
+        const modalPais = document.getElementById('modal_pais');
+        const btnSalirPais = document.getElementById('btn-salir-pais');
+        const btnImprimirPais = document.getElementById('btn-imprimir-pais');
+
+        function actualizarGraficoPais(datos, periodo) {
+            const titulos = {
+                day: 'Últimas 24 horas',
+                week: 'Últimos 7 días',
+                month: 'Último mes',
+                year: 'Último año'
+            };
+
+            document.getElementById('chart-title-pais').textContent = `Distribución de Usuarios por País - ${titulos[periodo]}`;
+
+            if (!datos || datos.length === 0) {
+                if (chartPais) {
+                    chartPais.destroy();
+                    chartPais = null;
+                }
+
+                const canvas = document.getElementById('paisChart');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.font = '18px Poppins';
+                ctx.fillStyle = '#666';
+                ctx.textAlign = 'center';
+                ctx.fillText('No hay datos para mostrar en este período', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
+            const labels = datos.map(item => item.pais);
+            const cantidades = datos.map(item => parseInt(item.cantidad));
+
+            const colores = [
+                'rgba(52, 152, 219, 0.6)',
+                'rgba(46, 204, 113, 0.6)',
+                'rgba(231, 76, 60, 0.6)',
+                'rgba(241, 196, 15, 0.6)',
+                'rgba(155, 89, 182, 0.6)',
+                'rgba(230, 126, 34, 0.6)',
+                'rgba(149, 165, 166, 0.6)'
+            ];
+
+            const bordeColores = [
+                '#3498db', '#2ecc71', '#e74c3c', '#f1c40f', '#9b59b6', '#e67e22', '#95a5a6'
+            ];
+
+            if (chartPais) {
+                chartPais.data.labels = labels;
+                chartPais.data.datasets[0].data = cantidades;
+                chartPais.data.datasets[0].backgroundColor = colores.slice(0, labels.length);
+                chartPais.data.datasets[0].borderColor = bordeColores.slice(0, labels.length);
+                chartPais.options.plugins.title.text = `Usuarios por País - ${titulos[periodo]}`;
+                chartPais.update();
+            } else {
+                const ctx = document.getElementById('paisChart').getContext('2d');
+                chartPais = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: chartDatasets.day.labels,
+                        labels: labels,
                         datasets: [{
-                            label: 'Usuarios Registrados',
-                            data: chartDatasets.day.data,
-                            borderColor: '#3498db',
-                            backgroundColor: 'rgba(52, 152, 219, 0.3)'
+                            label: 'Usuarios por País',
+                            data: cantidades,
+                            backgroundColor: colores.slice(0, labels.length),
+                            borderColor: bordeColores.slice(0, labels.length),
+                            borderWidth: 2
                         }]
                     },
                     options: {
                         responsive: true,
+                        maintainAspectRatio: true,
                         plugins: {
+                            datalabels: {
+                                display: true,
+                                color: '#2c3e50',
+                                font: {
+                                    weight: 'bold',
+                                    size: 14
+                                },
+                                anchor: 'end',
+                                align: 'start',  // Cambiado de 'top' a 'start'
+                                offset: -5
+                            },
                             title: {
                                 display: true,
-                                text: 'Evolución de Usuarios Registrados'
+                                text: `Usuarios por País - ${titulos[periodo]}`,
+                                font: { size: 16 }
+                            },
+                            legend: {
+                                display: true,
+                                position: 'top'
                             }
                         },
                         scales: {
                             y: {
                                 beginAtZero: true,
+                                ticks: { stepSize: 1 },
                                 title: {
                                     display: true,
-                                    text: 'Número de Usuarios'
+                                    text: 'Cantidad de Usuarios'
                                 }
                             },
                             x: {
                                 title: {
                                     display: true,
-                                    text: 'Fecha'
+                                    text: 'País'
+                                }
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+            }
+        }
+
+        btnPais.addEventListener('click', function() {
+            modalPais.style.display = 'flex';
+
+            if (!chartPais) {
+                actualizarGraficoPais(datosPais.week, 'week');
+            }
+        });
+
+        document.querySelectorAll('.filter-btn-pais').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn-pais').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const periodo = this.getAttribute('data-period');
+                actualizarGraficoPais(datosPais[periodo], periodo);
+            });
+        });
+
+        btnSalirPais.addEventListener('click', () => modalPais.style.display = 'none');
+        btnImprimirPais.addEventListener('click', () => generarPDF('pais'));
+        modalPais.addEventListener('click', (e) => {
+            if (e.target === modalPais) modalPais.style.display = 'none';
+        });
+
+        // ========== MODAL DE SEXO ==========
+        const btnSexo = document.getElementById('btn_sexo');
+        const modalSexo = document.getElementById('modal_sexo');
+        const btnSalirSexo = document.getElementById('btn-salir-sexo');
+        const btnImprimirSexo = document.getElementById('btn-imprimir-sexo');
+
+        function actualizarGraficoSexo(datos, periodo) {
+            const titulos = {
+                day: 'Últimas 24 horas',
+                week: 'Últimos 7 días',
+                month: 'Último mes',
+                year: 'Último año'
+            };
+
+            document.getElementById('chart-title-sexo').textContent = `Distribución de Usuarios por Sexo - ${titulos[periodo]}`;
+
+            if (!datos || datos.length === 0) {
+                if (chartSexo) {
+                    chartSexo.destroy();
+                    chartSexo = null;
+                }
+
+                const canvas = document.getElementById('sexoChart');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.font = '18px Poppins';
+                ctx.fillStyle = '#666';
+                ctx.textAlign = 'center';
+                ctx.fillText('No hay datos para mostrar en este período', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
+            const labels = datos.map(item => item.sexo);
+            const cantidades = datos.map(item => parseInt(item.cantidad));
+
+            if (chartSexo) {
+                chartSexo.data.labels = labels;
+                chartSexo.data.datasets[0].data = cantidades;
+                chartSexo.options.plugins.title.text = `Usuarios por Sexo - ${titulos[periodo]}`;
+                chartSexo.update();
+            } else {
+                const ctx = document.getElementById('sexoChart').getContext('2d');
+                chartSexo = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: cantidades,
+                            backgroundColor: [
+                                'rgba(52, 152, 219, 0.7)',
+                                'rgba(231, 76, 60, 0.7)',
+                                'rgba(155, 89, 182, 0.7)'
+                            ],
+                            borderColor: ['#3498db', '#e74c3c', '#9b59b6'],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            datalabels: {
+                                display: true,
+                                color: '#ffffff',
+                                font: {
+                                    weight: 'bold',
+                                    size: 16
+                                },
+                                formatter: function(value, context) {
+                                    // Mostrar el número y el porcentaje
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return value + '\n(' + percentage + '%)';
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: `Usuarios por Sexo - ${titulos[periodo]}`,
+                                font: { size: 16 }
+                            },
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+            }
+        }
+
+        btnSexo.addEventListener('click', function() {
+            modalSexo.style.display = 'flex';
+
+            if (!chartSexo) {
+                actualizarGraficoSexo(datosSexo.week, 'week');
+            }
+        });
+
+        document.querySelectorAll('.filter-btn-sexo').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn-sexo').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const periodo = this.getAttribute('data-period');
+                actualizarGraficoSexo(datosSexo[periodo], periodo);
+            });
+        });
+
+        btnSalirSexo.addEventListener('click', () => modalSexo.style.display = 'none');
+        btnImprimirSexo.addEventListener('click', () => generarPDF('sexo'));
+        modalSexo.addEventListener('click', (e) => {
+            if (e.target === modalSexo) modalSexo.style.display = 'none';
+        });
+
+        // ========== MODAL DE EDAD ==========
+        const btnEdad = document.getElementById('btn_edad');
+        const modalEdad = document.getElementById('modal_edad');
+        const btnSalirEdad = document.getElementById('btn-salir-edad');
+        const btnImprimirEdad = document.getElementById('btn-imprimir-edad');
+
+        function actualizarGraficoEdad(datos, periodo) {
+            const titulos = {
+                day: 'Últimas 24 horas',
+                week: 'Últimos 7 días',
+                month: 'Último mes',
+                year: 'Último año'
+            };
+
+            document.getElementById('chart-title-edad').textContent = `Distribución de Usuarios por Edad - ${titulos[periodo]}`;
+
+            if (!datos || datos.length === 0) {
+                if (chartEdad) {
+                    chartEdad.destroy();
+                    chartEdad = null;
+                }
+
+                const canvas = document.getElementById('edadChart');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.font = '18px Poppins';
+                ctx.fillStyle = '#666';
+                ctx.textAlign = 'center';
+                ctx.fillText('No hay datos para mostrar en este período', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
+            const labels = datos.map(item => item.rango_edad);
+            const cantidades = datos.map(item => parseInt(item.cantidad));
+
+            if (chartEdad) {
+                chartEdad.data.labels = labels;
+                chartEdad.data.datasets[0].data = cantidades;
+                chartEdad.options.plugins.title.text = `Usuarios por Edad - ${titulos[periodo]}`;
+                chartEdad.update();
+            } else {
+                const ctx = document.getElementById('edadChart').getContext('2d');
+                chartEdad = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Usuarios por Rango de Edad',
+                            data: cantidades,
+                            backgroundColor: 'rgba(46, 204, 113, 0.6)',
+                            borderColor: '#2ecc71',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Usuarios por Edad - ${titulos[periodo]}`,
+                                font: { size: 16 }
+                            },
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1 },
+                                title: {
+                                    display: true,
+                                    text: 'Cantidad de Usuarios'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Rango de Edad'
                                 }
                             }
                         }
                     }
                 });
             }
+        }
+
+        btnEdad.addEventListener('click', function() {
+            modalEdad.style.display = 'flex';
+
+            if (!chartEdad) {
+                actualizarGraficoEdad(datosEdad.week, 'week');
+            }
         });
 
-        // Event listeners para los botones de filtro
-        document.querySelectorAll('.filter-btn').forEach(btn => {
+        document.querySelectorAll('.filter-btn-edad').forEach(btn => {
             btn.addEventListener('click', function() {
-                // Remover clase active de todos los botones
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-
-                // Agregar clase active al botón clickeado
+                document.querySelectorAll('.filter-btn-edad').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
-
-                // Actualizar gráfico
-                const period = this.getAttribute('data-period');
-                updateChart(period);
+                const periodo = this.getAttribute('data-period');
+                actualizarGraficoEdad(datosEdad[periodo], periodo);
             });
         });
 
-        // Resto de eventos...
-        btnSalir.addEventListener('click', function() {
-            modal.style.display = 'none';
-        });
-
-        btnImprimir.addEventListener('click', function() {
-            window.print();
-        });
-
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
+        btnSalirEdad.addEventListener('click', () => modalEdad.style.display = 'none');
+        btnImprimirEdad.addEventListener('click', () => generarPDF('edad'));
+        modalEdad.addEventListener('click', (e) => {
+            if (e.target === modalEdad) modalEdad.style.display = 'none';
         });
     });
 </script>
-
+</body>
+</html>
