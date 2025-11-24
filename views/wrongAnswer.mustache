@@ -35,12 +35,12 @@
     </div>
 
     <div class="lobby-actions">
-        <form action="../index.php?controller=Game&method=startGame" method="POST">
+        <form action="/game/startGame" method="POST">
             <button type="submit" class="btn">Empezar nueva partida</button>
         </form>
 
         {{^reported}}
-            <form action="../index.php?controller=ReportQuestion&method=reportQuestion" method="POST">
+            <form action="/reportQuestion/reportQuestion" method="POST">
                 <input type="hidden" name="questionId" value="{{questionId}}">
                 <button type="submit" class="btn">Reportar esta pregunta</button>
             </form>
