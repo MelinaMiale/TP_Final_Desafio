@@ -11,7 +11,7 @@ class AdminModel {
         $sqlTotalUsers = "SELECT COUNT(*) as total FROM USUARIO WHERE id_rol = '3'";
         $totalUsers = $this->connection->query($sqlTotalUsers)[0]['total'];
 
-        $sqlTotalGames = "SELECT COUNT(*) as total FROM partida";
+        $sqlTotalGames = "SELECT COUNT(*) as total FROM PARTIDA";
         $totalGames = $this->connection->query($sqlTotalGames)[0]['total'];
 
         $sqlTotalQuestions = "SELECT COUNT(*) as total FROM PREGUNTA";
@@ -45,14 +45,12 @@ class AdminModel {
                 $order = "periodo ASC";
                 break;
             case 'month':
-                // Para mes: agrupar por día pero mostrar formato más corto
                 $select = "DATE(fechaDeRegistro) AS periodo, DAY(fechaDeRegistro) AS dia, MONTH(fechaDeRegistro) AS mes";
                 $where = "fechaDeRegistro >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
                 $group = "DATE(fechaDeRegistro)";
                 $order = "periodo ASC";
                 break;
             case 'year':
-                // Para año: agrupar por mes
                 $select = "DATE_FORMAT(fechaDeRegistro, '%Y-%m') AS periodo, YEAR(fechaDeRegistro) AS anio, MONTH(fechaDeRegistro) AS mes";
                 $where = "fechaDeRegistro >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)";
                 $group = "YEAR(fechaDeRegistro), MONTH(fechaDeRegistro)";
@@ -108,7 +106,7 @@ class AdminModel {
         }
 
         $sql = "SELECT $select, COUNT(*) AS cantidad
-        FROM partida
+        FROM PARTIDA
         WHERE $where
         GROUP BY $group
         ORDER BY $order";
@@ -239,6 +237,7 @@ class AdminModel {
         return $this->connection->query($sql);
     }
 
+
     public function getUsuariosPorEdad($periodo = 'week') {
         switch ($periodo) {
             case 'day':
@@ -258,27 +257,61 @@ class AdminModel {
         }
 
         $sql = "SELECT 
+            CASE 
+                WHEN (YEAR(CURDATE()) - u.anio_nacimiento) < 18 THEN 'Menores -18'
+                WHEN (YEAR(CURDATE()) - u.anio_nacimiento) BETWEEN 18 AND 30 THEN 'Adultos Jóvenes 18 - 30'
+                WHEN (YEAR(CURDATE()) - u.anio_nacimiento) BETWEEN 31 AND 65 THEN 'Adultos Mayores 31 - 65'
+                WHEN (YEAR(CURDATE()) - u.anio_nacimiento) > 65 THEN 'Jubilados +65'
+                ELSE 'Sin Edad'
+            END as rango_edad,
+            COUNT(u.id) as cantidad
+        FROM USUARIO u
+        WHERE u.id_rol = 3 AND u.anio_nacimiento IS NOT NULL AND $where
+        GROUP BY rango_edad
+        ORDER BY 
+            CASE rango_edad
+                WHEN 'Menores' THEN 1
+                WHEN 'Adultos Jóvenes' THEN 2
+                WHEN 'Adultos Mayores' THEN 3
+                WHEN 'Jubilados' THEN 4
+                ELSE 5
+            END";
+
+        return $this->connection->query($sql);
+    }
+    public function getPrequntasPorDificultad($periodo = 'week') {
+        switch ($periodo) {
+            case 'day':
+                $where = "DATE(fecha_creacion) = CURDATE()";
+                break;
+            case 'week':
+                $where = "fecha_creacion >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
+                break;
+            case 'month':
+                $where = "fecha_creacion >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
+                break;
+            case 'year':
+                $where = "fecha_creacion >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)";
+                break;
+            case 'all':
+                $where = "1=1";
+                break;
+            default:
+                $where = "fecha_creacion >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
+        }
+
+        $sql = "SELECT 
                 CASE 
-                    WHEN (YEAR(CURDATE()) - u.anio_nacimiento) BETWEEN 18 AND 25 THEN '18-25'
-                    WHEN (YEAR(CURDATE()) - u.anio_nacimiento) BETWEEN 26 AND 35 THEN '26-35'
-                    WHEN (YEAR(CURDATE()) - u.anio_nacimiento) BETWEEN 36 AND 45 THEN '36-45'
-                    WHEN (YEAR(CURDATE()) - u.anio_nacimiento) BETWEEN 46 AND 55 THEN '46-55'
-                    WHEN (YEAR(CURDATE()) - u.anio_nacimiento) >= 56 THEN '56+'
-                    ELSE 'Edad no válida'
-                END as rango_edad,
-                COUNT(u.id) as cantidad
-            FROM USUARIO u
-            WHERE u.id_rol = 3 AND u.anio_nacimiento IS NOT NULL AND $where
-            GROUP BY rango_edad
-            ORDER BY 
-                CASE rango_edad
-                    WHEN '18-25' THEN 1
-                    WHEN '26-35' THEN 2
-                    WHEN '36-45' THEN 3
-                    WHEN '46-55' THEN 4
-                    WHEN '56+' THEN 5
-                    ELSE 6
-                END";
+                    WHEN dificultad_actual = 1 THEN 'Fácil'
+                    WHEN dificultad_actual = 2 THEN 'Medio'
+                    WHEN dificultad_actual = 3 THEN 'Difícil'
+                    ELSE 'Sin clasificar'
+                END as dificultad,
+                COUNT(id) as cantidad
+            FROM PREGUNTA
+            WHERE $where
+            GROUP BY dificultad_actual
+            ORDER BY dificultad_actual ASC";
 
         return $this->connection->query($sql);
     }

@@ -41,9 +41,13 @@
             <p class="stat-number">{{total_questions}}</p>
             <button id="btn_preguntas">Ver Preguntas Creadas</button>
         </div>
+        <div class="cuadrado">
+            <h3>Dificultad de preguntas</h3>
+            <p class="stat-number">{{total_questions}}</p>
+            <button id="btn_dificultad">Ver Dificultad</button>
+        </div>
     </div>
 
-    <!-- MODAL DE USUARIOS -->
     <div id="modal_usuarios" class="modal" style="display: none;">
         <div class="modal-content">
             <h3>Información de Jugadores</h3>
@@ -67,7 +71,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE PARTIDAS -->
     <div id="modal_partidas" class="modal" style="display: none;">
         <div class="modal-content">
             <h3>Información de Partidas</h3>
@@ -91,7 +94,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE PREGUNTAS -->
+
     <div id="modal_preguntas" class="modal" style="display: none;">
         <div class="modal-content">
             <h3>Información de Preguntas</h3>
@@ -115,23 +118,43 @@
             </div>
         </div>
     </div>
+    <div id="modal_dificultad" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Distribución por Dificultad</h3>
+            <p>Análisis de preguntas creadas por nivel</p>
+            <div class="filter-buttons">
+                <button class="filter-btn-dificultad" data-period="day">Día</button>
+                <button class="filter-btn-dificultad active" data-period="week">Semana</button>
+                <button class="filter-btn-dificultad" data-period="month">Mes</button>
+                <button class="filter-btn-dificultad" data-period="year">Año</button>
+                <button class="filter-btn-dificultad" data-period="all">Todos</button>
+            </div>
 
+            <div class="chart-container" style="position: relative; height:300px; width:100%; display:flex; justify-content:center;">
+                <canvas id="difficultyChart"></canvas>
+            </div>
+            <h4 id="chart-title-dificultad" style="text-align: center; margin-top: 10px;">Dificultad - Últimos 7 días</h4>
+
+            <div class="modal-buttons">
+                <button id="btn-imprimir-dificultad" class="btn btn-primary">Imprimir</button>
+                <button id="btn-salir-dificultad" class="btn btn-secondary">Salir</button>
+            </div>
+        </div>
+    </div>
     <div class="close-sesion">
         <a href="?controller=login&method=logout" class="btn">Cerrar Sesión</a>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <script>
-    // ========== FUNCIÓN MEJORADA PARA GENERAR PDF ==========
     async function generarPDF(tipo) {
         try {
             let modalId, titulo, nombreArchivo, color;
 
-            // Configuración según el tipo de reporte
             switch(tipo) {
                 case 'usuarios':
                     modalId = '#modal_usuarios';
@@ -151,13 +174,27 @@
                     nombreArchivo = 'reporte-preguntas';
                     color = '#e74c3c';
                     break;
+                case 'dificultad':
+                    modalId = '#modal_dificultad';
+                    titulo = document.getElementById('chart-title-dificultad').textContent;
+                    nombreArchivo = 'reporte-dificultad';
+                    color = '#f1c40f';
+                    break;
             }
 
-            // Obtener solo el canvas del gráfico
             const canvas = document.querySelector(`${modalId} canvas`);
-            const imgData = canvas.toDataURL('image/png', 3.0); // Calidad máxima
 
-            // Crear PDF
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            tempCtx.fillStyle = '#ffffff';
+            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            tempCtx.drawImage(canvas, 0, 0);
+
+            const imgData = tempCanvas.toDataURL('image/png', 1.0);
+
+
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
 
@@ -165,12 +202,12 @@
             const pageHeight = 297;
             const margin = 20;
 
-            // ENCABEZADO
+
             pdf.setFontSize(20);
             pdf.setTextColor(44, 62, 80);
             pdf.text('Desafío UNLaM', margin, margin);
 
-            // LÍNEA DECORATIVA
+
             const r = parseInt(color.substring(1, 3), 16);
             const g = parseInt(color.substring(3, 5), 16);
             const b = parseInt(color.substring(5, 7), 16);
@@ -178,12 +215,12 @@
             pdf.setLineWidth(1);
             pdf.line(margin, margin + 5, pageWidth - margin, margin + 5);
 
-            // TÍTULO DEL REPORTE
+
             pdf.setFontSize(16);
             pdf.setTextColor(52, 73, 94);
             pdf.text(titulo, margin, margin + 15);
 
-            // FECHA DE GENERACIÓN
+
             pdf.setFontSize(10);
             pdf.setTextColor(127, 140, 141);
             const fecha = new Date().toLocaleDateString('es-ES', {
@@ -195,19 +232,20 @@
             });
             pdf.text(`Generado el: ${fecha}`, margin, margin + 22);
 
-            // GRÁFICO
-            const imgWidth = pageWidth - (margin * 2);
+
+            const imgWidth = 140;
             const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            const imgX = (pageWidth - imgWidth) / 2;
             const imgY = margin + 30;
 
-            pdf.addImage(imgData, 'PNG', margin, imgY, imgWidth, imgHeight, '', 'FAST');
+            pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth, imgHeight, '', 'FAST');
 
-            // PIE DE PÁGINA
+
             pdf.setFontSize(8);
             pdf.setTextColor(149, 165, 166);
             pdf.text('Panel de Administración - Desafío UNLaM', pageWidth / 2, pageHeight - 10, { align: 'center' });
 
-            // GUARDAR PDF
+
             pdf.save(`${nombreArchivo}-${new Date().toISOString().split('T')[0]}.pdf`);
 
         } catch (error) {
@@ -215,10 +253,10 @@
             alert('Hubo un error al generar el PDF. Por favor, intenta de nuevo.');
         }
     }
+
     document.addEventListener('DOMContentLoaded', function() {
         const mesesNombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
-        // ========== DATOS DE USUARIOS ==========
         const datosUsuarios = {
             day: JSON.parse('{{{datosDay}}}'),
             week: JSON.parse('{{{datosWeek}}}'),
@@ -226,7 +264,6 @@
             year: JSON.parse('{{{datosYear}}}')
         };
 
-        // ========== DATOS DE PARTIDAS ==========
         const datosPartidas = {
             day: JSON.parse('{{{partidasDay}}}'),
             week: JSON.parse('{{{partidasWeek}}}'),
@@ -241,365 +278,295 @@
             year: JSON.parse('{{{preguntasYear}}}')
         };
 
+        const datosDificultad = {
+            day: JSON.parse('{{{dificultadDay}}}'),
+            week: JSON.parse('{{{dificultadWeek}}}'),
+            month: JSON.parse('{{{dificultadMonth}}}'),
+            year: JSON.parse('{{{dificultadYear}}}'),
+            all: JSON.parse('{{{dificultadAll}}}')
+        };
+
         let chartUsuarios = null;
         let chartPartidas = null;
         let chartPreguntas = null;
+        let chartDificultad = null;
 
-        // Función para formatear labels
         function formatearLabel(item, periodo) {
-            if (periodo === 'day') {
-                return `${item.periodo}:00`;
-            } else if (periodo === 'month') {
-                if (item.dia && item.mes) {
-                    return `${item.dia}/${mesesNombres[item.mes - 1]}`;
-                }
+            if (periodo === 'day') return `${item.periodo}:00`;
+            if (periodo === 'month') {
+                if (item.dia && item.mes) return `${item.dia}/${mesesNombres[item.mes - 1]}`;
                 const fecha = new Date(item.periodo + 'T00:00:00');
                 return `${fecha.getDate()}/${mesesNombres[fecha.getMonth()]}`;
-            } else if (periodo === 'year') {
-                if (item.mes && item.anio) {
-                    return `${mesesNombres[item.mes - 1]} '${item.anio.toString().slice(-2)}`;
-                }
+            }
+            if (periodo === 'year') {
+                if (item.mes && item.anio) return `${mesesNombres[item.mes - 1]} '${item.anio.toString().slice(-2)}`;
                 const [anio, mes] = item.periodo.split('-');
                 return `${mesesNombres[parseInt(mes) - 1]} '${anio.slice(-2)}`;
             }
             return item.periodo;
         }
 
-        // ========== GRÁFICO DE USUARIOS ==========
         const btnUsuarios = document.getElementById('btn_usuarios');
         const modalUsuarios = document.getElementById('modal_usuarios');
         const btnSalirUsuarios = document.getElementById('btn-salir-usuarios');
         const btnImprimirUsuarios = document.getElementById('btn-imprimir-usuarios');
 
         function actualizarGraficoUsuarios(datos, periodo) {
-            const titulos = {
-                day: 'Últimas 24 horas',
-                week: 'Últimos 7 días',
-                month: 'Último mes',
-                year: 'Último año'
-            };
-
+            const titulos = { day: 'Últimas 24 horas', week: 'Últimos 7 días', month: 'Último mes', year: 'Último año' };
             document.getElementById('chart-title-usuarios').textContent = `Crecimiento de Usuarios - ${titulos[periodo]}`;
 
             if (!datos || datos.length === 0) {
-                if (chartUsuarios) {
-                    chartUsuarios.destroy();
-                    chartUsuarios = null;
-                }
-
-                const canvas = document.getElementById('userChart');
-                const ctx = canvas.getContext('2d');
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.font = '18px Poppins';
-                ctx.fillStyle = '#666';
-                ctx.textAlign = 'center';
-                ctx.fillText('No hay datos para mostrar en este período', canvas.width / 2, canvas.height / 2);
-                return;
+                if (chartUsuarios) { chartUsuarios.destroy(); chartUsuarios = null; }
+                const ctx = document.getElementById('userChart').getContext('2d');
+                ctx.clearRect(0,0,400,200); ctx.fillText('Sin datos', 200, 100); return;
             }
-
             const labels = datos.map(item => formatearLabel(item, periodo));
             const cantidades = datos.map(item => parseInt(item.cantidad));
 
             if (chartUsuarios) {
                 chartUsuarios.data.labels = labels;
                 chartUsuarios.data.datasets[0].data = cantidades;
-                chartUsuarios.options.plugins.title.text = `Usuarios Nuevos - ${titulos[periodo]}`;
                 chartUsuarios.update();
             } else {
                 const ctx = document.getElementById('userChart').getContext('2d');
                 chartUsuarios = new Chart(ctx, {
                     type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Usuarios Registrados',
-                            data: cantidades,
-                            backgroundColor: 'rgba(52, 152, 219, 0.6)',
-                            borderColor: '#3498db',
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            title: {
+                    data: { labels: labels, datasets: [{ label: 'Usuarios', data: cantidades, backgroundColor: 'rgba(52, 152, 219, 0.6)', borderColor: '#3498db', borderWidth: 2 }] },
+                    options: { responsive: true, plugins: { datalabels: {
                                 display: true,
-                                text: `Usuarios Nuevos - ${titulos[periodo]}`,
-                                font: { size: 16 }
-                            },
-                            legend: {
-                                display: true,
-                                position: 'top'
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: { stepSize: 1 },
-                                title: {
-                                    display: true,
-                                    text: 'Cantidad de Usuarios'
-                                }
-                            },
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Fecha'
-                                }
-                            }
-                        }
-                    }
+                                color: '#2c3e50',
+                                font: {
+                                    weight: 'bold',
+                                    size: 14
+                                },
+                                anchor: 'end',
+                                align: 'start',
+                                offset: -5
+                            }, } },
+                    plugins: [ChartDataLabels]
                 });
             }
         }
-
-        btnUsuarios.addEventListener('click', function() {
-            modalUsuarios.style.display = 'block';
-
-            if (!chartUsuarios) {
-                actualizarGraficoUsuarios(datosUsuarios.week, 'week');
-            }
-        });
-
+        btnUsuarios.addEventListener('click', () => { modalUsuarios.style.display = 'block'; if(!chartUsuarios) actualizarGraficoUsuarios(datosUsuarios.week, 'week'); });
         document.querySelectorAll('.filter-btn-usuarios').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.filter-btn-usuarios').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
-                const periodo = this.getAttribute('data-period');
-                actualizarGraficoUsuarios(datosUsuarios[periodo], periodo);
+                actualizarGraficoUsuarios(datosUsuarios[this.dataset.period], this.dataset.period);
             });
         });
-
         btnSalirUsuarios.addEventListener('click', () => modalUsuarios.style.display = 'none');
         btnImprimirUsuarios.addEventListener('click', () => generarPDF('usuarios'));
-        modalUsuarios.addEventListener('click', (e) => {
-            if (e.target === modalUsuarios) modalUsuarios.style.display = 'none';
-        });
 
-        // ========== GRÁFICO DE PARTIDAS ==========
+
         const btnPartidas = document.getElementById('btn_partidas');
         const modalPartidas = document.getElementById('modal_partidas');
         const btnSalirPartidas = document.getElementById('btn-salir-partidas');
         const btnImprimirPartidas = document.getElementById('btn-imprimir-partidas');
 
         function actualizarGraficoPartidas(datos, periodo) {
-            const titulos = {
-                day: 'Últimas 24 horas',
-                week: 'Últimos 7 días',
-                month: 'Último mes',
-                year: 'Último año'
-            };
-
-            document.getElementById('chart-title-partidas').textContent = `Partidas Jugadas - ${titulos[periodo]}`;
-
+            const titulos = { day: 'Últimas 24 horas', week: 'Últimos 7 días', month: 'Último mes', year: 'Último año' };
+            document.getElementById('chart-title-partidas').textContent = `Partidas - ${titulos[periodo]}`;
             if (!datos || datos.length === 0) {
-                if (chartPartidas) {
-                    chartPartidas.destroy();
-                    chartPartidas = null;
-                }
-
-                const canvas = document.getElementById('gamesChart');
-                const ctx = canvas.getContext('2d');
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.font = '18px Poppins';
-                ctx.fillStyle = '#666';
-                ctx.textAlign = 'center';
-                ctx.fillText('No hay datos para mostrar en este período', canvas.width / 2, canvas.height / 2);
-                return;
+                if (chartPartidas) { chartPartidas.destroy(); chartPartidas = null; } return;
             }
-
             const labels = datos.map(item => formatearLabel(item, periodo));
             const cantidades = datos.map(item => parseInt(item.cantidad));
-
             if (chartPartidas) {
                 chartPartidas.data.labels = labels;
                 chartPartidas.data.datasets[0].data = cantidades;
-                chartPartidas.options.plugins.title.text = `Partidas Jugadas - ${titulos[periodo]}`;
                 chartPartidas.update();
             } else {
                 const ctx = document.getElementById('gamesChart').getContext('2d');
                 chartPartidas = new Chart(ctx, {
                     type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Partidas Jugadas',
-                            data: cantidades,
-                            backgroundColor: 'rgba(46, 204, 113, 0.6)',
-                            borderColor: '#2ecc71',
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            title: {
+                    data: { labels: labels, datasets: [{ label: 'Partidas', data: cantidades, backgroundColor: 'rgba(46, 204, 113, 0.6)', borderColor: '#2ecc71', borderWidth: 2 }] },
+                    options: { responsive: true, plugins: { datalabels: {
                                 display: true,
-                                text: `Partidas Jugadas - ${titulos[periodo]}`,
-                                font: { size: 16 }
-                            },
-                            legend: {
-                                display: true,
-                                position: 'top'
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: { stepSize: 1 },
-                                title: {
-                                    display: true,
-                                    text: 'Cantidad de Partidas'
-                                }
-                            },
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Fecha'
-                                }
-                            }
-                        }
-                    }
+                                color: '#2c3e50',
+                                font: {
+                                    weight: 'bold',
+                                    size: 14
+                                },
+                                anchor: 'end',
+                                align: 'start',
+                                offset: -5
+                            }, } },
+                    plugins: [ChartDataLabels]
                 });
             }
         }
-
-        btnPartidas.addEventListener('click', function() {
-            modalPartidas.style.display = 'block';
-
-            if (!chartPartidas) {
-                actualizarGraficoPartidas(datosPartidas.week, 'week');
-            }
-        });
-
+        btnPartidas.addEventListener('click', () => { modalPartidas.style.display = 'block'; if(!chartPartidas) actualizarGraficoPartidas(datosPartidas.week, 'week'); });
         document.querySelectorAll('.filter-btn-partidas').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.filter-btn-partidas').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
-                const periodo = this.getAttribute('data-period');
-                actualizarGraficoPartidas(datosPartidas[periodo], periodo);
+                actualizarGraficoPartidas(datosPartidas[this.dataset.period], this.dataset.period);
             });
         });
-
         btnSalirPartidas.addEventListener('click', () => modalPartidas.style.display = 'none');
         btnImprimirPartidas.addEventListener('click', () => generarPDF('partidas'));
-        modalPartidas.addEventListener('click', (e) => {
-            if (e.target === modalPartidas) modalPartidas.style.display = 'none';
-        });
 
-        // ========== GRÁFICO DE PREGUNTAS ==========
         const btnPreguntas = document.getElementById('btn_preguntas');
         const modalPreguntas = document.getElementById('modal_preguntas');
         const btnSalirPreguntas = document.getElementById('btn-salir-preguntas');
         const btnImprimirPreguntas = document.getElementById('btn-imprimir-preguntas');
 
         function actualizarGraficoPreguntas(datos, periodo) {
-            const titulos = {
-                day: 'Últimas 24 horas',
-                week: 'Últimos 7 días',
-                month: 'Último mes',
-                year: 'Último año'
-            };
-
-            document.getElementById('chart-title-preguntas').textContent = `Preguntas Creadas - ${titulos[periodo]}`;
-
+            const titulos = { day: 'Últimas 24 horas', week: 'Últimos 7 días', month: 'Último mes', year: 'Último año' };
+            document.getElementById('chart-title-preguntas').textContent = `Preguntas - ${titulos[periodo]}`;
             if (!datos || datos.length === 0) {
-                if (chartPreguntas) {
-                    chartPreguntas.destroy();
-                    chartPreguntas = null;
-                }
-
-                const canvas = document.getElementById('questionsChart');
-                const ctx = canvas.getContext('2d');
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.font = '18px Poppins';
-                ctx.fillStyle = '#666';
-                ctx.textAlign = 'center';
-                ctx.fillText('No hay datos para mostrar en este período', canvas.width / 2, canvas.height / 2);
-                return;
+                if (chartPreguntas) { chartPreguntas.destroy(); chartPreguntas = null; } return;
             }
-
             const labels = datos.map(item => formatearLabel(item, periodo));
             const cantidades = datos.map(item => parseInt(item.cantidad));
-
             if (chartPreguntas) {
                 chartPreguntas.data.labels = labels;
                 chartPreguntas.data.datasets[0].data = cantidades;
-                chartPreguntas.options.plugins.title.text = `Preguntas Creadas - ${titulos[periodo]}`;
                 chartPreguntas.update();
             } else {
                 const ctx = document.getElementById('questionsChart').getContext('2d');
                 chartPreguntas = new Chart(ctx, {
                     type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Preguntas Creadas',
-                            data: cantidades,
-                            backgroundColor: 'rgba(231, 76, 60, 0.6)',
-                            borderColor: '#e74c3c',
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            title: {
+                    data: { labels: labels, datasets: [{ label: 'Preguntas', data: cantidades, backgroundColor: 'rgba(231, 76, 60, 0.6)', borderColor: '#e74c3c', borderWidth: 2 }] },
+                    options: { responsive: true, plugins: { datalabels: {
                                 display: true,
-                                text: `Preguntas Creadas - ${titulos[periodo]}`,
-                                font: { size: 16 }
-                            },
-                            legend: {
-                                display: true,
-                                position: 'top'
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: { stepSize: 1 },
-                                title: {
-                                    display: true,
-                                    text: 'Cantidad de Preguntas'
-                                }
-                            },
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Fecha'
-                                }
-                            }
-                        }
-                    }
+                                color: '#2c3e50',
+                                font: {
+                                    weight: 'bold',
+                                    size: 14
+                                },
+                                anchor: 'end',
+                                align: 'start',
+                                offset: -5
+                            }, } },
+                    plugins: [ChartDataLabels]
                 });
             }
         }
-
-        btnPreguntas.addEventListener('click', function() {
-            modalPreguntas.style.display = 'block';
-
-            if (!chartPreguntas) {
-                actualizarGraficoPreguntas(datosPreguntas.week, 'week');
-            }
-        });
-
+        btnPreguntas.addEventListener('click', () => { modalPreguntas.style.display = 'block'; if(!chartPreguntas) actualizarGraficoPreguntas(datosPreguntas.week, 'week'); });
         document.querySelectorAll('.filter-btn-preguntas').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.filter-btn-preguntas').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
+                actualizarGraficoPreguntas(datosPreguntas[this.dataset.period], this.dataset.period);
+            });
+        });
+        btnSalirPreguntas.addEventListener('click', () => modalPreguntas.style.display = 'none');
+        btnImprimirPreguntas.addEventListener('click', () => generarPDF('preguntas'));
+
+        const btnDificultad = document.getElementById('btn_dificultad');
+        const modalDificultad = document.getElementById('modal_dificultad');
+        const btnSalirDificultad = document.getElementById('btn-salir-dificultad');
+        const btnImprimirDificultad = document.getElementById('btn-imprimir-dificultad');
+
+        function actualizarGraficoDificultad(datos, periodo) {
+            const titulos = {
+                day: 'Últimas 24 horas',
+                week: 'Últimos 7 días',
+                month: 'Último mes',
+                year: 'Último año',
+                all: 'Histórico Completo'
+            };
+
+            document.getElementById('chart-title-dificultad').textContent = `Distribución - ${titulos[periodo]}`;
+
+            if (!datos || datos.length === 0) {
+                if (chartDificultad) {
+                    chartDificultad.destroy();
+                    chartDificultad = null;
+                }
+                const canvas = document.getElementById('difficultyChart');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.font = '16px Poppins';
+                ctx.fillStyle = '#666';
+                ctx.textAlign = 'center';
+                ctx.fillText('No hay datos', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
+            const labels = datos.map(item => item.dificultad);
+            const cantidades = datos.map(item => parseInt(item.cantidad));
+
+            const backgroundColors = labels.map(label => {
+                if (label === 'Fácil') return '#2ecc71';
+                if (label === 'Medio') return '#f1c40f';
+                if (label === 'Difícil') return '#e74c3c';
+                return '#95a5a6';
+            });
+
+            if (chartDificultad) {
+                chartDificultad.data.labels = labels;
+                chartDificultad.data.datasets[0].data = cantidades;
+                chartDificultad.data.datasets[0].backgroundColor = backgroundColors;
+                chartDificultad.update();
+            } else {
+                const ctx = document.getElementById('difficultyChart').getContext('2d');
+                chartDificultad = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: cantidades,
+                            backgroundColor: backgroundColors,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            datalabels: {
+                                display: true,
+                                color: '#fff',
+                                font: { weight: 'bold', size: 14 },
+                                formatter: function(value, context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return value + '\n(' + percentage + '%)';
+                                }
+                            },
+                            legend: {
+                                position: 'bottom',
+                                labels: { font: { size: 14 } }
+                            },
+                            title: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+            }
+        }
+
+
+        btnDificultad.addEventListener('click', function() {
+            modalDificultad.style.display = 'block';
+            if (!chartDificultad) {
+                actualizarGraficoDificultad(datosDificultad.week, 'week');
+            }
+        });
+
+        document.querySelectorAll('.filter-btn-dificultad').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn-dificultad').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
                 const periodo = this.getAttribute('data-period');
-                actualizarGraficoPreguntas(datosPreguntas[periodo], periodo);
+                actualizarGraficoDificultad(datosDificultad[periodo], periodo);
             });
         });
 
-        btnSalirPreguntas.addEventListener('click', () => modalPreguntas.style.display = 'none');
-        btnImprimirPreguntas.addEventListener('click', () => generarPDF('preguntas'));
-        modalPreguntas.addEventListener('click', (e) => {
-            if (e.target === modalPreguntas) modalPreguntas.style.display = 'none';
-        });
+        btnSalirDificultad.addEventListener('click', () => modalDificultad.style.display = 'none');
+        btnImprimirDificultad.addEventListener('click', () => generarPDF('dificultad'));
+
+        window.onclick = function(event) {
+            if (event.target == modalUsuarios) modalUsuarios.style.display = "none";
+            if (event.target == modalPartidas) modalPartidas.style.display = "none";
+            if (event.target == modalPreguntas) modalPreguntas.style.display = "none";
+            if (event.target == modalDificultad) modalDificultad.style.display = "none";
+        }
     });
 </script>
 </body>

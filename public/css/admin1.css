@@ -149,7 +149,6 @@
     gap: 10px;
 }
 
-/* AGREGADO: Estilos para filtros de usuarios */
 .filter-btn-usuarios {
     padding: 8px 16px;
     border: 2px solid #3498db;
@@ -169,7 +168,6 @@
     color: white;
 }
 
-/* AGREGADO: Estilos para filtros de partidas */
 .filter-btn-partidas {
     padding: 8px 16px;
     border: 2px solid #2ecc71;
@@ -218,10 +216,22 @@
     cursor: pointer;
 }
 
+#btn_dificultad {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#btn_dificultad:hover {
+    cursor: pointer;
+}
+
 body {
+    background-image: url("../img/fondoEstrellado.jpg");
     margin-left: 33px;
     padding-top: 80px;
     padding-bottom: 3rem;
+    color: white;
 }
 
 .title {
@@ -267,7 +277,6 @@ body {
     color: #f4a261;
 }
 
-/* Agrega esto a tu CSS (admin2.css o admin1.css según corresponda) */
 
 .navigation-links {
     display: flex;
@@ -313,4 +322,132 @@ body {
     font-family: 'Rubik', sans-serif;
     font-weight: 500;
     transition: background 0.3s;
+}
+
+.filter-btn-dificultad {
+    padding: 8px 16px;
+    border: 2px solid #f1c40f;
+    background: white;
+    color: #f1c40f;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.filter-btn-dificultad:hover {
+    background: #ecf0f1;
+}
+
+.filter-btn-dificultad.active {
+    background: #f1c40f;
+    color: white;
+}
+
+
+
+@media (max-width: 768px) {
+
+
+    body {
+        margin-left: 0;
+        padding-left: 10px;
+        padding-right: 10px;
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    .main-header {
+        flex-direction: column;
+        padding: 1rem;
+        height: auto;
+    }
+
+    .nav-links {
+        margin-top: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .nav-links a {
+        margin-left: 0;
+        font-size: 0.9rem;
+    }
+
+    .cuadradote {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .cuadrado {
+        width: 100%;
+        max-width: 350px;
+        margin: 10px 0;
+    }
+
+    .navigation-links {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .navigation-links a {
+        width: 100%;
+        max-width: 350px;
+        text-align: center;
+    }
+
+
+    .modal-content {
+        min-width: unset;
+        width: 90%;
+        padding: 1.5rem 1rem;
+        top: 50%;
+    }
+
+    .filter-buttons {
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .filter-btn-usuarios,
+    .filter-btn-partidas,
+    .filter-btn-preguntas,
+    .filter-btn-dificultad {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+        flex: 1 1 auto;
+    }
+
+    .chart-container {
+        padding: 5px;
+        overflow-x: hidden;
+    }
+
+    .modal-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn-primary, .btn-secondary {
+        width: 100%;
+        margin-right: 0;
+    }
+    .title {
+        padding-top: 50px;
+    }
+
+}
+
+@media (max-width: 400px) {
+    .logo {
+        font-size: 1.4rem;
+    }
+
+    .welcome {
+        font-size: 0.9rem;
+    }
 }

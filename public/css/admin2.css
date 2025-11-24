@@ -48,9 +48,11 @@
     display: inline-block;
     font-weight: 500;
     letter-spacing: 0.2px;
+
 }
 
 body {
+    background-image: url("../img/fondoEstrellado.jpg");
     margin-left: 33px;
     padding-top: 80px;
     padding-bottom: 3rem;
@@ -62,6 +64,7 @@ body {
     font-weight: 700;
     font-family: 'Rubik', sans-serif;
     letter-spacing: 0.5px;
+    color: white;
 }
 
 .main-header {
@@ -106,6 +109,7 @@ body {
     padding-top: 1rem;
     padding-left: 2rem;
     padding-right: 2rem;
+    margin-right: 2rem;
 }
 
 .tabla-container h3 {
@@ -256,6 +260,7 @@ body {
     display: flex;
     justify-content: center;
     margin-right: 2rem;
+    margin-top: 2rem;
 }
 
 .cuadrado{
@@ -452,4 +457,187 @@ body {
 
 .btn-secondary:hover {
     background: #c0392b;
+}
+
+#imprimir-tabla{
+    text-align: right;
+    margin-top: 10px;
+}
+
+#imprimir-tabla button{
+    padding: 10px;
+    background: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+#imprimir-tabla button:hover{
+    cursor: pointer;
+}
+
+
+@media (max-width: 768px) {
+
+    body {
+        margin-left: 0;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 110px;
+        background-size: cover;
+        background-attachment: fixed;
+    }
+
+    /* 2. Header (Menú) */
+    .main-header {
+        flex-direction: column;
+        padding: 1rem;
+        height: auto;
+        position: fixed;
+    }
+
+    .nav-links {
+        margin-top: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .nav-links a {
+        margin-left: 0;
+        margin: 0 10px;
+        font-size: 0.9rem;
+    }
+
+    .title {
+        font-size: 1.5rem;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .welcome {
+        display: block;
+        text-align: center;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .navigation-links {
+        justify-content: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .tabla-container {
+        padding: 10px;
+        margin-right: 0;
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .tabla-header {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .botones-ordenar {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .btn-ordenar {
+        flex: 1;
+        text-align: center;
+        font-size: 0.8rem;
+        padding: 8px 5px;
+    }
+
+    .tabla-usuarios {
+        min-width: 600px;
+    }
+
+    .cuadradote {
+        flex-direction: column;
+        align-items: center;
+        margin-right: 0;
+    }
+
+    .cuadrado {
+        width: 100%;
+        max-width: 100%;
+        margin: 10px 0;
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 1rem;
+        max-height: 85vh;
+    }
+
+    .filter-buttons {
+        gap: 5px;
+    }
+
+    .filter-btn-pais,
+    .filter-btn-sexo,
+    .filter-btn-edad {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        flex: 1;
+    }
+
+    .chart-container canvas {
+        max-height: 180px !important;
+    }
+
+    .modal-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn-primary, .btn-secondary {
+        width: 100%;
+        text-align: center;
+    }
+    .ocultar-mobile {
+        display: none !important;
+    }
+
+    .tabla-usuarios th,
+    .tabla-usuarios td {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .porcentaje {
+        padding: 0.2rem 0.5rem;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 550px) {
+    .logo { font-size: 1.4rem; }
+    .tabla-usuarios td {
+        padding: 0.3rem;
+        font-size: 0.85rem;
+    }
+
+    .porcentaje {
+        padding: 0.2rem 0.5rem;
+        font-size: 0.8rem;
+    }
+    .paginacion{
+        font-size: 14px;
+        margin: 0px;
+        padding: 0px;
+    }
+    .paginacion button{
+        font-size: 14px;
+        padding: 5px 8px;
+    }
+}
+
+@media (max-width: 400px) {
+    .logo { font-size: 1.4rem; }
+    .botones-ordenar { flex-direction: column; }
 }
