@@ -37,10 +37,10 @@
                         <span class="material-symbols-outlined">expand_more</span>
                     </button>
                     <div class="desplegable" id="desplegable">
-                        <div class="opcion">Histórico</div>
-                        <div class="opcion">Mes</div>
-                        <div class="opcion">Semana</div>
-                        <div class="opcion">Día</div>
+                        <div class="opcion" data-value="historico">Histórico</div>
+                        <div class="opcion" data-value="mes">Mes</div>
+                        <div class="opcion" data-value="semana">Semana</div>
+                        <div class="opcion" data-value="dia">Día</div>
                     </div>
                 </div>
                 <div class="button-pais">
@@ -49,9 +49,9 @@
                         <span class="material-symbols-outlined">expand_more</span>
                     </button>
                     <div class="desplegable2" id="desplegable2">
-                        {{#countries}}
-                            <div class="opcion2" data-pais-id="{{id}}">{{nombre}}</div>
-                        {{/countries}}
+                        <div class="opcion2" data-pais-id="all">Todos</div> {{#countries}}
+                        <div class="opcion2" data-pais-id="{{id}}">{{nombre}}</div>
+                    {{/countries}}
                     </div>
                 </div>
             </div>
@@ -155,64 +155,77 @@
     </div>
 </div>
 <script>
-    const btn = document.getElementById('btnTiempo');
-    const desplegable = document.getElementById('desplegable');
+    // 1. Leemos la URL actual para saber qué filtros hay
+    const urlParams = new URLSearchParams(window.location.search);
 
-    btn.addEventListener('click', () => {
-        desplegable.classList.toggle('activo');
-    });
+    // Referencias
+    const btnTiempo = document.getElementById('btnTiempo');
+    const desplegableTiempo = document.getElementById('desplegable');
+    const btnPais = document.getElementById('btnPais');
+    const desplegablePais = document.getElementById('desplegable2');
+    const searchInput = document.querySelector('.input-field');
 
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.button-tiempo')) {
-            desplegable.classList.remove('activo');
-        }
+    // 2. Manejo Dropdown TIEMPO
+    btnTiempo.addEventListener('click', (e) => {
+        e.stopPropagation();
+        desplegableTiempo.classList.toggle('activo');
+        desplegablePais.classList.remove('activo');
     });
 
     document.querySelectorAll('.opcion').forEach(opcion => {
         opcion.addEventListener('click', () => {
-            console.log('Seleccionado:', opcion.textContent);
-            desplegable.classList.remove('activo');
+            // Obtenemos valor (historico, mes, semana, dia)
+            const valor = opcion.getAttribute('data-value');
+            urlParams.set('time', valor);
+            urlParams.set('page', 1); // Volver a pag 1 al filtrar
+            window.location.search = urlParams.toString(); // Recargar
         });
     });
 
-    const btn2 = document.getElementById('btnPais');
-    const desplegable2 = document.getElementById('desplegable2');
-
-    btn2.addEventListener('click', () => {
-        desplegable2.classList.toggle('activo');
-    });
-
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.button-pais')) {
-            desplegable2.classList.remove('activo');
-        }
+    // 3. Manejo Dropdown PAIS
+    btnPais.addEventListener('click', (e) => {
+        e.stopPropagation();
+        desplegablePais.classList.toggle('activo');
+        desplegableTiempo.classList.remove('activo');
     });
 
     document.querySelectorAll('.opcion2').forEach(opcion => {
         opcion.addEventListener('click', () => {
-            console.log('Seleccionado:', opcion.textContent);
-            desplegable2.classList.remove('activo');
+            const paisId = opcion.getAttribute('data-pais-id');
+            if(paisId === 'all') {
+                urlParams.delete('country');
+            } else {
+                urlParams.set('country', paisId);
+            }
+            urlParams.set('page', 1);
+            window.location.search = urlParams.toString();
         });
     });
 
-    //
+    // Cerrar menús al hacer click afuera
+    document.addEventListener('click', () => {
+        desplegableTiempo.classList.remove('activo');
+        desplegablePais.classList.remove('activo');
+    });
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.querySelector('.input-field');
+    // 4. Manejo del Buscador (Enter)
+    if(searchInput) {
+        // Rellenar input si ya había búsqueda
+        if(urlParams.has('search')) searchInput.value = urlParams.get('search');
 
         searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                const searchTerm = this.value.trim();
-                if (searchTerm) {
-                    window.location.href = '/ranking/display?search=' + encodeURIComponent(searchTerm);
+                const term = this.value.trim();
+                if (term) {
+                    urlParams.set('search', term);
                 } else {
-                    window.location.href = '/ranking/display';
+                    urlParams.delete('search');
                 }
+                urlParams.set('page', 1);
+                window.location.search = urlParams.toString();
             }
         });
-    });
-
-
+    }
 </script>
 </body>
 
