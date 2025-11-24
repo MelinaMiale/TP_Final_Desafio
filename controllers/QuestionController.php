@@ -113,7 +113,7 @@ class QuestionController {
     }
 
     public function updateQuestion() {
-        $reportId = $_POST['reportId'] ?? null;
+        $reportId = $_SESSION["reportId"] ?? null;
         $questionId = $_POST['questionId'] ?? null;
         $editorComment = $_POST['editorComment'] ?? '';
         $editorId = $_SESSION['userId'];

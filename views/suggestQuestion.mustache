@@ -9,11 +9,15 @@
             <input type="text" id="question" name="question" required>
         </div>
 
-        <select name="categoryId" id="categoryId">
-            {{#categories}}
-                <option value="{{id}}">{{nombre}}</option>
-            {{/categories}}
-        </select>
+        <div class="form-group" style="margin-top: 10px;">
+            <label for="categoryId">Categoría</label>
+            <select name="categoryId" id="categoryId" required>
+                <option value="">Selecciona una categoría</option>
+                {{#categories}}
+                    <option value="{{id}}">{{nombre}}</option>
+                {{/categories}}
+            </select>
+        </div>
 
         <div class="form-grid">
             <div class="form-group">
