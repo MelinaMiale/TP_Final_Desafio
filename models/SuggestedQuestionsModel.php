@@ -22,6 +22,7 @@ class SuggestedQuestionsModel {
     public function addQuestion($data, $newResponseId) {
         $pendingStatus = QuestionStatus::PENDING;
         $idCreator = $_SESSION["userId"];
+        date_default_timezone_set('America/Argentina/Buenos_Aires');
         $date = date("Y-m-d H:i:s");
 
         $sql = "INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, fecha_creacion) VALUES ('{$data['question']}', $newResponseId, {$data['categoryId']}, $pendingStatus,  $idCreator, '$date')";
@@ -47,8 +48,10 @@ class SuggestedQuestionsModel {
     public function addAuditInformation($newQuestionId) {
         $pendingStatus = QuestionStatus::PENDING;
         $comment = 'Pregunta sugerida por jugador';
+        date_default_timezone_set('America/Argentina/Buenos_Aires');
         $date = date("Y-m-d H:i:s");
         $userId = $_SESSION["userId"];
+
         $sqlAudit = "INSERT INTO AUDITORIA_PREGUNTA 
         (id_solicitante, id_pregunta, comentario_usuario, estado_origen, estado_destino, fecha_reporte) 
         VALUES ($userId, $newQuestionId, '$comment', $pendingStatus, $pendingStatus, '$date')";

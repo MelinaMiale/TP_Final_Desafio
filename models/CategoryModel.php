@@ -72,6 +72,7 @@ class CategoryModel {
     }
 
     public function logEditorActivity($categoryData) {
+        date_default_timezone_set('America/Argentina/Buenos_Aires');
         $date = date("Y-m-d H:i:s");
         $newName = $categoryData['name'];
         $newColor = $categoryData['color'];
@@ -109,6 +110,7 @@ class CategoryModel {
         $this->connection->query($sql);
 
         $editorId = $_SESSION["userId"];
+        date_default_timezone_set('America/Argentina/Buenos_Aires');
         $date = date("Y-m-d H:i:s");
         $sqlAudit = "INSERT INTO AUDITORIA_CATEGORIA (id_categoria, comentario_editor, accion, id_editor, fecha_cambio) VALUES ($categoryId, '$editorComment', 'DESHABILITAR', $editorId, '$date')";
         $this->connection->query($sqlAudit);

@@ -70,32 +70,8 @@ class EditorModel {
         return $this->connection->query($sql) ?? [];
     }
 
-    public function resolveReport($reportId, $action, $editorComment, $editorId) {
-        $date = date("Y-m-d H:i:s");
-
-        switch ($action) {
-            case 'aprobar':
-                $statusDestination = QuestionStatus::APPROVED;
-                break;
-            case 'rechazar':
-                $statusDestination = QuestionStatus::REJECTED;
-                break;
-            default:
-                $statusDestination = QuestionStatus::PENDING;
-        }
-
-        $sql = "UPDATE AUDITORIA_PREGUNTA
-            SET id_editor = $editorId,
-                accion = '$action',
-                comentario_editor = '$editorComment',
-                fecha_revision = '$date',
-                estado_destino = $statusDestination
-            WHERE id = $reportId";
-
-        $this->connection->query($sql);
-    }
-
     public function rejectReport($reportId, $editorComment, $editorId) {
+        date_default_timezone_set('America/Argentina/Buenos_Aires');
         $date = date("Y-m-d H:i:s");
         $statusDestination = QuestionStatus::REJECTED;
 

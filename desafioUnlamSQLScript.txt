@@ -1,1230 +1,1438 @@
-CREATE DATABASE IF NOT EXISTS DESAFIO_UNLAM;
-
-USE DESAFIO_UNLAM;
-
-CREATE TABLE ROL(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(30) NOT NULL
-);
-
-CREATE TABLE SEXO(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(50) NOT NULL
-);
-
-CREATE TABLE PAIS(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(60) NOT NULL
-);
-
-CREATE TABLE CATEGORIA(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(100) NOT NULL,
-    color VARCHAR(20) NOT NULL,
-	estado ENUM('ACTIVO', 'DESHABILITADO') NOT NULL DEFAULT 'ACTIVO',
-);
-
-CREATE TABLE ESTADO_PREGUNTA(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(20) NOT NULL
-);
-
-CREATE TABLE RESULTADO(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(15) NOT NULL
-);
-
-CREATE TABLE TIPO_PARTIDA(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(20) NOT NULL
-);
-
-CREATE TABLE CIUDAD(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(60) NOT NULL,
-    id_pais INT NOT NULL,
-    FOREIGN KEY (id_pais) REFERENCES PAIS (id)
-);
-
-CREATE TABLE USUARIO(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre_completo VARCHAR(100) NOT NULL,
-    anio_nacimiento INT NOT NULL,
-    correo_electronico VARCHAR(100) UNIQUE NOT NULL,
-    contrasenia VARCHAR(10) NOT NULL,
-    nombre_usuario VARCHAR(10) UNIQUE NOT NULL,
-    foto VARCHAR(255) DEFAULT NULL,
-    puntos_totales INT NOT NULL DEFAULT 0,
-    id_sexo INT NOT NULL,
-    id_rol INT NOT NULL,
-    id_ciudad INT NOT NULL,
-	cuenta_verificada BIT DEFAULT 0,
-    codigo_verificacion VARCHAR(255) DEFAULT NULL,
-    FOREIGN KEY (id_sexo) REFERENCES SEXO (id),
-    FOREIGN KEY (id_rol) REFERENCES ROL (id),
-    FOREIGN KEY (id_ciudad) REFERENCES CIUDAD (id)
-);
-
-CREATE TABLE PARTIDA(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    fecha DATETIME NOT NULL,
-    puntaje_jugador1 INT NOT NULL,
-    puntaje_jugador2 INT NULL DEFAULT 0,
-    id_jugador1 INT NOT NULL,
-    id_jugador2 INT NULL,
-    id_resultado INT NOT NULL,
-    id_tipo_partida INT NOT NULL,
-    FOREIGN KEY (id_jugador1) REFERENCES USUARIO (id),
-    FOREIGN KEY (id_jugador2) REFERENCES USUARIO (id),
-    FOREIGN KEY (id_resultado) REFERENCES RESULTADO (id),
-    FOREIGN KEY (id_tipo_partida) REFERENCES TIPO_PARTIDA (id)
-);
-
-CREATE TABLE RESPUESTA(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    opcion_a VARCHAR(50) NOT NULL,
-    opcion_b VARCHAR(50) NOT NULL,
-    opcion_c VARCHAR(50) NOT NULL,
-    opcion_d VARCHAR(50) NOT NULL,
-    respuesta_correcta CHAR(1) NOT NULL
-);
-
-CREATE TABLE PREGUNTA(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    enunciado VARCHAR(100) NOT NULL,
-    id_respuesta INT NOT NULL,
-    id_categoria INT NOT NULL,
-    id_estado_pregunta INT NOT NULL,
-    id_autor INT NOT NULL,
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-    dificultad_actual ENUM('facil', 'media', 'dificil') NOT NULL DEFAULT 'media',
-	respuestas_totales INT NOT NULL DEFAULT 0,
-	respuestas_correctas INT NOT NULL DEFAULT 0,
-	ratio_aciertos DECIMAL(5,2) NOT NULL DEFAULT 0.00,
-    FOREIGN KEY (id_respuesta) REFERENCES RESPUESTA (id),
-    FOREIGN KEY (id_categoria) REFERENCES CATEGORIA (id),
-    FOREIGN KEY (id_estado_pregunta) REFERENCES ESTADO_PREGUNTA (id),
-    FOREIGN KEY (id_autor) REFERENCES USUARIO (id)
-);
-
-CREATE TABLE RESPUESTA_USUARIO(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    fue_correcta BIT NULL,
-    opcion_elegida CHAR(1) NULL,
-    id_partida INT NOT NULL,
-    id_pregunta INT NOT NULL,
-    id_usuario INT NOT NULL,
-    FOREIGN KEY (id_partida) REFERENCES PARTIDA (id),
-    FOREIGN KEY (id_pregunta) REFERENCES PREGUNTA (id),
-    FOREIGN KEY (id_usuario) REFERENCES USUARIO (id)
-);
-
-CREATE TABLE AUDITORIA_PREGUNTA (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    id_pregunta INT NOT NULL,
-    id_solicitante INT NULL,
-    comentario_usuario VARCHAR(255) NULL, -- propuesta del jugador
-    fecha_reporte DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    id_editor INT NULL,
-    accion ENUM('aprobado','rechazado','borrado','modificado') NULL,
-    comentario_editor VARCHAR(255) NULL, -- explicación del editor
-    fecha_revision DATETIME NULL,
-
-    estado_origen INT NOT NULL,
-    estado_destino INT NULL,
-
-    FOREIGN KEY (id_pregunta) REFERENCES PREGUNTA(id),
-    FOREIGN KEY (id_solicitante) REFERENCES USUARIO(id),
-    FOREIGN KEY (id_editor) REFERENCES USUARIO(id),
-    FOREIGN KEY (estado_origen) REFERENCES ESTADO_PREGUNTA(id),
-    FOREIGN KEY (estado_destino) REFERENCES ESTADO_PREGUNTA(id)
-);
-
-CREATE TABLE AUDITORIA_CATEGORIA (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    id_categoria INT NOT NULL,
-    nombre_antiguo VARCHAR(100) NULL,
-    nombre_nuevo VARCHAR(100) NULL,
-    color_antiguo VARCHAR(7) NULL,
-    color_nuevo VARCHAR(7) NULL,
-    comentario_editor VARCHAR(255) NULL,
-    accion ENUM('CREAR','EDITAR','DESHABILITAR') NOT NULL,
-    fecha_cambio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    id_editor INT NULL,
-    FOREIGN KEY (id_categoria) REFERENCES CATEGORIA(id),
-    FOREIGN KEY (id_editor) REFERENCES USUARIO(id)
-);
-
--- ---------------------------------------------------------------------------------------------
-
--- INSERT SCRIPTS -----------------------------------------------------------------------------
-
--- ---------------------------------------------------------------------------------------------
-
-INSERT INTO Pais (nombre) VALUES
-('Argentina'),
-('Estados Unidos'),
-('Reino Unido'),
-('Japón'),
-('Francia'),
-('China'),
-('Australia'),
-('Alemania'),
-('Emiratos Árabes Unidos'),
-('Singapur'),
-('Canadá'),
-('Brasil'),
-('México'),
-('Corea del Sur'),
-('Italia'),
-('España'),
-('Egipto'),
-('Rusia'),
-('India'),
-('Turquía');
-
--- Principales ciudades de Argentina
-INSERT INTO CIUDAD (nombre, id_pais) VALUES
-('Buenos Aires', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('Córdoba', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('Rosario', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('Mendoza', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('San Miguel de Tucumán', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('La Plata', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('Mar del Plata', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('Salta', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('Santa Fe', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('Corrientes', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('Bahía Blanca', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('Resistencia', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('Posadas', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('Santiago del Estero', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('San Salvador de Jujuy', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('Neuquén', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('Formosa', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('Catamarca', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('San Juan', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('La Rioja', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('Comodoro Rivadavia', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('San Luis', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('Concordia', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('Río Cuarto', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('San Nicolás de los Arroyos', (SELECT id FROM PAIS WHERE nombre = 'Argentina')),
-('Tandil', (SELECT id FROM PAIS WHERE nombre = 'Argentina'));
-
--- Ciudades más importantes del resto del mundo
-INSERT INTO CIUDAD (nombre, id_pais) VALUES
-('Nueva York', (SELECT id FROM PAIS WHERE nombre = 'Estados Unidos')),
-('Londres', (SELECT id FROM PAIS WHERE nombre = 'Reino Unido')),
-('Tokio', (SELECT id FROM PAIS WHERE nombre = 'Japón')),
-('París', (SELECT id FROM PAIS WHERE nombre = 'Francia')),
-('Pekín', (SELECT id FROM PAIS WHERE nombre = 'China')),
-('Shanghái', (SELECT id FROM PAIS WHERE nombre = 'China')),
-('Los Ángeles', (SELECT id FROM PAIS WHERE nombre = 'Estados Unidos')),
-('Sídney', (SELECT id FROM PAIS WHERE nombre = 'Australia')),
-('Berlín', (SELECT id FROM PAIS WHERE nombre = 'Alemania')),
-('Dubái', (SELECT id FROM PAIS WHERE nombre = 'Emiratos Árabes Unidos')),
-('Singapur', (SELECT id FROM PAIS WHERE nombre = 'Singapur')),
-('Hong Kong', (SELECT id FROM PAIS WHERE nombre = 'China')),
-('Toronto', (SELECT id FROM PAIS WHERE nombre = 'Canadá')),
-('São Paulo', (SELECT id FROM PAIS WHERE nombre = 'Brasil')),
-('Ciudad de México', (SELECT id FROM PAIS WHERE nombre = 'México')),
-('Seúl', (SELECT id FROM PAIS WHERE nombre = 'Corea del Sur')),
-('Roma', (SELECT id FROM PAIS WHERE nombre = 'Italia')),
-('Madrid', (SELECT id FROM PAIS WHERE nombre = 'España')),
-('El Cairo', (SELECT id FROM PAIS WHERE nombre = 'Egipto')),
-('Moscú', (SELECT id FROM PAIS WHERE nombre = 'Rusia')),
-('Bombay', (SELECT id FROM PAIS WHERE nombre = 'India')),
-('Estambul', (SELECT id FROM PAIS WHERE nombre = 'Turquía'));
-
-USE DESAFIO_UNLAM;
-INSERT INTO SEXO (nombre) VALUES ('Femenino'), ('Masculino'), ('Prefiero no especificar');
-
-INSERT INTO ROL (nombre) VALUES ('ADMINISTRADOR'), ('EDITOR'), ('JUGADOR');
-
-INSERT INTO CATEGORIA (nombre, color) VALUES
-('Historia', '#8B4513'),
-('Arte', '#800080'),
-('Matemáticas', '#808080'),
-('Física', '#0000FF'),
-('Biologia', '#006400'),
-('Cine', '#FF0000'),
-('Literatura', '#FFA500'),
-('Geografía', '#008000'),
-('Música', '#FF00FF'),
-('Deportes', '#FFFF00'),
-('Tecnología', '#0000FF'),
-('Videojuegos', '#800080'),
-('Gastronomía', '#CC760E'),
-('Mitología', '#FFD700'),
-('Biología', '#90EE90'),
-('Química', '#00CED1'),
-('Astronomia', '#191970'),
-('Política', '#36454F'),
-('Economía', '#A2CC0D');
-
-INSERT INTO ESTADO_PREGUNTA (nombre) VALUES ('Aprobada'), ('Pendiente'), ('Rechazada'), ('Deshabilitada'), ('Modificada');
-
-INSERT INTO RESULTADO (nombre) VALUES ('Ganada'),('Perdida');
-
-INSERT INTO TIPO_PARTIDA (nombre) VALUES ('Vs Bot'), ('Vs Otro Jugador');
-
-INSERT INTO USUARIO (nombre_completo, anio_nacimiento, correo_electronico, contrasenia, nombre_usuario, foto, puntos_totales, id_sexo, id_rol, id_ciudad) VALUES ('Adrian Rivas', 1983, 'admin@desafioUnlam.com', '12345', 'Admin', NULL, 0, 2, 1, 1);
-
--- HISTORIA --------------------------------------------------------------------------------------
-
--- Pregunta 1
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
-VALUES ('1492', '1512', '1482', '1502', 'A');
-SET @idResp1 = LAST_INSERT_ID();
-
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
-VALUES ('¿En qué año llegó Cristóbal Colón a América?', @idResp1, 1, 1, 1, 'facil');
-
--- Pregunta 2
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
-VALUES ('Napoleón Bonaparte', 'Julio César', 'Alejandro Magno', 'Genghis Khan', 'A');
-SET @idResp2 = LAST_INSERT_ID();
-
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
-VALUES ('¿Quién fue el líder militar francés que se coronó emperador en 1804?', @idResp2, 1, 1, 1, 'facil');
-
--- Pregunta 3
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
-VALUES ('Revolución Francesa', 'Revolución Rusa', 'Revolución Industrial', 'Revolución Americana', 'A');
-SET @idResp3 = LAST_INSERT_ID();
-
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
-VALUES ('¿Cuál de estas revoluciones comenzó en 1789 en Francia?', @idResp3, 1, 1, 1, 'facil');
-
--- Pregunta 4
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
-VALUES ('Roma', 'Grecia', 'Egipto', 'Mesopotamia', 'A');
-SET @idResp4 = LAST_INSERT_ID();
-
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
-VALUES ('¿Qué civilización construyó el Coliseo?', @idResp4, 1, 1, 1, 'facil');
-
--- Pregunta 5
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
-VALUES ('Magna Carta', 'Bill of Rights', 'Declaración de Independencia', 'Código de Hammurabi', 'A');
-SET @idResp5 = LAST_INSERT_ID();
-
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
-VALUES ('¿Qué documento histórico limitó el poder del rey de Inglaterra en 1215?', @idResp5, 1, 1, 1, 'facil');
-
--- Pregunta 6
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
-VALUES ('Tratado de Tordesillas', 'Paz de Westfalia', 'Concordato de Worms', 'Tratado de Utrecht', 'A');
-SET @idResp6 = LAST_INSERT_ID();
-
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
-VALUES ('¿Qué tratado dividió las tierras descubiertas entre España y Portugal en 1494?', @idResp6, 1, 1, 1, 'dificil');
-
--- Pregunta 7
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
-VALUES ('Carlos V', 'Felipe II', 'Luis XIV', 'Fernando VII', 'A');
-SET @idResp7 = LAST_INSERT_ID();
-
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
-VALUES ('¿Quién fue rey de España durante la época de la Armada Invencible?', @idResp7, 1, 1, 1, 'dificil');
-
--- Pregunta 8
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
-VALUES ('Batalla de Stalingrado', 'Batalla de Normandía', 'Batalla de Midway', 'Batalla de Kursk', 'A');
-SET @idResp8 = LAST_INSERT_ID();
-
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
-VALUES ('¿Qué batalla fue decisiva en la Segunda Guerra Mundial en el frente oriental?', @idResp8, 1, 1, 1, 'dificil');
-
--- Pregunta 9
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
-VALUES ('Imperio Hitita', 'Imperio Asirio', 'Imperio Persa', 'Imperio Romano', 'A');
-SET @idResp9 = LAST_INSERT_ID();
-
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
-VALUES ('¿Qué imperio antiguo se centró en Anatolia y Siria entre los siglos XVII y XII a.C.?', @idResp9, 1, 1, 1, 'dificil');
-
--- Pregunta 10
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta)
-VALUES ('Revolución Gloriosa', 'Revolución Industrial', 'Revolución Cubana', 'Revolución Meiji', 'A');
-SET @idResp10 = LAST_INSERT_ID();
-
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual)
-VALUES ('¿Qué revolución en Inglaterra resultó en la deposición del rey Jacobo II?', @idResp10, 1, 1, 1, 'dificil');
-
---  MATEMÁTICAS --------------------------------------------------------------------------------------
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Leonardo da Vinci', 'Miguel Ángel', 'Rafael', 'Donatello', 'A');
-SET @idRespArte1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién pintó La Última Cena?', @idRespArte1, 2, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('3.1416', '2.718', '1.618', '1.414', 'A');
-SET @idRespArte1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es el valor aproximado de π?', @idRespArte1, 3, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('2', '3', '5', '7', 'A');
-SET @idRespArte1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuánto es 1 + 1?', @idRespArte1, 3, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Pitágoras', 'Euclides', 'Arquímedes', 'Descartes', 'A');
-SET @idRespArte1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién formuló los principios de la geometría euclidiana?', @idRespArte1, 3, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('x = -b ± √(b²-4ac)/2a', 'x = (b+c)/a', 'x = a² + b²', 'x = √(a²+b²)', 'A');
-SET @idRespArte1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es la fórmula general para resolver ecuaciones cuadráticas?', @idRespArte1, 3, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Suma de ángulos de un triángulo es 180°', 'Suma de ángulos de un cuadrado es 180°', 'Suma de ángulos de un pentágono es 360°', 'Suma de ángulos de un hexágono es 540°', 'A');
-SET @idRespArte1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es la suma de los ángulos de un triángulo?', @idRespArte1, 3, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Integral de e^x es e^x + C', 'Integral de ln(x) es x ln(x)', 'Integral de sen(x) es cos(x)', 'Integral de x^2 es x^3', 'A');
-SET @idRespArte1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es la integral de e^x?', @idRespArte1, 3, 1, 1, 'dificil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Teorema Fundamental del Álgebra', 'Teorema de Bayes', 'Teorema de Pitágoras', 'Teorema de Rolle', 'A');
-SET @idRespArte1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué teorema establece que todo polinomio de grado n tiene n raíces (reales o complejas)?', @idRespArte1, 3, 1, 1, 'dificil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Serie de Fibonacci', 'Serie Geométrica', 'Serie Armónica', 'Serie de Taylor', 'A');
-SET @idRespArte1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué secuencia comienza 0, 1, 1, 2, 3, 5...?', @idRespArte1, 3, 1, 1, 'dificil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Número primo de Mersenne', 'Número de Fermat', 'Número de Euler', 'Número de Catalan', 'A');
-SET @idRespArte1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué tipo de número primo se expresa como 2^p - 1?', @idRespArte1, 3, 1, 1, 'dificil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Ecuación diferencial de segundo orden', 'Ecuación lineal simple', 'Ecuación exponencial', 'Ecuación logarítmica', 'A');
-SET @idRespArte1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cómo se llama una ecuación que involucra derivadas de segundo orden?', @idRespArte1, 3, 1, 1, 'dificil');
-
-
--- RESPUESTAS FISICA --------------------------------------------------------------------------------------
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Isaac Newton', 'Albert Einstein', 'Galileo Galilei', 'Niels Bohr', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién formuló las leyes del movimiento?', 1, 4, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('F = m * a', 'E = mc^2', 'p = mv', 'V = IR', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es la fórmula de la fuerza según Newton?', 2, 4, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Gravedad', 'Electromagnetismo', 'Fuerza nuclear fuerte', 'Fuerza nuclear débil', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué fuerza mantiene los planetas en órbita alrededor del Sol?', 3, 4, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('186,000 millas por segundo', '300,000 km por hora', '150,000 km/s', '299,792 km/s', 'D');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es la velocidad de la luz en el vacío?', 4, 4, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('La primera ley de Newton', 'La segunda ley de Newton', 'La tercera ley de Newton', 'Ley de gravitación universal', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué ley de Newton establece que un objeto en reposo permanecerá en reposo?', 5, 4, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Principio de incertidumbre de Heisenberg', 'Teoría de la relatividad', 'Ley de Coulomb', 'Ley de Ohm', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué principio en mecánica cuántica establece que no se pueden conocer simultáneamente posición y momento con precisión?', 6, 4, 1, 1, 'dificil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Efecto fotoeléctrico', 'Difracción de rayos X', 'Principio de Arquímedes', 'Ley de Hooke', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué fenómeno explicó Einstein en 1905 usando fotones?', 7, 4, 1, 1, 'dificil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Ondas electromagnéticas', 'Ondas mecánicas', 'Ondas gravitacionales', 'Ondas sonoras', 'C');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué tipo de ondas predice la teoría de la relatividad y fueron detectadas en 2015?', 8, 4, 1, 1, 'dificil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Partículas subatómicas: quarks', 'Átomos neutros', 'Moléculas simples', 'Electrones libres', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué partículas subatómicas forman los protones y neutrones?', 9, 4, 1, 1, 'dificil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Superconductividad', 'Superfluidez', 'Magnetismo', 'Termodinámica', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué fenómeno ocurre en ciertos materiales a temperaturas muy bajas, permitiendo resistencia eléctrica cero?', 10, 4, 1, 1, 'dificil');
-
--- BIOLOGIA --------------------------------------------------------------------------------------
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Célula', 'Tejido', 'Órgano', 'Sistema', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es la unidad básica de la vida?', @idResp, 5, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('ADN', 'ARN', 'Proteína', 'Lípido', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es la molécula que contiene la información genética?', @idResp, 5, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Charles Darwin', 'Gregor Mendel', 'Louis Pasteur', 'James Watson', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién propuso la teoría de la evolución por selección natural?', @idResp, 5, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Fotosíntesis', 'Respiración celular', 'Fermentación', 'Digestión', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué proceso realizan las plantas para producir glucosa?', @idResp, 5, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Corazón', 'Pulmón', 'Hígado', 'Riñón', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué órgano bombea sangre a todo el cuerpo?', @idResp, 5, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Mitosis', 'Meiosis', 'Fagocitosis', 'Difusión', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cómo se llama la división celular que produce células hijas idénticas?', @idResp, 5, 1, 1, 'dificil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Cloroplastos', 'Mitocondrias', 'Núcleo', 'Retículo endoplásmico', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué orgánulo celular realiza la fotosíntesis?', @idResp, 5, 1, 1, 'dificil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Sistemas nervioso y endocrino', 'Sistemas circulatorio y respiratorio', 'Sistemas digestivo y excretor', 'Sistemas muscular y esquelético', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué sistemas regulan las funciones del cuerpo humano?', @idResp, 5, 1, 1, 'dificil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Especie Homo sapiens', 'Especie Homo erectus', 'Especie Neanderthal', 'Especie Australopithecus', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es la especie humana moderna?', @idResp, 5, 1, 1, 'dificil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Genética molecular', 'Biología celular', 'Ecología', 'Fisiología', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué rama estudia los genes a nivel molecular?', @idResp, 5, 1, 1, 'dificil');
-
-
--- CINE --------------------------------------------------------------------------------------
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Steven Spielberg', 'Christopher Nolan', 'James Cameron', 'Quentin Tarantino', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES ('¿Quién dirigió "E.T. el Extraterrestre"?', @idResp, 6, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Titanic', 'Avatar', 'Gladiator', 'Jurassic Park', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES ('¿Qué película de James Cameron se estrenó en 1997 y cuenta una historia de amor en un barco hundiéndose?', @idResp, 6, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Star Wars', 'Star Trek', 'Guardians of the Galaxy', 'The Matrix', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES ('¿Qué saga espacial comenzó en 1977 con la primera película?', @idResp, 6, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Premios Oscar', 'Globos de Oro', 'BAFTA', 'Cannes', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES ('¿Cuál es el premio más importante del cine estadounidense?', @idResp, 6, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('El Padrino', 'Goodfellas', 'Scarface', 'Casablanca', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES ('¿Qué película de Francis Ford Coppola es un clásico del cine de mafia?', @idResp, 6, 1, 1, 'facil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Cinematografía', 'Edición', 'Guion', 'Dirección artística', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES ('¿Qué término describe la técnica de capturar la imagen en cine?', @idResp, 6, 1, 1, 'dificil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Guionistas', 'Directores', 'Productores', 'Actores', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES ('¿Quién crea la historia y los diálogos de una película?', @idResp, 6, 1, 1, 'dificil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Suspense psicológico', 'Comedia romántica', 'Western', 'Musical', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES ('¿Qué género cinematográfico enfatiza la tensión y el misterio psicológico?', @idResp, 6, 1, 1, 'dificil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Efectos especiales digitales', 'Stop motion', 'Animación tradicional', 'Trucos mecánicos', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES ('¿Qué técnica moderna se utiliza para crear efectos visuales realistas en películas?', @idResp, 6, 1, 1, 'dificil');
-
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Premio Palme', 'Premio Saturn', 'Premio Hugo', 'Premio Emmy', 'A');
-SET @idResp = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES ('¿Cuál es el premio máximo del Festival de Cannes?', @idResp, 6, 1, 1, 'dificil');
-
--- ===================== ARTE =====================
--- Pregunta 1
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Leonardo da Vinci', 'Miguel Ángel', 'Rafael', 'Donatello', 'A');
-SET @idRespArte1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién pintó La Última Cena?', @idRespArte1, 2, 1, 1, 'facil');
-
--- Pregunta 2
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Vincent van Gogh', 'Claude Monet', 'Pablo Picasso', 'Salvador Dalí', 'A');
-SET @idRespArte2 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué artista neerlandés cortó su propia oreja?', @idRespArte2, 2, 1, 1, 'facil');
-
--- Pregunta 3
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('La Mona Lisa', 'La última cena', 'El nacimiento de Venus', 'La persistencia de la memoria', 'A');
-SET @idRespArte3 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es la pintura más famosa de Leonardo da Vinci?', @idRespArte3, 2, 1, 1, 'facil');
-
--- Pregunta 4
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Renacimiento', 'Barroco', 'Romanticismo', 'Impresionismo', 'A');
-SET @idRespArte4 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿A qué movimiento artístico pertenece Leonardo da Vinci?', @idRespArte4, 2, 1, 1, 'facil');
-
--- Pregunta 5
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Fresco', 'Óleo', 'Acuarela', 'Témpera', 'A');
-SET @idRespArte5 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué técnica consiste en aplicar pigmento sobre yeso húmedo?', @idRespArte5, 2, 1, 1, 'facil');
-
--- Pregunta 6
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Cubismo', 'Surrealismo', 'Expresionismo', 'Futurismo', 'A');
-SET @idRespArte6 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué movimiento artístico fue desarrollado por Picasso y Braque?', @idRespArte6, 2, 1, 1, 'dificil');
-
--- Pregunta 7
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Guernica', 'El jardín de las delicias', 'La noche estrellada', 'Las meninas', 'A');
-SET @idRespArte7 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué obra de Picasso representa los horrores de la guerra civil española?', @idRespArte7, 2, 1, 1, 'dificil');
-
--- Pregunta 8
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Claude Monet', 'Paul Cézanne', 'Edgar Degas', 'Pierre-Auguste Renoir', 'A');
-SET @idRespArte8 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién fue un pintor líder del impresionismo francés?', @idRespArte8, 2, 1, 1, 'dificil');
-
--- Pregunta 9
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Arte Paleolítico', 'Arte Románico', 'Arte Gótico', 'Arte Barroco', 'A');
-SET @idRespArte9 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué arte es característico de las pinturas de las cuevas de Altamira?', @idRespArte9, 2, 1, 1, 'dificil');
-
--- Pregunta 10
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Sandro Botticelli', 'Hieronymus Bosch', 'Caravaggio', 'El Greco', 'A');
-SET @idRespArte10 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién pintó “El nacimiento de Venus”?', @idRespArte10, 2, 1, 1, 'dificil');
-
--- Literatura -----------------------------------------------------------------------
-
--- Pregunta 1
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Miguel de Cervantes', 'William Shakespeare', 'Gabriel García Márquez', 'Jorge Luis Borges', 'A');
-SET @idRespLit1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién escribió "Don Quijote de la Mancha"?', @idRespLit1, 7, 1, 1, 'facil');
-
--- Pregunta 2
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Don Quijote de la Mancha', 'La Odisea', 'Cien años de soledad', 'Hamlet', 'A');
-SET @idRespLit2 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es la obra más famosa de Cervantes?', @idRespLit2, 7, 1, 1, 'facil');
-
--- Pregunta 3
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('William Shakespeare', 'Charles Dickens', 'Mark Twain', 'Jane Austen', 'A');
-SET @idRespLit3 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién es considerado el dramaturgo inglés más importante?', @idRespLit3, 7, 1, 1, 'facil');
-
--- Pregunta 4
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Poesía', 'Novela', 'Ensayo', 'Teatro', 'A');
-SET @idRespLit4 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué género literario se centra en la representación de personajes y acciones en forma narrativa?', @idRespLit4, 7, 1, 1, 'facil');
-
--- Pregunta 5
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Realismo', 'Romanticismo', 'Modernismo', 'Barroco', 'A');
-SET @idRespLit5 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué movimiento literario enfatiza la objetividad y la descripción detallada de la realidad?', @idRespLit5, 7, 1, 1, 'facil');
-
--- Pregunta 6
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Gabriel García Márquez', 'Mario Vargas Llosa', 'Julio Cortázar', 'Isabel Allende', 'A');
-SET @idRespLit6 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién ganó el Nobel de Literatura con "Cien años de soledad"?', @idRespLit6, 7, 1, 1, 'dificil');
-
--- Pregunta 7
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('El Aleph', 'Ficciones', 'Cien años de soledad', 'Rayuela', 'B');
-SET @idRespLit7 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué colección de cuentos de Borges incluye "El Aleph"?', @idRespLit7, 7, 1, 1, 'dificil');
-
--- Pregunta 8
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Soneto', 'Haiku', 'Oda', 'Elegía', 'A');
-SET @idRespLit8 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué tipo de poema tiene 14 versos?', @idRespLit8, 7, 1, 1, 'dificil');
-
--- Pregunta 9
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('James Joyce', 'Virginia Woolf', 'Ernest Hemingway', 'F. Scott Fitzgerald', 'A');
-SET @idRespLit9 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién es autor de "Ulises", novela experimental del siglo XX?', @idRespLit9, 7, 1, 1, 'dificil');
-
--- Pregunta 10
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Teoría literaria', 'Crítica literaria', 'Semiótica', 'Hermenéutica', 'A');
-SET @idRespLit10 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué disciplina estudia los métodos de interpretación y análisis de textos literarios?', @idRespLit10, 7, 1, 1, 'dificil');
-
-
--- geografia -----------------------------------------------------------------------
-
--- Pregunta 1
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Monte Everest', 'K2', 'Annapurna', 'Makalu', 'A');
-SET @idRespGeo1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es la montaña más alta del mundo?', @idRespGeo1, 8, 1, 1, 'facil');
-
--- Pregunta 2
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Amazonas', 'Nilo', 'Yangtsé', 'Misisipi', 'A');
-SET @idRespGeo2 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué río es considerado el más caudaloso del mundo?', @idRespGeo2, 8, 1, 1, 'facil');
-
--- Pregunta 3
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Asia', 'África', 'América', 'Europa', 'A');
-SET @idRespGeo3 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es el continente más grande por superficie?', @idRespGeo3, 8, 1, 1, 'facil');
-
--- Pregunta 4
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Río Nilo', 'Río Congo', 'Río Amazonas', 'Río Mekong', 'A');
-SET @idRespGeo4 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué río atraviesa Egipto de sur a norte?', @idRespGeo4, 8, 1, 1, 'facil');
-
--- Pregunta 5
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Desierto del Sahara', 'Desierto de Gobi', 'Desierto de Atacama', 'Desierto de Kalahari', 'A');
-SET @idRespGeo5 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es el desierto más grande del mundo?', @idRespGeo5, 8, 1, 1, 'facil');
-
--- Pregunta 6
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Cordillera de los Andes', 'Montañas Rocosas', 'Himalaya', 'Alpes', 'A');
-SET @idRespGeo6 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué cordillera se extiende a lo largo de la costa occidental de Sudamérica?', @idRespGeo6, 8, 1, 1, 'facil');
-
--- Pregunta 7
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Océano Pacífico', 'Océano Atlántico', 'Océano Índico', 'Océano Ártico', 'A');
-SET @idRespGeo7 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es el océano más grande del planeta?', @idRespGeo7, 8, 1, 1, 'dificil');
-
--- Pregunta 8
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Lagos de Plitvice', 'Lago Baikal', 'Lago Titicaca', 'Lago Superior', 'B');
-SET @idRespGeo8 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué lago en Siberia es el más profundo del mundo?', @idRespGeo8, 8, 1, 1, 'dificil');
-
--- Pregunta 9
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Fusión continental', 'Subducción', 'Deriva continental', 'Erosión', 'C');
-SET @idRespGeo9 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué fenómeno explica el movimiento de los continentes?', @idRespGeo9, 8, 1, 1, 'dificil');
-
--- Pregunta 10
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Climas tropicales', 'Climas templados', 'Climas polares', 'Climas desérticos', 'A');
-SET @idRespGeo10 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué tipo de climas predominan cerca del ecuador?', @idRespGeo10, 8, 1, 1, 'dificil');
-
--- MUSICA -----------------------------------------------------------------------
-
-
--- Pregunta 1
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Ludwig van Beethoven', 'Wolfgang Amadeus Mozart', 'Johann Sebastian Bach', 'Frédéric Chopin', 'A');
-SET @idRespMus1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién compuso la Novena Sinfonía?', @idRespMus1, 9, 1, 1, 'facil');
-
--- Pregunta 2
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Piano', 'Violín', 'Flauta', 'Guitarra', 'A');
-SET @idRespMus2 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué instrumento tiene 88 teclas?', @idRespMus2, 9, 1, 1, 'facil');
-
--- Pregunta 3
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Sinfonía', 'Ópera', 'Concierto', 'Sonata', 'A');
-SET @idRespMus3 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué forma musical orquestal tiene varios movimientos y está escrita para una orquesta completa?', @idRespMus3, 9, 1, 1, 'facil');
-
--- Pregunta 4
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Rock', 'Jazz', 'Blues', 'Pop', 'A');
-SET @idRespMus4 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué género musical nació en Estados Unidos en los años 50?', @idRespMus4, 9, 1, 1, 'facil');
-
--- Pregunta 5
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Beatles', 'Rolling Stones', 'Pink Floyd', 'Queen', 'A');
-SET @idRespMus5 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué banda británica lanzó el álbum "Sgt. Pepper\'s Lonely Hearts Club Band"?', @idRespMus5, 9, 1, 1, 'facil');
-
--- Pregunta 6
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Freddie Mercury', 'Elvis Presley', 'David Bowie', 'Jimi Hendrix', 'A');
-SET @idRespMus6 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién fue el vocalista principal de Queen?', @idRespMus6, 9, 1, 1, 'dificil');
-
--- Pregunta 7
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Notas musicales: Do, Re, Mi, Fa, Sol, La, Si', 'Notas musicales: La, Si, Do, Re, Mi, Fa, Sol', 'Notas musicales: Re, Mi, Fa, Sol, La, Si, Do', 'Notas musicales: Mi, Fa, Sol, La, Si, Do, Re', 'A');
-SET @idRespMus7 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuáles son las notas musicales en orden ascendente?', @idRespMus7, 9, 1, 1, 'dificil');
-
--- Pregunta 8
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Escala mayor', 'Escala menor', 'Escala pentatónica', 'Escala cromática', 'A');
-SET @idRespMus8 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué escala tiene un patrón de tonos y semitonos: T-T-S-T-T-T-S?', @idRespMus8, 9, 1, 1, 'dificil');
-
--- Pregunta 9
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Compositores del barroco', 'Compositores del romanticismo', 'Compositores del impresionismo', 'Compositores del renacimiento', 'A');
-SET @idRespMus9 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué compositores se destacan en el periodo barroco?', @idRespMus9, 9, 1, 1, 'dificil');
-
--- Pregunta 10
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Teoría musical', 'Armonía', 'Contrapunto', 'Orquestación', 'B');
-SET @idRespMus10 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué disciplina estudia la combinación de sonidos y acordes en la música?', @idRespMus10, 9, 1, 1, 'dificil');
-
-
--- DEPORTES -----------------------------------------------------------------------
-
--- Pregunta 1
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Fútbol', 'Baloncesto', 'Tenis', 'Natación', 'A');
-SET @idRespDep1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es el deporte más popular del mundo?', @idRespDep1, 10, 1, 1, 'facil');
-
--- Pregunta 2
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Lionel Messi', 'Cristiano Ronaldo', 'Pelé', 'Diego Maradona', 'A');
-SET @idRespDep2 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué jugador argentino ganó 7 Balones de Oro?', @idRespDep2, 10, 1, 1, 'facil');
-
--- Pregunta 3
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Olimpiadas', 'Mundial de Fútbol', 'Copa América', 'Eurocopa', 'A');
-SET @idRespDep3 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es el evento deportivo internacional que ocurre cada 4 años y reúne varios deportes?', @idRespDep3, 10, 1, 1, 'facil');
-
--- Pregunta 4
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Maratón', '100 metros', 'Salto de altura', 'Lanzamiento de jabalina', 'A');
-SET @idRespDep4 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué prueba de atletismo consiste en correr 42,195 km?', @idRespDep4, 10, 1, 1, 'facil');
-
--- Pregunta 5
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Michael Jordan', 'LeBron James', 'Kobe Bryant', 'Magic Johnson', 'A');
-SET @idRespDep5 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién es considerado uno de los mejores jugadores de baloncesto de todos los tiempos?', @idRespDep5, 10, 1, 1, 'facil');
-
--- Pregunta 6
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Boxeo', 'Lucha libre', 'Kickboxing', 'Judo', 'A');
-SET @idRespDep6 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué deporte de combate se caracteriza por golpes de puño y guantes acolchados?', @idRespDep6, 10, 1, 1, 'dificil');
-
--- Pregunta 7
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Tour de Francia', 'Giro de Italia', 'Vuelta a España', 'Clasico de Italia', 'A');
-SET @idRespDep7 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué carrera ciclista es la más famosa de Francia?', @idRespDep7, 10, 1, 1, 'dificil');
-
--- Pregunta 8
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Formula 1', 'Nascar', 'IndyCar', 'Rally Dakar', 'A');
-SET @idRespDep8 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es la categoría máxima de automovilismo a nivel mundial?', @idRespDep8, 10, 1, 1, 'dificil');
-
--- Pregunta 9
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Rugby', 'Fútbol americano', 'Hockey sobre césped', 'Balonmano', 'A');
-SET @idRespDep9 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué deporte de contacto se juega con un balón ovalado y placajes?', @idRespDep9, 10, 1, 1, 'dificil');
-
--- Pregunta 10
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Tenis de mesa', 'Bádminton', 'Squash', 'Pickleball', 'B');
-SET @idRespDep10 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál de estos deportes se juega con volante y raqueta en una cancha interior?', @idRespDep10, 10, 1, 1, 'dificil');
-
--- TECNOLOGIA -----------------------------------------------------------------------
-
--- Pregunta 1
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Internet', 'Bluetooth', 'Wi-Fi', 'NFC', 'A');
-SET @idRespTec1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué red mundial permite la conexión de computadoras a nivel global?', @idRespTec1, 11, 1, 1, 'facil');
-
--- Pregunta 2
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Tim Berners-Lee', 'Steve Jobs', 'Bill Gates', 'Elon Musk', 'A');
-SET @idRespTec2 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién inventó la World Wide Web?', @idRespTec2, 11, 1, 1, 'facil');
-
--- Pregunta 3
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('CPU', 'GPU', 'RAM', 'ROM', 'A');
-SET @idRespTec3 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué componente central ejecuta las instrucciones de un computador?', @idRespTec3, 11, 1, 1, 'facil');
-
--- Pregunta 4
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Software', 'Hardware', 'Firmware', 'Middleware', 'A');
-SET @idRespTec4 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cómo se llama la parte tangible de un computador?', @idRespTec4, 11, 1, 1, 'facil');
-
--- Pregunta 5
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Python', 'Java', 'C++', 'JavaScript', 'A');
-SET @idRespTec5 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué lenguaje de programación se caracteriza por su sintaxis clara y legible?', @idRespTec5, 11, 1, 1, 'facil');
-
--- Pregunta 6
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Inteligencia Artificial', 'Realidad Virtual', 'Blockchain', 'Big Data', 'A');
-SET @idRespTec6 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué tecnología permite que las máquinas imiten procesos de pensamiento humano?', @idRespTec6, 11, 1, 1, 'dificil');
-
--- Pregunta 7
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Algoritmo de búsqueda', 'Algoritmo de ordenamiento', 'Algoritmo de cifrado', 'Algoritmo de compresión', 'B');
-SET @idRespTec7 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué tipo de algoritmo organiza datos en orden ascendente o descendente?', @idRespTec7, 11, 1, 1, 'dificil');
-
--- Pregunta 8
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Redes neuronales', 'Redes locales', 'Redes de área amplia', 'Redes inalámbricas', 'A');
-SET @idRespTec8 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué arquitectura informática se inspira en el funcionamiento del cerebro humano?', @idRespTec8, 11, 1, 1, 'dificil');
-
--- Pregunta 9
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Criptografía', 'Programación web', 'Sistemas operativos', 'Ciberseguridad', 'D');
-SET @idRespTec9 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué área de la informática protege la información frente a ataques y accesos no autorizados?', @idRespTec9, 11, 1, 1, 'dificil');
-
--- Pregunta 10
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Aprendizaje profundo', 'Aprendizaje supervisado', 'Aprendizaje no supervisado', 'Aprendizaje por refuerzo', 'A');
-SET @idRespTec10 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué técnica de IA utiliza múltiples capas para aprender representaciones complejas de datos?', @idRespTec10, 11, 1, 1, 'dificil');
-
-
-
--- VIDEOJUEGOS -----------------------------------------------------------------------
-
--- Pregunta 1
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Super Mario', 'Sonic', 'Pac-Man', 'Zelda', 'A');
-SET @idRespVid1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué personaje es el fontanero icónico de Nintendo?', @idRespVid1, 12, 1, 1, 'facil');
-
--- Pregunta 2
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Nintendo', 'Sony', 'Microsoft', 'Sega', 'A');
-SET @idRespVid2 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué compañía desarrolló la consola Switch?', @idRespVid2, 12, 1, 1, 'facil');
-
--- Pregunta 3
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('The Legend of Zelda', 'Final Fantasy', 'Metroid', 'Donkey Kong', 'A');
-SET @idRespVid3 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es la saga protagonizada por Link?', @idRespVid3, 12, 1, 1, 'facil');
-
--- Pregunta 4
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Fortnite', 'Minecraft', 'Roblox', 'Among Us', 'B');
-SET @idRespVid4 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué juego permite construir bloques y explorar libremente?', @idRespVid4, 12, 1, 1, 'facil');
-
--- Pregunta 5
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Minecraft', 'Call of Duty', 'FIFA', 'Tetris', 'A');
-SET @idRespVid5 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué juego de construcción y supervivencia se volvió viral en 2010?', @idRespVid5, 12, 1, 1, 'facil');
-
--- Pregunta 6
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Pokémon', 'Digimon', 'Yu-Gi-Oh!', 'Bakugan', 'A');
-SET @idRespVid6 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué franquicia de monstruos tiene Pikachu como personaje principal?', @idRespVid6, 12, 1, 1, 'facil');
-
--- Pregunta 7
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Esports', 'Speedrun', 'Cosplay', 'Modding', 'A');
-SET @idRespVid7 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cómo se denomina la competición profesional de videojuegos?', @idRespVid7, 12, 1, 1, 'dificil');
-
--- Pregunta 8
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Engine Unreal', 'Unity', 'CryEngine', 'Frostbite', 'B');
-SET @idRespVid8 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué motor de videojuegos es desarrollado por Unity Technologies?', @idRespVid8, 12, 1, 1, 'dificil');
-
--- Pregunta 9
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Juego de mundo abierto', 'Juego lineal', 'Juego de puzzles', 'Juego de rol', 'A');
-SET @idRespVid9 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué tipo de juego permite explorar un mundo sin restricciones lineales?', @idRespVid9, 12, 1, 1, 'dificil');
-
--- Pregunta 10
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Inteligencia artificial en NPCs', 'Física en motores gráficos', 'Renderizado 3D', 'Programación de servidores', 'A');
-SET @idRespVid10 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué técnica se utiliza para dotar de comportamiento inteligente a personajes no jugables?', @idRespVid10, 12, 1, 1, 'dificil');
-
-
--- GASTRONOMIA -----------------------------------------------------------------------
-
--- Pregunta 1
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Pizza', 'Hamburguesa', 'Sushi', 'Pasta', 'A');
-SET @idRespGast1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué plato italiano se hace con masa, tomate y queso?', @idRespGast1, 13, 1, 1, 'facil');
-
--- Pregunta 2
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Italia', 'Francia', 'España', 'México', 'A');
-SET @idRespGast2 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿De qué país es originaria la pizza?', @idRespGast2, 13, 1, 1, 'facil');
-
--- Pregunta 3
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Sushi', 'Taco', 'Paella', 'Curry', 'A');
-SET @idRespGast3 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué plato japonés incluye pescado crudo y arroz?', @idRespGast3, 13, 1, 1, 'facil');
-
--- Pregunta 4
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Café', 'Té', 'Chocolate', 'Agua', 'A');
-SET @idRespGast4 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué bebida se obtiene por tostado y molido de granos?', @idRespGast4, 13, 1, 1, 'facil');
-
--- Pregunta 5
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Cocción', 'Fritura', 'Horneado', 'Salteado', 'C');
-SET @idRespGast5 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué método de cocción utiliza calor seco en un horno?', @idRespGast5, 13, 1, 1, 'facil');
-
--- Pregunta 6
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Sous-vide', 'Braseado', 'Glaseado', 'Escabeche', 'A');
-SET @idRespGast6 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué técnica culinaria consiste en cocinar alimentos al vacío y baja temperatura?', @idRespGast6, 13, 1, 1, 'dificil');
-
--- Pregunta 7
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Cocina molecular', 'Cocina casera', 'Cocina rápida', 'Cocina tradicional', 'A');
-SET @idRespGast7 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué rama de la gastronomía aplica principios químicos y físicos a la cocina?', @idRespGast7, 13, 1, 1, 'dificil');
-
--- Pregunta 8
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Maridaje', 'Fermentación', 'Pasteurización', 'Confitado', 'A');
-SET @idRespGast8 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué término describe la combinación armoniosa de alimentos y bebidas?', @idRespGast8, 13, 1, 1, 'dificil');
-
--- Pregunta 9
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Champiñones', 'Trufa', 'Setas', 'Boletus', 'B');
-SET @idRespGast9 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué hongo es considerado un manjar de alta cocina y muy caro?', @idRespGast9, 13, 1, 1, 'dificil');
-
--- Pregunta 10
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Fermentación láctica', 'Deshidratación', 'Curado', 'Ahumado', 'A');
-SET @idRespGast10 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué proceso convierte la lactosa en ácido láctico en alimentos?', @idRespGast10, 13, 1, 1, 'dificil');
-
-
--- MITOLOGIA -----------------------------------------------------------------------
-
--- Pregunta 1
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Zeus', 'Hades', 'Poseidón', 'Ares', 'A');
-SET @idRespMit1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién es el dios supremo del Olimpo?', @idRespMit1, 14, 1, 1, 'facil');
-
--- Pregunta 2
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Olimpo', 'Tártaro', 'Érebo', 'Asgard', 'A');
-SET @idRespMit2 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Dónde residían los dioses griegos?', @idRespMit2, 14, 1, 1, 'facil');
-
--- Pregunta 3
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Thor', 'Loki', 'Odin', 'Freya', 'C');
-SET @idRespMit3 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién es el dios principal de la mitología nórdica?', @idRespMit3, 14, 1, 1, 'facil');
-
--- Pregunta 4
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Hércules', 'Aquiles', 'Perseo', 'Teseo', 'A');
-SET @idRespMit4 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué héroe realizó los 12 trabajos?', @idRespMit4, 14, 1, 1, 'facil');
-
--- Pregunta 5
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Medusa', 'Minotauro', 'Hidra', 'Quimera', 'A');
-SET @idRespMit5 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué criatura tenía serpientes en lugar de cabello?', @idRespMit5, 14, 1, 1, 'facil');
-
--- Pregunta 6
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Valquirias', 'Nornas', 'Elfos', 'Jotuns', 'A');
-SET @idRespMit6 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué figuras femeninas elegían a los guerreros muertos para el Valhalla?', @idRespMit6, 14, 1, 1, 'dificil');
-
--- Pregunta 7
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Atenea', 'Artemisa', 'Afrodita', 'Hera', 'A');
-SET @idRespMit7 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién es la diosa de la sabiduría en Grecia?', @idRespMit7, 14, 1, 1, 'dificil');
-
--- Pregunta 8
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Dionisio', 'Apolo', 'Hermes', 'Hefesto', 'B');
-SET @idRespMit8 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué dios griego es el patrón de la música y las artes?', @idRespMit8, 14, 1, 1, 'dificil');
-
--- Pregunta 9
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Odiseo', 'Aquiles', 'Agamenón', 'Paris', 'A');
-SET @idRespMit9 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué héroe griego ideó el caballo de Troya?', @idRespMit9, 14, 1, 1, 'dificil');
-
--- Pregunta 10
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Mitología comparada', 'Mitología clásica', 'Mitología nórdica', 'Mitología egipcia', 'A');
-SET @idRespMit10 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué disciplina compara mitologías de diferentes culturas?', @idRespMit10, 14, 1, 1, 'dificil');
-
-
--- QUIMICA -----------------------------------------------------------------------
-
--- Pregunta 1
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('H2O', 'CO2', 'O2', 'N2', 'A');
-SET @idRespQui1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cuál es la fórmula química del agua?', @idRespQui1, 16, 1, 1, 'facil');
-
--- Pregunta 2
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Elemento', 'Molécula', 'Compuesto', 'Ion', 'A');
-SET @idRespQui2 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cómo se llama una sustancia formada por átomos del mismo tipo?', @idRespQui2, 16, 1, 1, 'facil');
-
--- Pregunta 3
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Tabla periódica', 'Tabla de símbolos', 'Tabla de masas', 'Tabla de reacciones', 'A');
-SET @idRespQui3 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué tabla organiza los elementos químicos según sus propiedades?', @idRespQui3, 16, 1, 1, 'facil');
-
--- Pregunta 4
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Ácido', 'Base', 'Sal', 'Óxido', 'A');
-SET @idRespQui4 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué tipo de sustancia tiene un pH menor a 7?', @idRespQui4, 16, 1, 1, 'facil');
-
--- Pregunta 5
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('pH 7', 'pH 0', 'pH 14', 'pH 3', 'A');
-SET @idRespQui5 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué pH indica una solución neutra?', @idRespQui5, 16, 1, 1, 'facil');
-
--- Pregunta 6
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Ley de conservación de la masa', 'Ley de las proporciones definidas', 'Ley de Boyle', 'Ley de Charles', 'A');
-SET @idRespQui6 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué ley establece que la masa no se crea ni se destruye en una reacción?', @idRespQui6, 16, 1, 1, 'dificil');
-
--- Pregunta 7
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Reacción redox', 'Reacción ácido-base', 'Reacción de precipitación', 'Reacción endotérmica', 'A');
-SET @idRespQui7 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué reacción implica transferencia de electrones?', @idRespQui7, 16, 1, 1, 'dificil');
-
--- Pregunta 8
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Enlace covalente', 'Enlace iónico', 'Enlace metálico', 'Enlace de hidrógeno', 'A');
-SET @idRespQui8 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué tipo de enlace comparte electrones entre átomos?', @idRespQui8, 16, 1, 1, 'dificil');
-
--- Pregunta 9
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Catalizador', 'Inhibidor', 'Reactivo', 'Producto', 'A');
-SET @idRespQui9 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué sustancia acelera una reacción química sin consumirse?', @idRespQui9, 16, 1, 1, 'dificil');
-
--- Pregunta 10
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Química orgánica', 'Química inorgánica', 'Bioquímica', 'Físicoquímica', 'C');
-SET @idRespQui10 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué rama estudia moléculas biológicas como proteínas y carbohidratos?', @idRespQui10, 16, 1, 1, 'dificil');
-
-
--- ASTRONOMIA -----------------------------------------------------------------------
-
--- Pregunta 1
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Sol', 'Luna', 'Marte', 'Júpiter', 'A');
-SET @idRespAst1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué estrella es el centro del sistema solar?', @idRespAst1, 17, 1, 1, 'facil');
-
--- Pregunta 2
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Planeta', 'Estrella', 'Cometa', 'Asteroide', 'B');
-SET @idRespAst2 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué cuerpo celeste genera luz propia?', @idRespAst2, 17, 1, 1, 'facil');
-
--- Pregunta 3
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Vía Láctea', 'Andrómeda', 'Triángulo', 'Sagitario', 'A');
-SET @idRespAst3 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cómo se llama la galaxia donde se encuentra la Tierra?', @idRespAst3, 17, 1, 1, 'facil');
-
--- Pregunta 4
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Sistema solar', 'Galaxia', 'Nebulosa', 'Constelación', 'A');
-SET @idRespAst4 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cómo se denomina el conjunto de planetas y cuerpos que orbitan una estrella?', @idRespAst4, 17, 1, 1, 'facil');
-
--- Pregunta 5
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Neil Armstrong', 'Yuri Gagarin', 'Buzz Aldrin', 'Michael Collins', 'A');
-SET @idRespAst5 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién fue el primer hombre en caminar sobre la Luna?', @idRespAst5, 17, 1, 1, 'facil');
-
--- Pregunta 6
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Telescopio', 'Microscopio', 'Espectroscopio', 'Cámara', 'A');
-SET @idRespAst6 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué instrumento permite observar cuerpos celestes a gran distancia?', @idRespAst6, 17, 1, 1, 'dificil');
-
--- Pregunta 7
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Agujero negro', 'Supernova', 'Estrella de neutrones', 'Quásar', 'A');
-SET @idRespAst7 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué fenómeno astronómico es una región del espacio con gravedad extrema de la que nada escapa?', @idRespAst7, 17, 1, 1, 'dificil');
-
--- Pregunta 8
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Materia oscura', 'Energía oscura', 'Radiación cósmica', 'Planetas extrasolares', 'B');
-SET @idRespAst8 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué componente misterioso representa aproximadamente el 70% de la energía del universo?', @idRespAst8, 17, 1, 1, 'dificil');
-
--- Pregunta 9
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Exoplanetas', 'Cometas', 'Asteroides', 'Satélites', 'A');
-SET @idRespAst9 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué planeta fuera del sistema solar ha sido detectado orbitando otra estrella?', @idRespAst9, 17, 1, 1, 'dificil');
-
--- Pregunta 10
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Big Bang', 'Teoría de la relatividad', 'Inflación cósmica', 'Gravedad cuántica', 'A');
-SET @idRespAst10 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué teoría explica el origen y expansión del universo hace aproximadamente 13.8 mil millones de años?', @idRespAst10, 17, 1, 1, 'dificil');
-
--- POLITICA -----------------------------------------------------------------------
-
--- Pregunta 1
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Democracia', 'Monarquía', 'Dictadura', 'República', 'A');
-SET @idRespPol1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué sistema permite a los ciudadanos elegir a sus representantes?', @idRespPol1, 18, 1, 1, 'facil');
-
--- Pregunta 2
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('División de poderes', 'Soberanía popular', 'Derechos humanos', 'Estado de derecho', 'A');
-SET @idRespPol2 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué principio establece que los poderes del Estado son independientes?', @idRespPol2, 18, 1, 1, 'facil');
-
--- Pregunta 3
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Presidente', 'Primer Ministro', 'Canciller', 'Rey', 'A');
-SET @idRespPol3 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué cargo es la máxima autoridad ejecutiva en muchos países?', @idRespPol3, 18, 1, 1, 'facil');
-
--- Pregunta 4
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('ONU', 'OTAN', 'UE', 'OEA', 'A');
-SET @idRespPol4 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué organización internacional promueve la paz y la cooperación mundial?', @idRespPol4, 18, 1, 1, 'facil');
-
--- Pregunta 5
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Elecciones', 'Referéndum', 'Plebiscito', 'Asamblea', 'A');
-SET @idRespPol5 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué mecanismo permite que los ciudadanos aprueben o rechacen leyes directamente?', @idRespPol5, 18, 1, 1, 'facil');
-
--- Pregunta 6
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Separación de poderes', 'Federalismo', 'Centralismo', 'Autonomía', 'A');
-SET @idRespPol6 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué principio limita el poder del Estado mediante órganos independientes?', @idRespPol6, 18, 1, 1, 'dificil');
-
--- Pregunta 7
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Liberalismo', 'Socialismo', 'Conservadurismo', 'Nacionalismo', 'A');
-SET @idRespPol7 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué ideología promueve la libertad individual y economía de mercado?', @idRespPol7, 18, 1, 1, 'dificil');
-
--- Pregunta 8
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Constitución', 'Decreto', 'Ley', 'Reglamento', 'A');
-SET @idRespPol8 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué documento establece los derechos y deberes fundamentales de los ciudadanos?', @idRespPol8, 18, 1, 1, 'dificil');
-
--- Pregunta 9
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Partido político', 'Sindicato', 'ONG', 'Cooperativa', 'A');
-SET @idRespPol9 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Cómo se llama la agrupación que busca influir en la política mediante elecciones?', @idRespPol9, 18, 1, 1, 'dificil');
-
--- Pregunta 10
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Geopolítica', 'Política fiscal', 'Política monetaria', 'Política energética', 'A');
-SET @idRespPol10 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué estudio analiza la influencia del espacio geográfico en la política?', @idRespPol10, 18, 1, 1, 'dificil');
-
--- ECONOMIA -----------------------------------------------------------------------
-
--- Pregunta 1
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Oferta y demanda', 'Inflación', 'Deflación', 'Intervención estatal', 'A');
-SET @idRespEco1 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES ('¿Qué ley básica explica cómo se determinan los precios en un mercado?', @idRespEco1, 19, 1, 1, 'facil');
-
--- Pregunta 2
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Producto Interno Bruto', 'Renta Nacional', 'Ingreso per cápita', 'Deuda pública', 'A');
-SET @idRespEco2 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué indicador mide el valor total de los bienes y servicios producidos en un país?', @idRespEco2, 19, 1, 1, 'facil');
-
--- Pregunta 3
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Inflación', 'Deflación', 'Recesión', 'Depresión', 'A');
-SET @idRespEco3 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué fenómeno económico implica aumento generalizado de los precios?', @idRespEco3, 19, 1, 1, 'facil');
-
--- Pregunta 4
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Mercado', 'Banco', 'Estado', 'Empresa', 'A');
-SET @idRespEco4 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué institución regula la compraventa de bienes y servicios?', @idRespEco4, 19, 1, 1, 'facil');
-
--- Pregunta 5
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Microeconomía', 'Macroeconomía', 'Econometría', 'Finanzas', 'A');
-SET @idRespEco5 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué rama estudia la economía de individuos y empresas?', @idRespEco5, 19, 1, 1, 'facil');
-
--- Pregunta 6
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Adam Smith', 'John Maynard Keynes', 'Karl Marx', 'Milton Friedman', 'A');
-SET @idRespEco6 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Quién es considerado el padre de la economía moderna?', @idRespEco6, 19, 1, 1, 'dificil');
-
--- Pregunta 7
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Oferta monetaria', 'Tasa de interés', 'Déficit fiscal', 'Balanza de pagos', 'B');
-SET @idRespEco7 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué indicador mide la cantidad de dinero disponible en la economía?', @idRespEco7, 19, 1, 1, 'dificil');
-
--- Pregunta 8
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Economía conductual', 'Economía normativa', 'Economía positiva', 'Economía experimental', 'A');
-SET @idRespEco8 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué rama analiza los comportamientos económicos y decisiones humanas?', @idRespEco8, 19, 1, 1, 'dificil');
-
--- Pregunta 9
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Producto marginal', 'Costo marginal', 'Ingreso marginal', 'Beneficio marginal', 'C');
-SET @idRespEco9 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué concepto mide el ingreso adicional por unidad producida?', @idRespEco9, 19, 1, 1, 'dificil');
-
--- Pregunta 10
-INSERT INTO RESPUESTA (opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta) VALUES ('Política fiscal', 'Política monetaria', 'Política comercial', 'Política industrial', 'A');
-SET @idRespEco10 = LAST_INSERT_ID();
-INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, dificultad_actual) VALUES  ('¿Qué política utiliza el gobierno para influir en la economía mediante gastos e impuestos?', @idRespEco10, 19, 1, 1, 'dificil');
-
-
-
--- actualizacion por logica de dificultad_pregunta
-use desafio_unlam;
-
-ALTER TABLE PREGUNTA ADD COLUMN dificultad_num TINYINT;
-UPDATE PREGUNTA 
-SET dificultad_num = CASE dificultad_actual
-    WHEN 'facil' THEN 1
-    WHEN 'media' THEN 2
-    WHEN 'dificil' THEN 3
-END;
-ALTER TABLE PREGUNTA DROP COLUMN dificultad_actual;
-ALTER TABLE PREGUNTA CHANGE dificultad_num dificultad_actual TINYINT NOT NULL DEFAULT 2;
-
--- cambiosRiki
-ALTER TABLE USUARIO
-ADD COLUMN fechaDeRegistro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS RESPUESTA;
+DROP TABLE IF EXISTS RESPUESTA_USUARIO;
+DROP TABLE IF EXISTS AUDITORIA_CATEGORIA;
+DROP TABLE IF EXISTS AUDITORIA_PREGUNTA;
+DROP TABLE IF EXISTS PREGUNTA;
+DROP TABLE IF EXISTS PARTIDA;
+DROP TABLE IF EXISTS CATEGORIA;
+DROP TABLE IF EXISTS CIUDAD;
+DROP TABLE IF EXISTS ESTADO_PREGUNTA;
+DROP TABLE IF EXISTS PAIS;
+DROP TABLE IF EXISTS RESULTADO;
+DROP TABLE IF EXISTS ROL;
+DROP TABLE IF EXISTS SEXO;
+DROP TABLE IF EXISTS TIPO_PARTIDA;
+DROP TABLE IF EXISTS USUARIO;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 24-11-2025 a las 15:42:03
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de datos: `desafio_unlam`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `AUDITORIA_CATEGORIA`
+--
+
+CREATE TABLE `AUDITORIA_CATEGORIA` (
+  `id` int(11) NOT NULL,
+  `id_categoria` int(11) NOT NULL,
+  `nombre_antiguo` varchar(100) DEFAULT NULL,
+  `nombre_nuevo` varchar(100) DEFAULT NULL,
+  `color_antiguo` varchar(7) DEFAULT NULL,
+  `color_nuevo` varchar(7) DEFAULT NULL,
+  `comentario_editor` varchar(255) DEFAULT NULL,
+  `accion` enum('CREAR','EDITAR','DESHABILITAR') NOT NULL,
+  `fecha_cambio` datetime NOT NULL DEFAULT current_timestamp(),
+  `id_editor` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `AUDITORIA_CATEGORIA`
+--
+
+INSERT INTO `AUDITORIA_CATEGORIA` (`id`, `id_categoria`, `nombre_antiguo`, `nombre_nuevo`, `color_antiguo`, `color_nuevo`, `comentario_editor`, `accion`, `fecha_cambio`, `id_editor`) VALUES
+(1, 4, 'Físicaaaaaaaaaaaa', 'Físicaaaaaaaaaaaa', '#0000ff', '#0000ff', '', 'EDITAR', '2025-11-21 21:35:01', 4),
+(2, 4, 'Física', 'Física', '#0000ff', '#0000ff', '', 'EDITAR', '2025-11-21 21:35:09', 4),
+(3, 1, 'Historiaaaaaaaa', 'Historiaaaaaaaa', '#8b4513', '#8b4513', 'comentario!!!', 'EDITAR', '2025-11-21 21:49:05', 4),
+(4, 1, NULL, NULL, NULL, NULL, 'comment prueba reasignacion preguntas de historia, ahora quimica', 'DESHABILITAR', '2025-11-21 23:17:30', 4),
+(5, 1, NULL, NULL, NULL, NULL, '', 'DESHABILITAR', '2025-11-21 23:18:45', 4),
+(6, 2, NULL, NULL, NULL, NULL, 'preubbsbs', 'DESHABILITAR', '2025-11-21 23:29:34', 4),
+(7, 22, 'zeldaFans 2', 'zeldaFans 2', '#ff00ae', '#ff00ae', '', 'EDITAR', '2025-11-21 23:30:35', 4),
+(8, 3, NULL, NULL, NULL, NULL, 'Matemáticas a politica ¿Cuánto es 1 + 1?', 'DESHABILITAR', '2025-11-24 02:26:56', 4);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `AUDITORIA_PREGUNTA`
+--
+
+CREATE TABLE `AUDITORIA_PREGUNTA` (
+  `id` int(11) NOT NULL,
+  `id_pregunta` int(11) NOT NULL,
+  `id_solicitante` int(11) DEFAULT NULL,
+  `comentario_usuario` varchar(255) DEFAULT NULL,
+  `fecha_reporte` datetime NOT NULL DEFAULT current_timestamp(),
+  `id_editor` int(11) DEFAULT NULL,
+  `accion` enum('aprobado','rechazado','borrado','modificado') DEFAULT NULL,
+  `comentario_editor` varchar(255) DEFAULT NULL,
+  `fecha_revision` datetime DEFAULT NULL,
+  `estado_origen` int(11) NOT NULL,
+  `estado_destino` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `AUDITORIA_PREGUNTA`
+--
+
+INSERT INTO `AUDITORIA_PREGUNTA` (`id`, `id_pregunta`, `id_solicitante`, `comentario_usuario`, `fecha_reporte`, `id_editor`, `accion`, `comentario_editor`, `fecha_revision`, `estado_origen`, `estado_destino`) VALUES
+(1, 4, 2, 'Se reporta el enunciado: Tengo que mostrar el enunciado! no tengo porque acordarmelo.', '2025-11-19 23:34:28', 4, '', 'Prueba rechazo de reporte', '2025-11-19 23:55:50', 1, 3),
+(2, 30, 2, 'Se reporta el enunciado: Prueba numero 2', '2025-11-20 00:22:22', 4, 'modificado', 'Quito comentarios . prueba edicion', '2025-11-20 22:50:55', 1, 1),
+(3, 63, 2, 'Se reporta el enunciado: sssss', '2025-11-20 01:03:41', 4, 'modificado', 'Pruebo modificar pregunta suelta', '2025-11-20 23:44:09', 1, 1),
+(4, 119, 2, 'Se reporta el enunciado: sssss', '2025-11-20 01:17:22', 4, 'modificado', 'voy a aprobar', '2025-11-21 02:39:37', 1, 1),
+(8, 1, NULL, NULL, '2025-11-20 20:18:30', 4, 'modificado', 'COLOOOOOONNNN', '2025-11-21 00:18:30', 1, 1),
+(9, 1, 2, 'Se reporta el enunciado: COLOOOOOOOON', '2025-11-21 00:40:25', 4, '', '', '2025-11-21 03:11:39', 1, 3),
+(10, 121, NULL, NULL, '2025-11-20 22:40:53', 4, 'modificado', ' MELI MELI MELI	', '2025-11-21 02:40:53', 1, 1),
+(11, 119, NULL, NULL, '2025-11-20 22:42:41', 4, 'modificado', '', '2025-11-21 02:42:41', 1, 1),
+(12, 182, NULL, NULL, '2025-11-20 23:10:54', 4, 'modificado', '', '2025-11-21 03:10:54', 1, 1),
+(13, 11, NULL, NULL, '2025-11-21 19:30:21', 4, 'modificado', '', '2025-11-21 23:30:21', 1, 1),
+(14, 185, 2, 'Pregunta sugerida por jugador', '2025-11-24 01:57:07', 4, '', '', '2025-11-24 02:05:40', 2, 3),
+(15, 109, 2, 'Se reporta el enunciado: PRUEBA DOMINGO MELI MELI', '2025-11-24 02:03:47', NULL, NULL, NULL, NULL, 1, 2),
+(16, 185, NULL, NULL, '2025-11-23 22:04:25', 4, 'modificado', '', '2025-11-24 02:04:25', 1, 1),
+(17, 25, 6, 'Se reporta la respuesta: 1', '2025-11-24 02:08:49', 4, '', '', '2025-11-24 03:07:50', 1, 3),
+(18, 105, 2, 'Se reporta la respuesta: 1', '2025-11-24 02:34:35', 4, '', '', '2025-11-24 03:07:35', 1, 3),
+(19, 186, NULL, NULL, '2025-11-23 23:04:18', 4, 'modificado', '', '2025-11-24 03:04:18', 1, 1),
+(20, 186, NULL, NULL, '2025-11-23 23:04:30', 4, 'modificado', '', '2025-11-24 03:04:30', 1, 1),
+(21, 187, 2, 'Pregunta sugerida por jugador', '2025-11-24 15:39:07', NULL, NULL, NULL, NULL, 2, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `CATEGORIA`
+--
+
+CREATE TABLE `CATEGORIA` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `color` varchar(20) NOT NULL,
+  `estado` enum('ACTIVO','DESHABILITADO') NOT NULL DEFAULT 'ACTIVO'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `CATEGORIA`
+--
+
+INSERT INTO `CATEGORIA` (`id`, `nombre`, `color`, `estado`) VALUES
+(1, 'Historiaaaaaaaa', '#8b4513', 'DESHABILITADO'),
+(2, 'Arte', '#800080', 'DESHABILITADO'),
+(3, 'Matemáticas', '#808080', 'DESHABILITADO'),
+(4, 'Física', '#0000ff', 'ACTIVO'),
+(5, 'Biologia', '#006400', 'ACTIVO'),
+(6, 'Cine', '#FF0000', 'ACTIVO'),
+(7, 'Literatura', '#FFA500', 'ACTIVO'),
+(8, 'Geografía', '#008000', 'ACTIVO'),
+(9, 'Música', '#FF00FF', 'ACTIVO'),
+(10, 'Deportes', '#FFFF00', 'ACTIVO'),
+(11, 'Tecnología', '#0000FF', 'ACTIVO'),
+(12, 'Videojuegos', '#800080', 'ACTIVO'),
+(13, 'Gastronomía', '#CC760E', 'ACTIVO'),
+(14, 'Mitología', '#FFD700', 'ACTIVO'),
+(15, 'Biología', '#90EE90', 'ACTIVO'),
+(16, 'Química', '#00CED1', 'ACTIVO'),
+(17, 'Astronomia', '#191970', 'ACTIVO'),
+(18, 'Política', '#36454F', 'ACTIVO'),
+(19, 'Economía', '#A2CC0D', 'ACTIVO'),
+(20, '', '#e5bc2a', 'ACTIVO'),
+(21, '', '#e5bc2a', 'ACTIVO'),
+(22, 'zeldaFans 2', '#ff00ae', 'ACTIVO'),
+(23, 'zeldaFans', '#ff00ae', 'ACTIVO'),
+(24, 'koko', '#00ff62', 'ACTIVO'),
+(25, 'Gimnasia', '#0a12f5', 'ACTIVO'),
+(26, 'MELINA SOLEDAD MIALE', '#ff0000', 'ACTIVO');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `CIUDAD`
+--
+
+CREATE TABLE `CIUDAD` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(60) NOT NULL,
+  `id_pais` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `CIUDAD`
+--
+
+INSERT INTO `CIUDAD` (`id`, `nombre`, `id_pais`) VALUES
+(1, 'Buenos Aires', 1),
+(2, 'Córdoba', 1),
+(3, 'Rosario', 1),
+(4, 'Mendoza', 1),
+(5, 'San Miguel de Tucumán', 1),
+(6, 'La Plata', 1),
+(7, 'Mar del Plata', 1),
+(8, 'Salta', 1),
+(9, 'Santa Fe', 1),
+(10, 'Corrientes', 1),
+(11, 'Bahía Blanca', 1),
+(12, 'Resistencia', 1),
+(13, 'Posadas', 1),
+(14, 'Santiago del Estero', 1),
+(15, 'San Salvador de Jujuy', 1),
+(16, 'Neuquén', 1),
+(17, 'Formosa', 1),
+(18, 'Catamarca', 1),
+(19, 'San Juan', 1),
+(20, 'La Rioja', 1),
+(21, 'Comodoro Rivadavia', 1),
+(22, 'San Luis', 1),
+(23, 'Concordia', 1),
+(24, 'Río Cuarto', 1),
+(25, 'San Nicolás de los Arroyos', 1),
+(26, 'Tandil', 1),
+(27, 'Nueva York', 2),
+(28, 'Londres', 3),
+(29, 'Tokio', 4),
+(30, 'París', 5),
+(31, 'Pekín', 6),
+(32, 'Shanghái', 6),
+(33, 'Los Ángeles', 2),
+(34, 'Sídney', 7),
+(35, 'Berlín', 8),
+(36, 'Dubái', 9),
+(37, 'Singapur', 10),
+(38, 'Hong Kong', 6),
+(39, 'Toronto', 11),
+(40, 'São Paulo', 12),
+(41, 'Ciudad de México', 13),
+(42, 'Seúl', 14),
+(43, 'Roma', 15),
+(44, 'Madrid', 16),
+(45, 'El Cairo', 17),
+(46, 'Moscú', 18),
+(47, 'Bombay', 19),
+(48, 'Estambul', 20),
+(49, 'Castelar', 1),
+(50, 'Cuartel Zapiola', 1),
+(51, 'Distrito Sauce', 1),
+(52, 'Pedanía Remedios', 1),
+(53, 'Pedanía La Amarga', 1),
+(54, 'Comisión Municipal de Lafinur', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `ESTADO_PREGUNTA`
+--
+
+CREATE TABLE `ESTADO_PREGUNTA` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `ESTADO_PREGUNTA`
+--
+
+INSERT INTO `ESTADO_PREGUNTA` (`id`, `nombre`) VALUES
+(1, 'Aprobada'),
+(2, 'Pendiente'),
+(3, 'Rechazada'),
+(4, 'Deshabilitada'),
+(5, 'Modificada');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `PAIS`
+--
+
+CREATE TABLE `PAIS` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(60) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `PAIS`
+--
+
+INSERT INTO `PAIS` (`id`, `nombre`) VALUES
+(1, 'Argentina'),
+(2, 'Estados Unidos'),
+(3, 'Reino Unido'),
+(4, 'Japón'),
+(5, 'Francia'),
+(6, 'China'),
+(7, 'Australia'),
+(8, 'Alemania'),
+(9, 'Emiratos Árabes Unidos'),
+(10, 'Singapur'),
+(11, 'Canadá'),
+(12, 'Brasil'),
+(13, 'México'),
+(14, 'Corea del Sur'),
+(15, 'Italia'),
+(16, 'España'),
+(17, 'Egipto'),
+(18, 'Rusia'),
+(19, 'India'),
+(20, 'Turquía');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `PARTIDA`
+--
+
+CREATE TABLE `PARTIDA` (
+  `id` int(11) NOT NULL,
+  `fecha` datetime NOT NULL,
+  `puntaje_jugador1` int(11) NOT NULL,
+  `puntaje_jugador2` int(11) DEFAULT 0,
+  `id_jugador1` int(11) NOT NULL,
+  `id_jugador2` int(11) DEFAULT NULL,
+  `id_resultado` int(11) NOT NULL,
+  `id_tipo_partida` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `PARTIDA`
+--
+
+INSERT INTO `PARTIDA` (`id`, `fecha`, `puntaje_jugador1`, `puntaje_jugador2`, `id_jugador1`, `id_jugador2`, `id_resultado`, `id_tipo_partida`) VALUES
+(61, '2025-11-13 22:33:27', 0, 0, 3, NULL, 2, 1),
+(62, '2025-11-13 23:12:07', 0, 0, 3, NULL, 2, 1),
+(63, '2025-11-13 23:12:31', 0, 0, 3, NULL, 2, 1),
+(64, '2025-11-13 23:13:55', 0, 0, 3, NULL, 2, 1),
+(65, '2025-11-13 23:14:44', 0, 0, 3, NULL, 2, 1),
+(66, '2025-11-13 23:20:45', 4, 0, 3, NULL, 2, 1),
+(67, '2025-11-13 23:28:35', 4, 0, 3, NULL, 2, 1),
+(68, '2025-11-13 23:28:39', 8, 0, 3, NULL, 2, 1),
+(69, '2025-11-13 23:28:55', 8, 0, 3, NULL, 2, 1),
+(70, '2025-11-13 23:30:51', 0, 0, 3, NULL, 2, 1),
+(71, '2025-11-13 23:32:12', 18, 0, 3, NULL, 2, 1),
+(72, '2025-11-13 23:32:37', 20, 0, 3, NULL, 2, 1),
+(73, '2025-11-13 23:32:49', 20, 0, 3, NULL, 2, 1),
+(74, '2025-11-13 23:39:18', 2, 0, 3, NULL, 2, 1),
+(75, '2025-11-13 23:39:29', 10, 0, 3, NULL, 2, 1),
+(76, '2025-11-13 23:40:01', 10, 0, 3, NULL, 2, 1),
+(77, '2025-11-13 23:40:39', 0, 0, 3, NULL, 2, 1),
+(78, '2025-11-13 23:46:39', 4, 0, 3, NULL, 2, 1),
+(79, '2025-11-13 23:47:01', 0, 0, 3, NULL, 2, 1),
+(80, '2025-11-16 14:26:27', 4, 0, 3, NULL, 2, 1),
+(81, '2025-11-16 14:26:54', 5, 0, 3, NULL, 2, 1),
+(82, '2025-11-16 14:27:02', 0, 0, 3, NULL, 2, 1),
+(83, '2025-11-16 14:33:12', 0, 0, 3, NULL, 2, 1),
+(203, '2025-11-17 14:37:10', 0, 0, 2, NULL, 2, 1),
+(204, '2025-11-17 14:37:57', 0, 0, 2, NULL, 2, 1),
+(205, '2025-11-17 14:39:09', 0, 0, 2, NULL, 2, 1),
+(206, '2025-11-18 20:44:56', 1, 0, 2, NULL, 2, 1),
+(207, '2025-11-18 20:45:11', 0, 0, 2, NULL, 2, 1),
+(208, '2025-11-18 20:45:44', 0, 0, 2, NULL, 2, 1),
+(209, '2025-11-18 20:47:33', 0, 0, 2, NULL, 2, 1),
+(210, '2025-11-18 20:47:38', 0, 0, 2, NULL, 2, 1),
+(211, '2025-11-18 20:48:19', 0, 0, 2, NULL, 2, 1),
+(212, '2025-11-18 23:11:37', 0, 0, 2, NULL, 2, 1),
+(213, '2025-11-18 23:11:52', 0, 0, 2, NULL, 2, 1),
+(214, '2025-11-18 23:22:02', 0, 0, 2, NULL, 2, 1),
+(215, '2025-11-18 23:22:10', 0, 0, 2, NULL, 2, 1),
+(216, '2025-11-18 23:25:08', 0, 0, 2, NULL, 2, 1),
+(217, '2025-11-18 23:31:19', 0, 0, 2, NULL, 2, 1),
+(218, '2025-11-19 09:30:21', 0, 0, 2, NULL, 2, 1),
+(219, '2025-11-19 09:35:58', 0, 0, 2, NULL, 2, 1),
+(220, '2025-11-19 09:41:50', 0, 0, 2, NULL, 2, 1),
+(221, '2025-11-19 09:47:01', 0, 0, 2, NULL, 2, 1),
+(222, '2025-11-19 09:47:14', 0, 0, 2, NULL, 2, 1),
+(223, '2025-11-19 18:06:06', 0, 0, 2, NULL, 2, 1),
+(224, '2025-11-19 18:06:10', 0, 0, 2, NULL, 2, 1),
+(225, '2025-11-19 19:17:53', 0, 0, 2, NULL, 2, 1),
+(226, '2025-11-19 19:27:44', 0, 0, 2, NULL, 2, 1),
+(227, '2025-11-19 19:34:04', 1, 0, 2, NULL, 2, 1),
+(228, '2025-11-19 20:22:10', 0, 0, 2, NULL, 2, 1),
+(229, '2025-11-19 21:03:33', 0, 0, 2, NULL, 2, 1),
+(230, '2025-11-19 21:17:07', 2, 0, 2, NULL, 2, 1),
+(231, '2025-11-20 20:40:09', 3, 0, 2, NULL, 2, 1),
+(232, '2025-11-21 13:21:03', 0, 0, 2, NULL, 2, 1),
+(233, '2025-11-21 13:21:08', 0, 0, 2, NULL, 2, 1),
+(234, '2025-11-21 13:21:09', 0, 0, 2, NULL, 2, 1),
+(235, '2025-11-21 13:52:26', 0, 0, 5, NULL, 2, 1),
+(236, '2025-11-21 14:01:23', 0, 0, 5, NULL, 2, 1),
+(237, '2025-11-21 14:06:15', 0, 0, 5, NULL, 2, 1),
+(238, '2025-11-21 14:13:50', 0, 0, 2, NULL, 2, 1),
+(239, '2025-11-23 18:32:44', 0, 0, 2, NULL, 2, 1),
+(240, '2025-11-23 18:33:09', 0, 0, 2, NULL, 2, 1),
+(241, '2025-11-23 18:58:32', 0, 0, 2, NULL, 2, 1),
+(242, '2025-11-23 18:58:37', 0, 0, 2, NULL, 2, 1),
+(243, '2025-11-23 18:58:40', 0, 0, 2, NULL, 2, 1),
+(244, '2025-11-23 19:00:28', 0, 0, 2, NULL, 2, 1),
+(245, '2025-11-23 19:00:39', 0, 0, 2, NULL, 2, 1),
+(246, '2025-11-23 19:08:44', 0, 0, 2, NULL, 2, 1),
+(265, '2025-11-23 20:20:13', 1, 0, 6, NULL, 2, 1),
+(266, '2025-11-23 20:20:27', 1, 0, 6, NULL, 2, 1),
+(267, '2025-11-23 20:20:33', 2, 0, 6, NULL, 2, 1),
+(268, '2025-11-23 20:28:10', 1, 0, 6, NULL, 2, 1),
+(269, '2025-11-23 20:43:36', 0, 0, 6, NULL, 2, 1),
+(270, '2025-11-23 21:04:31', 1, 0, 6, NULL, 2, 1),
+(271, '2025-11-23 21:04:42', 0, 0, 6, NULL, 2, 1),
+(272, '2025-11-23 21:08:18', 0, 0, 6, NULL, 2, 1),
+(273, '2025-11-23 21:09:01', 0, 0, 6, NULL, 2, 1),
+(274, '2025-11-23 22:03:30', 0, 0, 2, NULL, 2, 1),
+(275, '2025-11-23 22:08:33', 0, 0, 6, NULL, 2, 1),
+(276, '2025-11-23 22:08:42', 0, 0, 6, NULL, 2, 1),
+(277, '2025-11-23 22:09:37', 0, 0, 6, NULL, 2, 1),
+(278, '2025-11-23 22:11:02', 0, 0, 6, NULL, 2, 1),
+(279, '2025-11-23 22:31:02', 0, 0, 2, NULL, 2, 1),
+(280, '2025-11-23 22:34:23', 1, 0, 2, NULL, 2, 1),
+(281, '2025-11-24 11:36:36', 0, 0, 2, NULL, 2, 1),
+(282, '2025-11-24 11:36:42', 2, 0, 2, NULL, 2, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `PREGUNTA`
+--
+
+CREATE TABLE `PREGUNTA` (
+  `id` int(11) NOT NULL,
+  `enunciado` varchar(100) NOT NULL,
+  `id_respuesta` int(11) NOT NULL,
+  `id_categoria` int(11) NOT NULL,
+  `id_estado_pregunta` int(11) NOT NULL,
+  `id_autor` int(11) NOT NULL,
+  `fecha_creacion` datetime DEFAULT current_timestamp(),
+  `respuestas_totales` int(11) NOT NULL DEFAULT 0,
+  `respuestas_correctas` int(11) NOT NULL DEFAULT 0,
+  `ratio_aciertos` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `dificultad_actual` tinyint(4) NOT NULL DEFAULT 2
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `PREGUNTA`
+--
+
+INSERT INTO `PREGUNTA` (`id`, `enunciado`, `id_respuesta`, `id_categoria`, `id_estado_pregunta`, `id_autor`, `fecha_creacion`, `respuestas_totales`, `respuestas_correctas`, `ratio_aciertos`, `dificultad_actual`) VALUES
+(1, '¿En qué año llegó Cristóbal Colón a América?', 1, 16, 1, 1, '2025-11-09 16:13:29', 3, 1, 0.33, 2),
+(2, '¿Quién fue el líder militar francés que se coronó emperador en 1804?', 2, 16, 1, 1, '2025-11-09 16:13:29', 4, 3, 0.75, 3),
+(3, '¿Cuál de estas revoluciones comenzó en 1789 en Francia?', 3, 16, 1, 1, '2025-11-09 16:13:30', 2, 1, 0.50, 2),
+(4, '¿Qué civilización construyó el Coliseo?', 4, 16, 1, 1, '2025-11-09 16:13:30', 3, 1, 0.33, 2),
+(5, '¿Qué documento histórico limitó el poder del rey de Inglaterra en 1215?', 5, 16, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(6, '¿Qué tratado dividió las tierras descubiertas entre España y Portugal en 1494?', 6, 16, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(7, '¿Quién fue rey de España durante la época de la Armada Invencible?', 7, 16, 1, 1, '2025-11-09 16:13:30', 4, 4, 1.00, 3),
+(8, '¿Qué batalla fue decisiva en la Segunda Guerra Mundial en el frente oriental?', 8, 16, 1, 1, '2025-11-09 16:13:30', 4, 3, 0.75, 3),
+(9, '¿Qué imperio antiguo se centró en Anatolia y Siria entre los siglos XVII y XII a.C.?', 9, 16, 4, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(10, '¿Qué revolución en Inglaterra resultó en la deposición del rey Jacobo II?', 10, 16, 1, 1, '2025-11-09 16:13:30', 2, 2, 1.00, 3),
+(11, '¿Quién pintó La Última Cena????', 11, 1, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(12, '¿Cuál es el valor aproximado de π?', 12, 18, 1, 1, '2025-11-09 16:13:30', 2, 0, 0.00, 1),
+(13, '¿Cuánto es 1 + 1?', 13, 18, 1, 1, '2025-11-09 16:13:30', 5, 4, 0.80, 3),
+(14, '¿Quién formuló los principios de la geometría euclidiana?', 14, 18, 1, 1, '2025-11-09 16:13:30', 4, 3, 0.75, 3),
+(15, '¿Cuál es la fórmula general para resolver ecuaciones cuadráticas?', 15, 18, 1, 1, '2025-11-09 16:13:30', 4, 3, 0.75, 3),
+(16, '¿Cuál es la suma de los ángulos de un triángulo?', 16, 18, 1, 1, '2025-11-09 16:13:30', 4, 2, 0.50, 2),
+(17, '¿Cuál es la integral de e^x?', 17, 18, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(18, '¿Qué teorema establece que todo polinomio de grado n tiene n raíces (reales o complejas)?', 18, 18, 1, 1, '2025-11-09 16:13:30', 3, 3, 1.00, 3),
+(19, '¿Qué secuencia comienza 0, 1, 1, 2, 3, 5...?', 19, 18, 1, 1, '2025-11-09 16:13:30', 3, 3, 1.00, 3),
+(20, '¿Qué tipo de número primo se expresa como 2^p - 1?', 20, 18, 1, 1, '2025-11-09 16:13:30', 3, 1, 0.33, 2),
+(21, '¿Cómo se llama una ecuación que involucra derivadas de segundo orden?', 21, 18, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(22, '¿Quién formuló las leyes del movimiento?', 1, 4, 1, 1, '2025-11-09 16:13:30', 2, 2, 1.00, 3),
+(23, '¿Cuál es la fórmula de la fuerza según Newton?', 2, 4, 1, 1, '2025-11-09 16:13:30', 4, 3, 0.75, 3),
+(24, '¿Qué fuerza mantiene los planetas en órbita alrededor del Sol?', 3, 4, 1, 1, '2025-11-09 16:13:30', 2, 2, 1.00, 3),
+(25, '¿Cuál es la velocidad de la luz en el vacío?', 4, 4, 1, 1, '2025-11-09 16:13:30', 4, 2, 0.50, 2),
+(26, '¿Qué ley de Newton establece que un objeto en reposo permanecerá en reposo?', 5, 4, 1, 1, '2025-11-09 16:13:30', 5, 3, 0.60, 2),
+(27, '¿Qué principio en mecánica cuántica establece que no se pueden conocer simultáneamente posición y mo', 6, 4, 1, 1, '2025-11-09 16:13:30', 3, 3, 1.00, 3),
+(28, '¿Qué fenómeno explicó Einstein en 1905 usando fotones?', 7, 4, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(29, '¿Qué tipo de ondas predice la teoría de la relatividad y fueron detectadas en 2015?', 8, 4, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(30, '¿Qué partículas subatómicas forman los protones y neutrones?', 9, 4, 1, 1, '2025-11-09 16:13:30', 4, 3, 0.75, 3),
+(31, '¿Qué fenómeno ocurre en ciertos materiales a temperaturas muy bajas, permitiendo resistencia eléctri', 10, 4, 1, 1, '2025-11-09 16:13:30', 5, 4, 0.80, 3),
+(32, '¿Cuál es la unidad básica de la vida?', 32, 5, 1, 1, '2025-11-09 16:13:30', 4, 3, 0.75, 3),
+(33, '¿Cuál es la molécula que contiene la información genética?', 33, 5, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(34, '¿Quién propuso la teoría de la evolución por selección natural?', 34, 5, 1, 1, '2025-11-09 16:13:30', 2, 2, 1.00, 3),
+(35, '¿Qué proceso realizan las plantas para producir glucosa?', 35, 5, 1, 1, '2025-11-09 16:13:30', 2, 1, 0.50, 2),
+(36, '¿Qué órgano bombea sangre a todo el cuerpo?', 36, 5, 1, 1, '2025-11-09 16:13:30', 2, 1, 0.50, 2),
+(37, '¿Cómo se llama la división celular que produce células hijas idénticas?', 37, 5, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(38, '¿Qué orgánulo celular realiza la fotosíntesis?', 38, 5, 1, 1, '2025-11-09 16:13:30', 2, 2, 1.00, 3),
+(39, '¿Qué sistemas regulan las funciones del cuerpo humano?', 39, 5, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(40, '¿Cuál es la especie humana moderna?', 40, 5, 1, 1, '2025-11-09 16:13:30', 4, 3, 0.75, 3),
+(41, '¿Qué rama estudia los genes a nivel molecular?', 41, 5, 1, 1, '2025-11-09 16:13:30', 2, 2, 1.00, 3),
+(42, '¿Quién dirigió \"E.T. el Extraterrestre\"?', 42, 6, 1, 1, '2025-11-09 16:13:30', 1, 1, 1.00, 3),
+(43, '¿Qué película de James Cameron se estrenó en 1997 y cuenta una historia de amor en un barco hundiénd', 43, 6, 1, 1, '2025-11-09 16:13:30', 5, 3, 0.60, 2),
+(44, '¿Qué saga espacial comenzó en 1977 con la primera película?', 44, 6, 1, 1, '2025-11-09 16:13:30', 4, 4, 1.00, 3),
+(45, '¿Cuál es el premio más importante del cine estadounidense?', 45, 6, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(46, '¿Qué película de Francis Ford Coppola es un clásico del cine de mafia?', 46, 6, 1, 1, '2025-11-09 16:13:30', 4, 2, 0.50, 2),
+(47, '¿Qué término describe la técnica de capturar la imagen en cine?', 47, 6, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(48, '¿Quién crea la historia y los diálogos de una película?', 48, 6, 1, 1, '2025-11-09 16:13:30', 2, 1, 0.50, 2),
+(49, '¿Qué género cinematográfico enfatiza la tensión y el misterio psicológico?', 49, 6, 1, 1, '2025-11-09 16:13:30', 5, 3, 0.60, 2),
+(50, '¿Qué técnica moderna se utiliza para crear efectos visuales realistas en películas?', 50, 6, 1, 1, '2025-11-09 16:13:30', 3, 3, 1.00, 3),
+(51, '¿Cuál es el premio máximo del Festival de Cannes?', 51, 6, 1, 1, '2025-11-09 16:13:30', 4, 2, 0.50, 2),
+(52, '¿Quién pintó La Última Cena?', 52, 1, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(53, '¿Qué artista neerlandés cortó su propia oreja?', 53, 1, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(54, '¿Cuál es la pintura más famosa de Leonardo da Vinci?', 54, 1, 1, 1, '2025-11-09 16:13:30', 2, 1, 0.50, 2),
+(55, '¿A qué movimiento artístico pertenece Leonardo da Vinci?', 55, 1, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(56, '¿Qué técnica consiste en aplicar pigmento sobre yeso húmedo?', 56, 1, 1, 1, '2025-11-09 16:13:30', 4, 3, 0.75, 3),
+(57, '¿Qué movimiento artístico fue desarrollado por Picasso y Braque?', 57, 1, 1, 1, '2025-11-09 16:13:30', 4, 3, 0.75, 3),
+(58, '¿Qué obra de Picasso representa los horrores de la guerra civil española?', 58, 1, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(59, '¿Quién fue un pintor líder del impresionismo francés?', 59, 1, 1, 1, '2025-11-09 16:13:30', 3, 3, 1.00, 3),
+(60, '¿Qué arte es característico de las pinturas de las cuevas de Altamira?', 60, 1, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(61, '¿Quién pintó “El nacimiento de Venus”?', 61, 1, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(62, '¿Quién escribió \"Don Quijote de la Mancha\"?', 62, 7, 1, 1, '2025-11-09 16:13:30', 3, 0, 0.00, 1),
+(63, '¿Cuál es la obra más famosa de Cervantesssssss?', 63, 7, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(64, '¿Quién es considerado el dramaturgo inglés más importante?', 64, 7, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(65, '¿Qué género literario se centra en la representación de personajes y acciones en forma narrativa?', 65, 7, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(66, '¿Qué movimiento literario enfatiza la objetividad y la descripción detallada de la realidad?', 66, 7, 1, 1, '2025-11-09 16:13:30', 3, 0, 0.00, 1),
+(67, '¿Quién ganó el Nobel de Literatura con \"Cien años de soledad\"?', 67, 7, 1, 1, '2025-11-09 16:13:30', 4, 4, 1.00, 3),
+(68, '¿Qué colección de cuentos de Borges incluye \"El Aleph\"?', 68, 7, 1, 1, '2025-11-09 16:13:30', 4, 0, 0.00, 1),
+(69, '¿Qué tipo de poema tiene 14 versos?', 69, 7, 1, 1, '2025-11-09 16:13:30', 1, 1, 1.00, 3),
+(70, '¿Quién es autor de \"Ulises\", novela experimental del siglo XX?', 70, 7, 1, 1, '2025-11-09 16:13:30', 3, 1, 0.33, 2),
+(71, '¿Qué disciplina estudia los métodos de interpretación y análisis de textos literarios?', 71, 7, 1, 1, '2025-11-09 16:13:30', 3, 3, 1.00, 3),
+(72, '¿Cuál es la montaña más alta del mundo?', 72, 8, 1, 1, '2025-11-09 16:13:30', 2, 2, 1.00, 3),
+(73, '¿Qué río es considerado el más caudaloso del mundo?', 73, 8, 1, 1, '2025-11-09 16:13:30', 6, 6, 1.00, 3),
+(74, '¿Cuál es el continente más grande por superficie?', 74, 8, 1, 1, '2025-11-09 16:13:30', 2, 1, 0.50, 2),
+(75, '¿Qué río atraviesa Egipto de sur a norte?', 75, 8, 1, 1, '2025-11-09 16:13:30', 1, 1, 1.00, 3),
+(76, '¿Cuál es el desierto más grande del mundo?', 76, 8, 1, 1, '2025-11-09 16:13:30', 4, 4, 1.00, 3),
+(77, '¿Qué cordillera se extiende a lo largo de la costa occidental de Sudamérica?', 77, 8, 1, 1, '2025-11-09 16:13:30', 3, 3, 1.00, 3),
+(78, '¿Cuál es el océano más grande del planeta?', 78, 8, 1, 1, '2025-11-09 16:13:30', 2, 1, 0.50, 2),
+(79, '¿Qué lago en Siberia es el más profundo del mundo?', 79, 8, 1, 1, '2025-11-09 16:13:30', 7, 1, 0.14, 1),
+(80, '¿Qué fenómeno explica el movimiento de los continentes?', 80, 8, 1, 1, '2025-11-09 16:13:30', 3, 1, 0.33, 2),
+(81, '¿Qué tipo de climas predominan cerca del ecuador?', 81, 8, 1, 1, '2025-11-09 16:13:30', 2, 1, 0.50, 2),
+(82, '¿Quién compuso la Novena Sinfonía?', 82, 9, 1, 1, '2025-11-09 16:13:30', 4, 3, 0.75, 3),
+(83, '¿Qué instrumento tiene 88 teclas?', 83, 9, 1, 1, '2025-11-09 16:13:30', 2, 2, 1.00, 3),
+(84, '¿Qué forma musical orquestal tiene varios movimientos y está escrita para una orquesta completa?', 84, 9, 1, 1, '2025-11-09 16:13:30', 4, 3, 0.75, 3),
+(85, '¿Qué género musical nació en Estados Unidos en los años 50?', 85, 9, 1, 1, '2025-11-09 16:13:30', 3, 2, 0.67, 2),
+(86, '¿Qué banda británica lanzó el álbum \"Sgt. Pepper\'s Lonely Hearts Club Band\"?', 86, 9, 1, 1, '2025-11-09 16:13:30', 2, 1, 0.50, 2),
+(87, '¿Quién fue el vocalista principal de Queen?', 87, 9, 1, 1, '2025-11-09 16:13:30', 5, 2, 0.40, 2),
+(88, '¿Cuáles son las notas musicales en orden ascendente?', 88, 9, 1, 1, '2025-11-09 16:13:30', 3, 1, 0.33, 2),
+(89, '¿Qué escala tiene un patrón de tonos y semitonos: T-T-S-T-T-T-S?', 89, 9, 1, 1, '2025-11-09 16:13:31', 2, 1, 0.50, 2),
+(90, '¿Qué compositores se destacan en el periodo barroco?', 90, 9, 1, 1, '2025-11-09 16:13:31', 2, 1, 0.50, 2),
+(91, '¿Qué disciplina estudia la combinación de sonidos y acordes en la música?', 91, 9, 1, 1, '2025-11-09 16:13:31', 4, 2, 0.50, 2),
+(92, '¿Cuál es el deporte más popular del mundo?', 92, 10, 1, 1, '2025-11-09 16:13:31', 3, 2, 0.67, 2),
+(93, '¿Qué jugador argentino ganó 7 Balones de Oro?', 93, 10, 1, 1, '2025-11-09 16:13:31', 1, 1, 1.00, 3),
+(94, '¿Cuál es el evento deportivo internacional que ocurre cada 4 años y reúne varios deportes?', 94, 10, 1, 1, '2025-11-09 16:13:31', 3, 2, 0.67, 2),
+(95, '¿Qué prueba de atletismo consiste en correr 42,195 km?', 95, 10, 1, 1, '2025-11-09 16:13:31', 2, 1, 0.50, 2),
+(96, '¿Quién es considerado uno de los mejores jugadores de baloncesto de todos los tiempos?', 96, 10, 1, 1, '2025-11-09 16:13:31', 3, 1, 0.33, 2),
+(97, '¿Qué deporte de combate se caracteriza por golpes de puño y guantes acolchados?', 97, 10, 1, 1, '2025-11-09 16:13:31', 3, 2, 0.67, 2),
+(98, '¿Qué carrera ciclista es la más famosa de Francia?', 98, 10, 1, 1, '2025-11-09 16:13:31', 4, 3, 0.75, 3),
+(99, '¿Cuál es la categoría máxima de automovilismo a nivel mundial?', 99, 10, 1, 1, '2025-11-09 16:13:31', 3, 3, 1.00, 3),
+(100, '¿Qué deporte de contacto se juega con un balón ovalado y placajes?', 100, 10, 1, 1, '2025-11-09 16:13:31', 3, 2, 0.67, 2),
+(101, '¿Cuál de estos deportes se juega con volante y raqueta en una cancha interior?', 101, 10, 1, 1, '2025-11-09 16:13:31', 6, 3, 0.50, 2),
+(102, '¿Qué red mundial permite la conexión de computadoras a nivel global?', 102, 11, 1, 1, '2025-11-09 16:13:31', 3, 2, 0.67, 2),
+(103, '¿Quién inventó la World Wide Web?', 103, 11, 1, 1, '2025-11-09 16:13:31', 2, 2, 1.00, 3),
+(104, '¿Qué componente central ejecuta las instrucciones de un computador?', 104, 11, 1, 1, '2025-11-09 16:13:31', 2, 1, 0.50, 2),
+(105, '¿Cómo se llama la parte tangible de un computador?', 105, 11, 1, 1, '2025-11-09 16:13:31', 4, 2, 0.50, 2),
+(106, '¿Qué lenguaje de programación se caracteriza por su sintaxis clara y legible?', 106, 11, 1, 1, '2025-11-09 16:13:31', 3, 2, 0.67, 2),
+(107, '¿Qué tecnología permite que las máquinas imiten procesos de pensamiento humano?', 107, 11, 1, 1, '2025-11-09 16:13:31', 4, 3, 0.75, 3),
+(108, '¿Qué tipo de algoritmo organiza datos en orden ascendente o descendente?', 108, 11, 1, 1, '2025-11-09 16:13:31', 2, 1, 0.50, 2),
+(109, '¿Qué arquitectura informática se inspira en el funcionamiento del cerebro humano?', 109, 11, 2, 1, '2025-11-09 16:13:31', 3, 2, 0.67, 2),
+(110, '¿Qué área de la informática protege la información frente a ataques y accesos no autorizados?', 110, 11, 1, 1, '2025-11-09 16:13:31', 4, 2, 0.50, 2),
+(111, '¿Qué técnica de IA utiliza múltiples capas para aprender representaciones complejas de datos?', 111, 11, 1, 1, '2025-11-09 16:13:31', 4, 2, 0.50, 2),
+(112, '¿Qué personaje es el fontanero icónico de Nintendo?', 112, 12, 1, 1, '2025-11-09 16:13:31', 3, 3, 1.00, 3),
+(113, '¿Qué compañía desarrolló la consola Switch?', 113, 12, 1, 1, '2025-11-09 16:13:31', 2, 2, 1.00, 3),
+(114, '¿Cuál es la saga protagonizada por Link?', 114, 12, 1, 1, '2025-11-09 16:13:31', 4, 4, 1.00, 3),
+(115, '¿Qué juego permite construir bloques y explorar libremente?', 115, 12, 1, 1, '2025-11-09 16:13:31', 3, 1, 0.33, 2),
+(116, '¿Qué juego de construcción y supervivencia se volvió viral en 2010?', 116, 12, 1, 1, '2025-11-09 16:13:31', 3, 1, 0.33, 2),
+(117, '¿Qué franquicia de monstruos tiene Pikachu como personaje principal?', 117, 12, 1, 1, '2025-11-09 16:13:31', 2, 0, 0.00, 1),
+(118, '¿Cómo se denomina la competición profesional de videojuegos?', 118, 12, 1, 1, '2025-11-09 16:13:31', 2, 2, 1.00, 3),
+(119, '¿Qué motor de videojuegos es desarrollado por Unity Technologies? MELIiiiiiii', 119, 12, 1, 1, '2025-11-09 16:13:31', 6, 2, 0.33, 2),
+(120, '¿Qué tipo de juego permite explorar un mundo sin restricciones lineales?', 120, 12, 1, 1, '2025-11-09 16:13:31', 2, 1, 0.50, 2),
+(121, '¿Qué técnica se utiliza para dotar de comportamiento inteligente a personajes no jugables?  MELI MEL', 121, 12, 1, 1, '2025-11-09 16:13:31', 4, 2, 0.50, 2),
+(122, '¿Qué plato italiano se hace con masa, tomate y queso?', 122, 13, 1, 1, '2025-11-09 16:13:31', 2, 2, 1.00, 3),
+(123, '¿De qué país es originaria la pizza?', 123, 13, 1, 1, '2025-11-09 16:13:31', 3, 2, 0.67, 2),
+(124, '¿Qué plato japonés incluye pescado crudo y arroz?', 124, 13, 1, 1, '2025-11-09 16:13:31', 3, 2, 0.67, 2),
+(125, '¿Qué bebida se obtiene por tostado y molido de granos?', 125, 13, 1, 1, '2025-11-09 16:13:31', 3, 3, 1.00, 3),
+(126, '¿Qué método de cocción utiliza calor seco en un horno?', 126, 13, 1, 1, '2025-11-09 16:13:31', 3, 1, 0.33, 2),
+(127, '¿Qué técnica culinaria consiste en cocinar alimentos al vacío y baja temperatura?', 127, 13, 1, 1, '2025-11-09 16:13:31', 3, 2, 0.67, 2),
+(128, '¿Qué rama de la gastronomía aplica principios químicos y físicos a la cocina?', 128, 13, 1, 1, '2025-11-09 16:13:31', 2, 1, 0.50, 2),
+(129, '¿Qué término describe la combinación armoniosa de alimentos y bebidas?', 129, 13, 1, 1, '2025-11-09 16:13:31', 2, 1, 0.50, 2),
+(130, '¿Qué hongo es considerado un manjar de alta cocina y muy caro?', 130, 13, 1, 1, '2025-11-09 16:13:31', 4, 1, 0.25, 1),
+(131, '¿Qué proceso convierte la lactosa en ácido láctico en alimentos?', 131, 13, 1, 1, '2025-11-09 16:13:31', 3, 1, 0.33, 2),
+(132, '¿Quién es el dios supremo del Olimpo?', 132, 14, 1, 1, '2025-11-09 16:13:31', 3, 2, 0.67, 2),
+(133, '¿Dónde residían los dioses griegos?', 133, 14, 1, 1, '2025-11-09 16:13:31', 3, 2, 0.67, 2),
+(134, '¿Quién es el dios principal de la mitología nórdica?', 134, 14, 1, 1, '2025-11-09 16:13:31', 3, 2, 0.67, 2),
+(135, '¿Qué héroe realizó los 12 trabajos?', 135, 14, 1, 1, '2025-11-09 16:13:31', 4, 3, 0.75, 3),
+(136, '¿Qué criatura tenía serpientes en lugar de cabello?', 136, 14, 1, 1, '2025-11-09 16:13:31', 6, 6, 1.00, 3),
+(137, '¿Qué figuras femeninas elegían a los guerreros muertos para el Valhalla?', 137, 14, 1, 1, '2025-11-09 16:13:31', 2, 2, 1.00, 3),
+(138, '¿Quién es la diosa de la sabiduría en Grecia?', 138, 14, 1, 1, '2025-11-09 16:13:31', 4, 3, 0.75, 3),
+(139, '¿Qué dios griego es el patrón de la música y las artes?', 139, 14, 1, 1, '2025-11-09 16:13:31', 3, 2, 0.67, 2),
+(140, '¿Qué héroe griego ideó el caballo de Troya?', 140, 14, 1, 1, '2025-11-09 16:13:31', 1, 0, 0.00, 1),
+(141, '¿Qué disciplina compara mitologías de diferentes culturas?', 141, 14, 1, 1, '2025-11-09 16:13:31', 3, 2, 0.67, 2),
+(142, '¿Cuál es la fórmula química del agua?', 142, 16, 1, 1, '2025-11-09 16:13:31', 2, 2, 1.00, 3),
+(143, '¿Cómo se llama una sustancia formada por átomos del mismo tipo?', 143, 16, 1, 1, '2025-11-09 16:13:31', 4, 4, 1.00, 3),
+(144, '¿Qué tabla organiza los elementos químicos según sus propiedades?', 144, 16, 1, 1, '2025-11-09 16:13:31', 3, 2, 0.67, 2),
+(145, '¿Qué tipo de sustancia tiene un pH menor a 7?', 145, 16, 1, 1, '2025-11-09 16:13:31', 2, 2, 1.00, 3),
+(146, '¿Qué pH indica una solución neutra?', 146, 16, 1, 1, '2025-11-09 16:13:31', 2, 1, 0.50, 2),
+(147, '¿Qué ley establece que la masa no se crea ni se destruye en una reacción?', 147, 16, 1, 1, '2025-11-09 16:13:31', 2, 1, 0.50, 2),
+(148, '¿Qué reacción implica transferencia de electrones?', 148, 16, 1, 1, '2025-11-09 16:13:31', 3, 3, 1.00, 3),
+(149, '¿Qué tipo de enlace comparte electrones entre átomos?', 149, 16, 1, 1, '2025-11-09 16:13:31', 4, 3, 0.75, 3),
+(150, '¿Qué sustancia acelera una reacción química sin consumirse?', 150, 16, 1, 1, '2025-11-09 16:13:31', 2, 1, 0.50, 2),
+(151, '¿Qué rama estudia moléculas biológicas como proteínas y carbohidratos?', 151, 16, 1, 1, '2025-11-09 16:13:31', 4, 0, 0.00, 1),
+(152, '¿Qué estrella es el centro del sistema solar?', 152, 17, 1, 1, '2025-11-09 16:13:31', 3, 2, 0.67, 2),
+(153, '¿Qué cuerpo celeste genera luz propia?', 153, 17, 1, 1, '2025-11-09 16:13:31', 2, 2, 1.00, 3),
+(154, '¿Cómo se llama la galaxia donde se encuentra la Tierra?', 154, 17, 1, 1, '2025-11-09 16:13:31', 3, 3, 1.00, 3),
+(155, '¿Cómo se denomina el conjunto de planetas y cuerpos que orbitan una estrella?', 155, 17, 1, 1, '2025-11-09 16:13:31', 2, 1, 0.50, 2),
+(156, '¿Quién fue el primer hombre en caminar sobre la Luna?', 156, 17, 1, 1, '2025-11-09 16:13:31', 2, 2, 1.00, 3),
+(157, '¿Qué instrumento permite observar cuerpos celestes a gran distancia?', 157, 17, 1, 1, '2025-11-09 16:13:31', 1, 1, 1.00, 3),
+(158, '¿Qué fenómeno astronómico es una región del espacio con gravedad extrema de la que nada escapa?', 158, 17, 1, 1, '2025-11-09 16:13:31', 3, 3, 1.00, 3),
+(159, '¿Qué componente misterioso representa aproximadamente el 70% de la energía del universo?', 159, 17, 1, 1, '2025-11-09 16:13:31', 2, 1, 0.50, 2),
+(160, '¿Qué planeta fuera del sistema solar ha sido detectado orbitando otra estrella?', 160, 17, 1, 1, '2025-11-09 16:13:31', 2, 1, 0.50, 2),
+(161, '¿Qué teoría explica el origen y expansión del universo hace aproximadamente 13.8 mil millones de año', 161, 17, 1, 1, '2025-11-09 16:13:31', 3, 2, 0.67, 2),
+(162, '¿Qué sistema permite a los ciudadanos elegir a sus representantes?', 162, 18, 1, 1, '2025-11-09 16:13:31', 1, 1, 1.00, 3),
+(163, '¿Qué principio establece que los poderes del Estado son independientes?', 163, 18, 1, 1, '2025-11-09 16:13:31', 4, 3, 0.75, 3),
+(164, '¿Qué cargo es la máxima autoridad ejecutiva en muchos países?', 164, 18, 1, 1, '2025-11-09 16:13:31', 3, 2, 0.67, 2),
+(165, '¿Qué organización internacional promueve la paz y la cooperación mundial?', 165, 18, 1, 1, '2025-11-09 16:13:31', 4, 3, 0.75, 3),
+(166, '¿Qué mecanismo permite que los ciudadanos aprueben o rechacen leyes directamente?', 166, 18, 1, 1, '2025-11-09 16:13:31', 1, 1, 1.00, 3),
+(167, '¿Qué principio limita el poder del Estado mediante órganos independientes?', 167, 18, 1, 1, '2025-11-09 16:13:31', 5, 4, 0.80, 3),
+(168, '¿Qué ideología promueve la libertad individual y economía de mercado?', 168, 18, 1, 1, '2025-11-09 16:13:31', 2, 1, 0.50, 2),
+(169, '¿Qué documento establece los derechos y deberes fundamentales de los ciudadanos?', 169, 18, 1, 1, '2025-11-09 16:13:31', 4, 3, 0.75, 3),
+(170, '¿Cómo se llama la agrupación que busca influir en la política mediante elecciones?', 170, 18, 1, 1, '2025-11-09 16:13:32', 4, 3, 0.75, 3),
+(171, '¿Qué estudio analiza la influencia del espacio geográfico en la política?', 171, 18, 1, 1, '2025-11-09 16:13:32', 3, 3, 1.00, 3),
+(172, '¿Qué ley básica explica cómo se determinan los precios en un mercado?', 172, 19, 1, 1, '2025-11-09 16:13:32', 3, 3, 1.00, 3),
+(173, '¿Qué indicador mide el valor total de los bienes y servicios producidos en un país?', 173, 19, 1, 1, '2025-11-09 16:13:32', 2, 1, 0.50, 2),
+(174, '¿Qué fenómeno económico implica aumento generalizado de los precios?', 174, 19, 1, 1, '2025-11-09 16:13:32', 2, 1, 0.50, 2),
+(175, '¿Qué institución regula la compraventa de bienes y servicios?', 175, 19, 1, 1, '2025-11-09 16:13:32', 3, 2, 0.67, 2),
+(176, '¿Qué rama estudia la economía de individuos y empresas?', 176, 19, 1, 1, '2025-11-09 16:13:32', 4, 3, 0.75, 3),
+(177, '¿Quién es considerado el padre de la economía moderna?', 177, 19, 1, 1, '2025-11-09 16:13:32', 2, 1, 0.50, 2),
+(178, '¿Qué indicador mide la cantidad de dinero disponible en la economía?', 178, 19, 1, 1, '2025-11-09 16:13:32', 3, 2, 0.67, 2),
+(179, '¿Qué rama analiza los comportamientos económicos y decisiones humanas?', 179, 19, 1, 1, '2025-11-09 16:13:32', 4, 3, 0.75, 3),
+(180, '¿Qué concepto mide el ingreso adicional por unidad producida?', 180, 19, 1, 1, '2025-11-09 16:13:32', 2, 2, 1.00, 3),
+(181, '¿Qué política utiliza el gobierno para influir en la economía mediante gastos e impuestos?', 181, 19, 4, 1, '2025-11-09 16:13:32', 4, 2, 0.50, 2),
+(182, '¿amo a mi familia?', 184, 16, 1, 4, '2025-11-21 03:10:40', 0, 0, 0.00, 2),
+(183, 'Prueba enunciado sugerido por jugador', 185, 1, 2, 6, '2025-11-24 01:34:10', 0, 0, 0.00, 2),
+(184, 'PRUEBA 2', 186, 1, 2, 2, '2025-11-24 01:56:18', 0, 0, 0.00, 2),
+(185, 'PRUEBA 2', 187, 1, 1, 2, '2025-11-24 01:57:07', 0, 0, 0.00, 2),
+(186, 'esta es una prueba ADRI ZELDAZELDAZELDAZELDA', 188, 14, 1, 4, '2025-11-24 03:04:00', 0, 0, 0.00, 2),
+(187, 'que juego juabas en la infancia MELI TEST', 189, 14, 2, 2, '2025-11-24 15:39:07', 0, 0, 0.00, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `RESPUESTA`
+--
+
+CREATE TABLE `RESPUESTA` (
+  `id` int(11) NOT NULL,
+  `opcion_a` varchar(50) NOT NULL,
+  `opcion_b` varchar(50) NOT NULL,
+  `opcion_c` varchar(50) NOT NULL,
+  `opcion_d` varchar(50) NOT NULL,
+  `respuesta_correcta` char(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `RESPUESTA`
+--
+
+INSERT INTO `RESPUESTA` (`id`, `opcion_a`, `opcion_b`, `opcion_c`, `opcion_d`, `respuesta_correcta`) VALUES
+(1, '1492', '15126', '1482', '1502', 'A'),
+(2, 'Napoleón Bonaparte', 'Julio César', 'Alejandro Magno', 'Genghis Khan', 'A'),
+(3, 'Revolución Francesa', 'Revolución Rusa', 'Revolución Industrial', 'Revolución Americana', 'A'),
+(4, 'Roma', 'Grecia', 'Egipto', 'Mesopotamia', 'A'),
+(5, 'Magna Carta', 'Bill of Rights', 'Declaración de Independencia', 'Código de Hammurabi', 'A'),
+(6, 'Tratado de Tordesillas', 'Paz de Westfalia', 'Concordato de Worms', 'Tratado de Utrecht', 'A'),
+(7, 'Carlos V', 'Felipe II', 'Luis XIV', 'Fernando VII', 'A'),
+(8, 'Batalla de Stalingrado', 'Batalla de Normandía', 'Batalla de Midway', 'Batalla de Kursk', 'A'),
+(9, 'Quarks', 'Imperio Asirio', 'Imperio Persa', 'Imperio Romano', 'A'),
+(10, 'Revolución Gloriosa', 'Revolución Industrial', 'Revolución Cubana', 'Revolución Meiji', 'A'),
+(11, 'Leonardo da Vinci', 'Miguel Ángel', 'Rafael', 'Donatello', 'A'),
+(12, '3.1416', '2.718', '1.618', '1.414', 'A'),
+(13, '2', '3', '5', '7', 'A'),
+(14, 'Pitágoras', 'Euclides', 'Arquímedes', 'Descartes', 'A'),
+(15, 'x = -b ± √(b²-4ac)/2a', 'x = (b+c)/a', 'x = a² + b²', 'x = √(a²+b²)', 'A'),
+(16, 'Suma de ángulos de un triángulo es 180°', 'Suma de ángulos de un cuadrado es 180°', 'Suma de ángulos de un pentágono es 360°', 'Suma de ángulos de un hexágono es 540°', 'A'),
+(17, 'Integral de e^x es e^x + C', 'Integral de ln(x) es x ln(x)', 'Integral de sen(x) es cos(x)', 'Integral de x^2 es x^3', 'A'),
+(18, 'Teorema Fundamental del Álgebra', 'Teorema de Bayes', 'Teorema de Pitágoras', 'Teorema de Rolle', 'A'),
+(19, 'Serie de Fibonacci', 'Serie Geométrica', 'Serie Armónica', 'Serie de Taylor', 'A'),
+(20, 'Número primo de Mersenne', 'Número de Fermat', 'Número de Euler', 'Número de Catalan', 'A'),
+(21, 'Ecuación diferencial de segundo orden', 'Ecuación lineal simple', 'Ecuación exponencial', 'Ecuación logarítmica', 'A'),
+(22, 'Isaac Newton', 'Albert Einstein', 'Galileo Galilei', 'Niels Bohr', 'A'),
+(23, 'F = m * a', 'E = mc^2', 'p = mv', 'V = IR', 'A'),
+(24, 'Gravedad', 'Electromagnetismo', 'Fuerza nuclear fuerte', 'Fuerza nuclear débil', 'A'),
+(25, '186,000 millas por segundo', '300,000 km por hora', '150,000 km/s', '299,792 km/s', 'D'),
+(26, 'La primera ley de Newton', 'La segunda ley de Newton', 'La tercera ley de Newton', 'Ley de gravitación universal', 'A'),
+(27, 'Principio de incertidumbre de Heisenberg', 'Teoría de la relatividad', 'Ley de Coulomb', 'Ley de Ohm', 'A'),
+(28, 'Efecto fotoeléctrico', 'Difracción de rayos X', 'Principio de Arquímedes', 'Ley de Hooke', 'A'),
+(29, 'Ondas electromagnéticas', 'Ondas mecánicas', 'Ondas gravitacionales', 'Ondas sonoras', 'C'),
+(30, 'Partículas subatómicas: quarks', 'Átomos neutros', 'Moléculas simples', 'Electrones libres', 'A'),
+(31, 'Superconductividad', 'Superfluidez', 'Magnetismo', 'Termodinámica', 'A'),
+(32, 'Célula', 'Tejido', 'Órgano', 'Sistema', 'A'),
+(33, 'ADN', 'ARN', 'Proteína', 'Lípido', 'A'),
+(34, 'Charles Darwin', 'Gregor Mendel', 'Louis Pasteur', 'James Watson', 'A'),
+(35, 'Fotosíntesis', 'Respiración celular', 'Fermentación', 'Digestión', 'A'),
+(36, 'Corazón', 'Pulmón', 'Hígado', 'Riñón', 'A'),
+(37, 'Mitosis', 'Meiosis', 'Fagocitosis', 'Difusión', 'A'),
+(38, 'Cloroplastos', 'Mitocondrias', 'Núcleo', 'Retículo endoplásmico', 'A'),
+(39, 'Sistemas nervioso y endocrino', 'Sistemas circulatorio y respiratorio', 'Sistemas digestivo y excretor', 'Sistemas muscular y esquelético', 'A'),
+(40, 'Especie Homo sapiens', 'Especie Homo erectus', 'Especie Neanderthal', 'Especie Australopithecus', 'A'),
+(41, 'Genética molecular', 'Biología celular', 'Ecología', 'Fisiología', 'A'),
+(42, 'Steven Spielberg', 'Christopher Nolan', 'James Cameron', 'Quentin Tarantino', 'A'),
+(43, 'Titanic', 'Avatar', 'Gladiator', 'Jurassic Park', 'A'),
+(44, 'Star Wars', 'Star Trek', 'Guardians of the Galaxy', 'The Matrix', 'A'),
+(45, 'Premios Oscar', 'Globos de Oro', 'BAFTA', 'Cannes', 'A'),
+(46, 'El Padrino', 'Goodfellas', 'Scarface', 'Casablanca', 'A'),
+(47, 'Cinematografía', 'Edición', 'Guion', 'Dirección artística', 'A'),
+(48, 'Guionistas', 'Directores', 'Productores', 'Actores', 'A'),
+(49, 'Suspense psicológico', 'Comedia romántica', 'Western', 'Musical', 'A'),
+(50, 'Efectos especiales digitales', 'Stop motion', 'Animación tradicional', 'Trucos mecánicos', 'A'),
+(51, 'Premio Palme', 'Premio Saturn', 'Premio Hugo', 'Premio Emmy', 'A'),
+(52, 'Leonardo da Vinci', 'Miguel Ángel', 'Rafael', 'Donatello', 'A'),
+(53, 'Vincent van Gogh', 'Claude Monet', 'Pablo Picasso', 'Salvador Dalí', 'A'),
+(54, 'La Mona Lisa', 'La última cena', 'El nacimiento de Venus', 'La persistencia de la memoria', 'A'),
+(55, 'Renacimiento', 'Barroco', 'Romanticismo', 'Impresionismo', 'A'),
+(56, 'Fresco', 'Óleo', 'Acuarela', 'Témpera', 'A'),
+(57, 'Cubismo', 'Surrealismo', 'Expresionismo', 'Futurismo', 'A'),
+(58, 'Guernica', 'El jardín de las delicias', 'La noche estrellada', 'Las meninas', 'A'),
+(59, 'Claude Monet', 'Paul Cézanne', 'Edgar Degas', 'Pierre-Auguste Renoir', 'A'),
+(60, 'Arte Paleolítico', 'Arte Románico', 'Arte Gótico', 'Arte Barroco', 'A'),
+(61, 'Sandro Botticelli', 'Hieronymus Bosch', 'Caravaggio', 'El Greco', 'A'),
+(62, 'Miguel de Cervantes', 'William Shakespeare', 'Gabriel García Márquez', 'Jorge Luis Borges', 'A'),
+(63, 'Don Quijote de la Mancha', 'Cualquieraaaa', 'Cualquieraaaa', 'Cualquieraaaa', 'A'),
+(64, 'William Shakespeare', 'Charles Dickens', 'Mark Twain', 'Jane Austen', 'A'),
+(65, 'Poesía', 'Novela', 'Ensayo', 'Teatro', 'A'),
+(66, 'Realismo', 'Romanticismo', 'Modernismo', 'Barroco', 'A'),
+(67, 'Gabriel García Márquez', 'Mario Vargas Llosa', 'Julio Cortázar', 'Isabel Allende', 'A'),
+(68, 'El Aleph', 'Ficciones', 'Cien años de soledad', 'Rayuela', 'B'),
+(69, 'Soneto', 'Haiku', 'Oda', 'Elegía', 'A'),
+(70, 'James Joyce', 'Virginia Woolf', 'Ernest Hemingway', 'F. Scott Fitzgerald', 'A'),
+(71, 'Teoría literaria', 'Crítica literaria', 'Semiótica', 'Hermenéutica', 'A'),
+(72, 'Monte Everest', 'K2', 'Annapurna', 'Makalu', 'A'),
+(73, 'Amazonas', 'Nilo', 'Yangtsé', 'Misisipi', 'A'),
+(74, 'Asia', 'África', 'América', 'Europa', 'A'),
+(75, 'Río Nilo', 'Río Congo', 'Río Amazonas', 'Río Mekong', 'A'),
+(76, 'Desierto del Sahara', 'Desierto de Gobi', 'Desierto de Atacama', 'Desierto de Kalahari', 'A'),
+(77, 'Cordillera de los Andes', 'Montañas Rocosas', 'Himalaya', 'Alpes', 'A'),
+(78, 'Océano Pacífico', 'Océano Atlántico', 'Océano Índico', 'Océano Ártico', 'A'),
+(79, 'Lagos de Plitvice', 'Lago Baikal', 'Lago Titicaca', 'Lago Superior', 'B'),
+(80, 'Fusión continental', 'Subducción', 'Deriva continental', 'Erosión', 'C'),
+(81, 'Climas tropicales', 'Climas templados', 'Climas polares', 'Climas desérticos', 'A'),
+(82, 'Ludwig van Beethoven', 'Wolfgang Amadeus Mozart', 'Johann Sebastian Bach', 'Frédéric Chopin', 'A'),
+(83, 'Piano', 'Violín', 'Flauta', 'Guitarra', 'A'),
+(84, 'Sinfonía', 'Ópera', 'Concierto', 'Sonata', 'A'),
+(85, 'Rock', 'Jazz', 'Blues', 'Pop', 'A'),
+(86, 'Beatles', 'Rolling Stones', 'Pink Floyd', 'Queen', 'A'),
+(87, 'Freddie Mercury', 'Elvis Presley', 'David Bowie', 'Jimi Hendrix', 'A'),
+(88, 'Notas musicales: Do, Re, Mi, Fa, Sol, La, Si', 'Notas musicales: La, Si, Do, Re, Mi, Fa, Sol', 'Notas musicales: Re, Mi, Fa, Sol, La, Si, Do', 'Notas musicales: Mi, Fa, Sol, La, Si, Do, Re', 'A'),
+(89, 'Escala mayor', 'Escala menor', 'Escala pentatónica', 'Escala cromática', 'A'),
+(90, 'Compositores del barroco', 'Compositores del romanticismo', 'Compositores del impresionismo', 'Compositores del renacimiento', 'A'),
+(91, 'Teoría musical', 'Armonía', 'Contrapunto', 'Orquestación', 'B'),
+(92, 'Fútbol', 'Baloncesto', 'Tenis', 'Natación', 'A'),
+(93, 'Lionel Messi', 'Cristiano Ronaldo', 'Pelé', 'Diego Maradona', 'A'),
+(94, 'Olimpiadas', 'Mundial de Fútbol', 'Copa América', 'Eurocopa', 'A'),
+(95, 'Maratón', '100 metros', 'Salto de altura', 'Lanzamiento de jabalina', 'A'),
+(96, 'Michael Jordan', 'LeBron James', 'Kobe Bryant', 'Magic Johnson', 'A'),
+(97, 'Boxeo', 'Lucha libre', 'Kickboxing', 'Judo', 'A'),
+(98, 'Tour de Francia', 'Giro de Italia', 'Vuelta a España', 'Clasico de Italia', 'A'),
+(99, 'Formula 1', 'Nascar', 'IndyCar', 'Rally Dakar', 'A'),
+(100, 'Rugby', 'Fútbol americano', 'Hockey sobre césped', 'Balonmano', 'A'),
+(101, 'Tenis de mesa', 'Bádminton', 'Squash', 'Pickleball', 'B'),
+(102, 'Internet', 'Bluetooth', 'Wi-Fi', 'NFC', 'A'),
+(103, 'Tim Berners-Lee', 'Steve Jobs', 'Bill Gates', 'Elon Musk', 'A'),
+(104, 'CPU', 'GPU', 'RAM', 'ROM', 'A'),
+(105, 'Software', 'Hardware', 'Firmware', 'Middleware', 'A'),
+(106, 'Python', 'Java', 'C++', 'JavaScript', 'A'),
+(107, 'Inteligencia Artificial', 'Realidad Virtual', 'Blockchain', 'Big Data', 'A'),
+(108, 'Algoritmo de búsqueda', 'Algoritmo de ordenamiento', 'Algoritmo de cifrado', 'Algoritmo de compresión', 'B'),
+(109, 'Redes neuronales', 'Redes locales', 'Redes de área amplia', 'Redes inalámbricas', 'A'),
+(110, 'Criptografía', 'Programación web', 'Sistemas operativos', 'Ciberseguridad', 'D'),
+(111, 'Aprendizaje profundo', 'Aprendizaje supervisado', 'Aprendizaje no supervisado', 'Aprendizaje por refuerzo', 'A'),
+(112, 'Super Mario', 'Sonic', 'Pac-Man', 'Zelda', 'A'),
+(113, 'Nintendo', 'Sony', 'Microsoft', 'Sega', 'A'),
+(114, 'The Legend of Zelda', 'Final Fantasy', 'Metroid', 'Donkey Kong', 'A'),
+(115, 'Fortnite', 'Minecraft', 'Roblox', 'Among Us', 'B'),
+(116, 'Minecraft', 'Call of Duty', 'FIFA', 'Tetris', 'A'),
+(117, 'Pokémon', 'Digimon', 'Yu-Gi-Oh!', 'Bakugan', 'A'),
+(118, 'Esports', 'Speedrun', 'Cosplay', 'Modding', 'A'),
+(119, 'Engine Unreal', 'Unity', 'CryEngine', 'Frostbite', 'B'),
+(120, 'Juego de mundo abierto', 'Juego lineal', 'Juego de puzzles', 'Juego de rol', 'A'),
+(121, 'Inteligencia artificial en NPCs', 'Física en motores gráficos', 'Renderizado 3D', 'Programación de servidores', 'A'),
+(122, 'Pizza', 'Hamburguesa', 'Sushi', 'Pasta', 'A'),
+(123, 'Italia', 'Francia', 'España', 'México', 'A'),
+(124, 'Sushi', 'Taco', 'Paella', 'Curry', 'A'),
+(125, 'Café', 'Té', 'Chocolate', 'Agua', 'A'),
+(126, 'Cocción', 'Fritura', 'Horneado', 'Salteado', 'C'),
+(127, 'Sous-vide', 'Braseado', 'Glaseado', 'Escabeche', 'A'),
+(128, 'Cocina molecular', 'Cocina casera', 'Cocina rápida', 'Cocina tradicional', 'A'),
+(129, 'Maridaje', 'Fermentación', 'Pasteurización', 'Confitado', 'A'),
+(130, 'Champiñones', 'Trufa', 'Setas', 'Boletus', 'B'),
+(131, 'Fermentación láctica', 'Deshidratación', 'Curado', 'Ahumado', 'A'),
+(132, 'Zeus', 'Hades', 'Poseidón', 'Ares', 'A'),
+(133, 'Olimpo', 'Tártaro', 'Érebo', 'Asgard', 'A'),
+(134, 'Thor', 'Loki', 'Odin', 'Freya', 'C'),
+(135, 'Hércules', 'Aquiles', 'Perseo', 'Teseo', 'A'),
+(136, 'Medusa', 'Minotauro', 'Hidra', 'Quimera', 'A'),
+(137, 'Valquirias', 'Nornas', 'Elfos', 'Jotuns', 'A'),
+(138, 'Atenea', 'Artemisa', 'Afrodita', 'Hera', 'A'),
+(139, 'Dionisio', 'Apolo', 'Hermes', 'Hefesto', 'B'),
+(140, 'Odiseo', 'Aquiles', 'Agamenón', 'Paris', 'A'),
+(141, 'Mitología comparada', 'Mitología clásica', 'Mitología nórdica', 'Mitología egipcia', 'A'),
+(142, 'H2O', 'CO2', 'O2', 'N2', 'A'),
+(143, 'Elemento', 'Molécula', 'Compuesto', 'Ion', 'A'),
+(144, 'Tabla periódica', 'Tabla de símbolos', 'Tabla de masas', 'Tabla de reacciones', 'A'),
+(145, 'Ácido', 'Base', 'Sal', 'Óxido', 'A'),
+(146, 'pH 7', 'pH 0', 'pH 14', 'pH 3', 'A'),
+(147, 'Ley de conservación de la masa', 'Ley de las proporciones definidas', 'Ley de Boyle', 'Ley de Charles', 'A'),
+(148, 'Reacción redox', 'Reacción ácido-base', 'Reacción de precipitación', 'Reacción endotérmica', 'A'),
+(149, 'Enlace covalente', 'Enlace iónico', 'Enlace metálico', 'Enlace de hidrógeno', 'A'),
+(150, 'Catalizador', 'Inhibidor', 'Reactivo', 'Producto', 'A'),
+(151, 'Química orgánica', 'Química inorgánica', 'Bioquímica', 'Físicoquímica', 'C'),
+(152, 'Sol', 'Luna', 'Marte', 'Júpiter', 'A'),
+(153, 'Planeta', 'Estrella', 'Cometa', 'Asteroide', 'B'),
+(154, 'Vía Láctea', 'Andrómeda', 'Triángulo', 'Sagitario', 'A'),
+(155, 'Sistema solar', 'Galaxia', 'Nebulosa', 'Constelación', 'A'),
+(156, 'Neil Armstrong', 'Yuri Gagarin', 'Buzz Aldrin', 'Michael Collins', 'A'),
+(157, 'Telescopio', 'Microscopio', 'Espectroscopio', 'Cámara', 'A'),
+(158, 'Agujero negro', 'Supernova', 'Estrella de neutrones', 'Quásar', 'A'),
+(159, 'Materia oscura', 'Energía oscura', 'Radiación cósmica', 'Planetas extrasolares', 'B'),
+(160, 'Exoplanetas', 'Cometas', 'Asteroides', 'Satélites', 'A'),
+(161, 'Big Bang', 'Teoría de la relatividad', 'Inflación cósmica', 'Gravedad cuántica', 'A'),
+(162, 'Democracia', 'Monarquía', 'Dictadura', 'República', 'A'),
+(163, 'División de poderes', 'Soberanía popular', 'Derechos humanos', 'Estado de derecho', 'A'),
+(164, 'Presidente', 'Primer Ministro', 'Canciller', 'Rey', 'A'),
+(165, 'ONU', 'OTAN', 'UE', 'OEA', 'A'),
+(166, 'Elecciones', 'Referéndum', 'Plebiscito', 'Asamblea', 'A'),
+(167, 'Separación de poderes', 'Federalismo', 'Centralismo', 'Autonomía', 'A'),
+(168, 'Liberalismo', 'Socialismo', 'Conservadurismo', 'Nacionalismo', 'A'),
+(169, 'Constitución', 'Decreto', 'Ley', 'Reglamento', 'A'),
+(170, 'Partido político', 'Sindicato', 'ONG', 'Cooperativa', 'A'),
+(171, 'Geopolítica', 'Política fiscal', 'Política monetaria', 'Política energética', 'A'),
+(172, 'Oferta y demanda', 'Inflación', 'Deflación', 'Intervención estatal', 'A'),
+(173, 'Producto Interno Bruto', 'Renta Nacional', 'Ingreso per cápita', 'Deuda pública', 'A'),
+(174, 'Inflación', 'Deflación', 'Recesión', 'Depresión', 'A'),
+(175, 'Mercado', 'Banco', 'Estado', 'Empresa', 'A'),
+(176, 'Microeconomía', 'Macroeconomía', 'Econometría', 'Finanzas', 'A'),
+(177, 'Adam Smith', 'John Maynard Keynes', 'Karl Marx', 'Milton Friedman', 'A'),
+(178, 'Oferta monetaria', 'Tasa de interés', 'Déficit fiscal', 'Balanza de pagos', 'B'),
+(179, 'Economía conductual', 'Economía normativa', 'Economía positiva', 'Economía experimental', 'A'),
+(180, 'Producto marginal', 'Costo marginal', 'Ingreso marginal', 'Beneficio marginal', 'C'),
+(181, 'Política fiscal', 'Política monetaria', 'Política comercial', 'Política industrial', 'A'),
+(182, 'claro que si', 'siiiiii', 'por supuestoooo', 'son lo mas mejor de la vida', 'D'),
+(183, 'claro que si', 'siiiiii', 'por supuestoooo', 'son lo mas mejor de la vida', 'D'),
+(184, 'claro que si', 'siiiiii', 'por supuestoooo', 'son lo mas mejor de la vida', 'A'),
+(185, 'respuesta a', 'respuesta b', 'respuesta c', 'respuesta d', 'D'),
+(186, 'respuesta PRUEBA 2 a', 'respuesta PRUEBA 2 b', 'respuesta PRUEBA 2 c', 'respuesta PRUEBA 2 d', 'D'),
+(187, 'respuesta PRUEBA 2 a', 'respuesta PRUEBA 2 b', 'respuesta PRUEBA 2 c', 'respuesta PRUEBA 2 d', 'D'),
+(188, 'ZELDA 1', ' ZELDA 1', ' ZELDA 1', ' ZELDA 1', 'D'),
+(189, 'respuesta PRUEBA 2 a', 'respuesta PRUEBA 2 b', 'respuesta PRUEBA 2 c', 'respuesta PRUEBA 2 d', 'D');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `RESPUESTA_USUARIO`
+--
+
+CREATE TABLE `RESPUESTA_USUARIO` (
+  `id` int(11) NOT NULL,
+  `fue_correcta` bit(1) DEFAULT NULL,
+  `opcion_elegida` char(1) DEFAULT NULL,
+  `id_partida` int(11) NOT NULL,
+  `id_pregunta` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `RESPUESTA_USUARIO`
+--
+
+INSERT INTO `RESPUESTA_USUARIO` (`id`, `fue_correcta`, `opcion_elegida`, `id_partida`, `id_pregunta`, `id_usuario`) VALUES
+(61, b'0', 'N', 61, 62, 3),
+(62, b'0', 'N', 62, 170, 3),
+(63, b'0', 'N', 63, 129, 3),
+(64, b'0', 'N', 64, 161, 3),
+(65, b'0', 'N', 65, 149, 3),
+(66, b'1', 'A', 66, 55, 3),
+(67, b'1', 'A', 66, 122, 3),
+(68, b'1', 'A', 66, 30, 3),
+(69, b'1', 'A', 66, 13, 3),
+(70, b'0', 'B', 66, 61, 3),
+(71, b'0', 'A', 67, 80, 3),
+(72, b'1', 'A', 68, 10, 3),
+(73, b'1', 'A', 68, 103, 3),
+(74, b'1', 'A', 68, 138, 3),
+(75, b'1', 'A', 68, 59, 3),
+(76, b'0', 'A', 68, 119, 3),
+(77, b'0', 'N', 69, 130, 3),
+(78, b'1', 'A', 70, 113, 3),
+(79, b'1', 'A', 70, 163, 3),
+(80, b'1', 'A', 70, 154, 3),
+(81, b'1', 'A', 70, 84, 3),
+(82, b'1', 'A', 70, 64, 3),
+(83, b'1', 'A', 70, 166, 3),
+(84, b'1', 'A', 70, 31, 3),
+(85, b'1', 'A', 70, 9, 3),
+(86, b'1', 'A', 70, 164, 3),
+(87, b'1', 'A', 70, 49, 3),
+(89, b'0', 'N', 71, 20, 3),
+(90, b'1', 'A', 72, 82, 3),
+(91, b'1', 'A', 72, 28, 3),
+(92, b'0', 'D', 72, 87, 3),
+(93, b'0', 'N', 73, 52, 3),
+(94, b'1', 'A', 74, 5, 3),
+(95, b'1', 'A', 74, 100, 3),
+(96, b'0', 'A', 74, 91, 3),
+(97, b'1', 'A', 75, 135, 3),
+(98, b'1', 'A', 75, 37, 3),
+(99, b'1', 'A', 75, 56, 3),
+(100, b'1', 'A', 75, 16, 3),
+(101, b'1', 'A', 75, 181, 3),
+(102, b'1', 'A', 75, 114, 3),
+(103, b'1', 'A', 75, 43, 3),
+(104, b'1', 'A', 75, 76, 3),
+(105, b'0', 'B', 75, 14, 3),
+(106, b'0', 'A', 76, 79, 3),
+(107, b'1', 'A', 77, 48, 3),
+(108, b'1', 'B', 77, 67, 3),
+(109, b'1', 'B', 77, 152, 3),
+(110, b'1', 'B', 77, 41, 3),
+(111, b'1', 'C', 77, 126, 3),
+(112, b'1', 'C', 77, 178, 3),
+(113, b'1', 'D', 77, 58, 3),
+(114, b'1', 'D', 77, 73, 3),
+(115, b'1', 'D', 77, 121, 3),
+(116, b'1', 'D', 77, 94, 3),
+(117, b'1', 'D', 77, 175, 3),
+(118, b'1', 'D', 77, 7, 3),
+(119, b'1', 'D', 77, 19, 3),
+(120, b'1', 'C', 77, 133, 3),
+(121, b'1', 'C', 77, 63, 3),
+(122, b'1', 'B', 77, 136, 3),
+(123, b'1', 'B', 77, 134, 3),
+(124, b'1', 'B', 77, 139, 3),
+(125, b'1', 'B', 77, 6, 3),
+(126, b'1', 'B', 77, 11, 3),
+(127, NULL, NULL, 77, 160, 3),
+(128, b'1', 'A', 78, 77, 3),
+(129, b'1', 'A', 78, 107, 3),
+(130, b'1', 'A', 78, 158, 3),
+(131, b'1', 'A', 78, 2, 3),
+(132, b'0', 'A', 78, 115, 3),
+(133, NULL, NULL, 79, 141, 3),
+(134, b'1', 'A', 80, 109, 3),
+(135, b'1', 'A', 80, 23, 3),
+(136, b'1', 'A', 80, 169, 3),
+(137, b'1', 'A', 80, 176, 3),
+(138, b'0', 'A', 80, 68, 3),
+(139, b'1', 'A', 81, 65, 3),
+(140, b'0', 'A', 81, 101, 3),
+(141, b'1', 'A', 82, 171, 3),
+(142, b'1', 'A', 82, 32, 3),
+(143, b'1', 'A', 82, 143, 3),
+(144, b'1', 'A', 82, 50, 3),
+(145, b'1', 'A', 82, 124, 3),
+(146, b'1', 'A', 82, 29, 3),
+(147, b'1', 'A', 82, 102, 3),
+(148, b'1', 'A', 82, 106, 3),
+(149, b'1', 'A', 82, 26, 3),
+(150, b'1', 'A', 82, 98, 3),
+(151, NULL, NULL, 82, 8, 3),
+(152, b'1', 'A', 83, 111, 3),
+(153, b'1', 'A', 83, 125, 3),
+(154, b'1', 'A', 83, 40, 3),
+(155, b'1', 'A', 83, 71, 3),
+(156, b'1', 'A', 83, 47, 3),
+(157, b'1', 'A', 83, 92, 3),
+(158, b'1', 'A', 83, 81, 3),
+(159, b'1', 'A', 83, 179, 3),
+(160, b'1', 'A', 83, 167, 3),
+(161, b'1', 'A', 83, 85, 3),
+(162, NULL, NULL, 83, 83, 3),
+(520, b'1', 'D', 203, 116, 2),
+(521, b'1', 'C', 203, 87, 2),
+(522, b'1', 'B', 204, 117, 2),
+(523, b'1', 'C', 204, 47, 2),
+(524, b'1', 'D', 204, 111, 2),
+(525, NULL, NULL, 205, 88, 2),
+(526, b'1', 'A', 206, 18, 2),
+(527, b'0', 'A', 206, 40, 2),
+(528, NULL, NULL, 207, 160, 2),
+(529, b'1', 'N', 208, 79, 2),
+(530, NULL, NULL, 209, 169, 2),
+(531, b'1', 'N', 210, 57, 2),
+(532, NULL, NULL, 211, 89, 2),
+(533, b'1', 'D', 212, 151, 2),
+(534, NULL, NULL, 213, 20, 2),
+(535, b'1', 'A', 214, 155, 2),
+(536, b'1', 'D', 214, 66, 2),
+(537, b'1', 'N', 215, 102, 2),
+(538, b'1', 'B', 216, 51, 2),
+(539, b'1', 'C', 217, 91, 2),
+(540, b'1', 'B', 218, 98, 2),
+(541, b'1', 'A', 219, 17, 2),
+(542, b'1', 'D', 219, 140, 2),
+(543, b'1', 'A', 220, 143, 2),
+(544, b'1', 'C', 220, 110, 2),
+(545, NULL, NULL, 221, 153, 2),
+(546, NULL, NULL, 222, 14, 2),
+(547, b'1', 'B', 223, 23, 2),
+(548, b'1', 'A', 224, 114, 2),
+(549, b'1', 'D', 224, 62, 2),
+(550, b'1', 'D', 226, 106, 2),
+(551, b'1', 'C', 227, 4, 2),
+(552, b'1', 'A', 227, 148, 2),
+(553, b'1', 'D', 227, 16, 2),
+(554, b'1', 'C', 228, 30, 2),
+(555, b'1', 'D', 228, 31, 2),
+(556, b'1', 'B', 229, 63, 2),
+(557, b'1', 'C', 229, 181, 2),
+(558, b'1', 'A', 230, 167, 2),
+(559, b'1', 'A', 230, 149, 2),
+(560, b'1', 'N', 230, 119, 2),
+(561, b'1', 'C', 230, 146, 2),
+(562, b'1', 'A', 231, 142, 2),
+(563, b'1', 'D', 231, 1, 2),
+(564, b'1', 'A', 231, 136, 2),
+(565, b'1', 'A', 231, 15, 2),
+(566, b'1', 'D', 231, 25, 2),
+(567, NULL, NULL, 238, 75, 2),
+(568, NULL, NULL, 239, 10, 2),
+(569, NULL, NULL, 240, 28, 2),
+(570, b'1', 'C', 241, 12, 2),
+(571, b'1', 'A', 242, 178, 2),
+(572, b'1', 'A', 243, 13, 2),
+(573, b'1', 'A', 243, 68, 2),
+(574, b'1', 'A', 244, 83, 2),
+(575, b'1', 'A', 244, 67, 2),
+(576, b'1', 'A', 244, 38, 2),
+(577, b'1', 'D', 244, 48, 2),
+(578, b'1', 'A', 245, 176, 2),
+(579, b'1', 'A', 245, 156, 2),
+(580, b'1', 'A', 245, 76, 2),
+(581, b'1', 'A', 245, 112, 2),
+(582, b'1', 'D', 245, 60, 2),
+(583, b'1', 'A', 246, 97, 2),
+(584, b'1', 'A', 246, 7, 2),
+(585, b'1', 'A', 246, 27, 2),
+(586, b'1', 'D', 246, 104, 2),
+(610, b'1', 'A', 265, 60, 6),
+(611, b'0', 'D', 265, 79, 6),
+(612, b'1', 'A', 266, 73, 6),
+(613, b'0', 'A', 266, 130, 6),
+(614, b'1', 'A', 267, 18, 6),
+(615, b'1', 'A', 267, 49, 6),
+(616, b'0', 'D', 267, 127, 6),
+(617, b'1', 'A', 268, 158, 6),
+(618, b'0', 'N', 268, 121, 6),
+(619, NULL, NULL, 269, 74, 6),
+(620, b'1', 'B', 270, 119, 6),
+(621, b'0', 'C', 270, 46, 6),
+(622, b'0', 'D', 271, 151, 6),
+(623, NULL, NULL, 272, 68, 6),
+(624, NULL, NULL, 273, 83, 6),
+(625, b'0', 'C', 274, 109, 2),
+(626, b'0', 'D', 274, 49, 2),
+(627, b'0', 'C', 275, 101, 6),
+(628, b'0', 'C', 276, 25, 6),
+(629, b'0', 'C', 276, 16, 6),
+(630, b'0', 'C', 277, 70, 6),
+(631, NULL, NULL, 278, 93, 6),
+(632, b'0', 'C', 280, 105, 2),
+(633, b'1', 'A', 280, 73, 2),
+(634, b'0', 'D', 280, 107, 2),
+(635, b'0', 'C', 281, 144, 2),
+(636, b'1', 'A', 282, 172, 2),
+(637, b'1', 'A', 282, 44, 2),
+(638, b'0', 'N', 282, 26, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `RESULTADO`
+--
+
+CREATE TABLE `RESULTADO` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(15) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `RESULTADO`
+--
+
+INSERT INTO `RESULTADO` (`id`, `nombre`) VALUES
+(1, 'Ganada'),
+(2, 'Perdida');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `ROL`
+--
+
+CREATE TABLE `ROL` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `ROL`
+--
+
+INSERT INTO `ROL` (`id`, `nombre`) VALUES
+(1, 'ADMINISTRADOR'),
+(2, 'EDITOR'),
+(3, 'JUGADOR');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `SEXO`
+--
+
+CREATE TABLE `SEXO` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `SEXO`
+--
+
+INSERT INTO `SEXO` (`id`, `nombre`) VALUES
+(1, 'Femenino'),
+(2, 'Masculino'),
+(3, 'Prefiero no especificar');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `TIPO_PARTIDA`
+--
+
+CREATE TABLE `TIPO_PARTIDA` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `TIPO_PARTIDA`
+--
+
+INSERT INTO `TIPO_PARTIDA` (`id`, `nombre`) VALUES
+(1, 'Vs Bot'),
+(2, 'Vs Otro Jugador');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `USUARIO`
+--
+
+CREATE TABLE `USUARIO` (
+  `id` int(11) NOT NULL,
+  `nombre_completo` varchar(100) NOT NULL,
+  `anio_nacimiento` int(11) NOT NULL,
+  `correo_electronico` varchar(100) NOT NULL,
+  `contrasenia` varchar(10) NOT NULL,
+  `nombre_usuario` varchar(10) NOT NULL,
+  `foto` varchar(255) DEFAULT NULL,
+  `puntos_totales` int(11) NOT NULL DEFAULT 0,
+  `id_sexo` int(11) NOT NULL,
+  `id_rol` int(11) NOT NULL,
+  `id_ciudad` int(11) NOT NULL,
+  `cuenta_verificada` bit(1) DEFAULT b'0',
+  `codigo_verificacion` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `USUARIO`
+--
+
+INSERT INTO `USUARIO` (`id`, `nombre_completo`, `anio_nacimiento`, `correo_electronico`, `contrasenia`, `nombre_usuario`, `foto`, `puntos_totales`, `id_sexo`, `id_rol`, `id_ciudad`, `cuenta_verificada`, `codigo_verificacion`) VALUES
+(1, 'Adrian Rivas', 1983, 'admin@desafioUnlam.com', '12345', 'Admin', NULL, 0, 2, 1, 1, b'1', NULL),
+(2, 'Kiko Miale', 2010, 'melina.miale@gmail.com', '123456', 'KikoRey', '', 230, 2, 3, 49, b'1', NULL),
+(3, 'Alberto Suegrito', 2010, 'megustanlaspastas@gmail.com', '123456', 'Suegrin', '', 79, 2, 3, 50, b'1', NULL),
+(4, 'Loli', 1960, 'loli@hotmail.com', '123456', 'Editor', NULL, 0, 1, 2, 45, b'1', NULL),
+(5, 'Meli Lime', 2018, 'melina.chef@gmail.com', '123123', 'MeliLime', '', 0, 1, 2, 51, b'1', NULL),
+(6, 'Manu', 1980, 'megustanlaspasstas@gmail.com', '123123', 'Manu', '', 6, 1, 3, 52, b'1', NULL),
+(7, 'Pepe trueno', 1950, 'pepe@pwpw.com', '123123', 'Pepe truen', '', 0, 2, 3, 53, b'0', '49712b35ea799df31e7a4e958666a9f9'),
+(8, 'BRAAA', 2000, 'melina.mSSSiale@gmail.com', '123123', 'BRAAA', '', 0, 2, 3, 54, b'0', 'dae886715e0eef00880b1114175a8967');
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `AUDITORIA_CATEGORIA`
+--
+ALTER TABLE `AUDITORIA_CATEGORIA`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_categoria` (`id_categoria`),
+  ADD KEY `id_editor` (`id_editor`);
+
+--
+-- Indices de la tabla `AUDITORIA_PREGUNTA`
+--
+ALTER TABLE `AUDITORIA_PREGUNTA`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_pregunta` (`id_pregunta`),
+  ADD KEY `id_solicitante` (`id_solicitante`),
+  ADD KEY `id_editor` (`id_editor`),
+  ADD KEY `estado_origen` (`estado_origen`),
+  ADD KEY `estado_destino` (`estado_destino`);
+
+--
+-- Indices de la tabla `CATEGORIA`
+--
+ALTER TABLE `CATEGORIA`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `CIUDAD`
+--
+ALTER TABLE `CIUDAD`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_pais` (`id_pais`);
+
+--
+-- Indices de la tabla `ESTADO_PREGUNTA`
+--
+ALTER TABLE `ESTADO_PREGUNTA`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `PAIS`
+--
+ALTER TABLE `PAIS`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `PARTIDA`
+--
+ALTER TABLE `PARTIDA`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_jugador1` (`id_jugador1`),
+  ADD KEY `id_jugador2` (`id_jugador2`),
+  ADD KEY `id_resultado` (`id_resultado`),
+  ADD KEY `id_tipo_partida` (`id_tipo_partida`);
+
+--
+-- Indices de la tabla `PREGUNTA`
+--
+ALTER TABLE `PREGUNTA`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_respuesta` (`id_respuesta`),
+  ADD KEY `id_categoria` (`id_categoria`),
+  ADD KEY `id_estado_pregunta` (`id_estado_pregunta`),
+  ADD KEY `id_autor` (`id_autor`);
+
+--
+-- Indices de la tabla `RESPUESTA`
+--
+ALTER TABLE `RESPUESTA`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `RESPUESTA_USUARIO`
+--
+ALTER TABLE `RESPUESTA_USUARIO`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_partida` (`id_partida`),
+  ADD KEY `id_pregunta` (`id_pregunta`),
+  ADD KEY `id_usuario` (`id_usuario`);
+
+--
+-- Indices de la tabla `RESULTADO`
+--
+ALTER TABLE `RESULTADO`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `ROL`
+--
+ALTER TABLE `ROL`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `SEXO`
+--
+ALTER TABLE `SEXO`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `TIPO_PARTIDA`
+--
+ALTER TABLE `TIPO_PARTIDA`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `USUARIO`
+--
+ALTER TABLE `USUARIO`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `correo_electronico` (`correo_electronico`),
+  ADD UNIQUE KEY `nombre_usuario` (`nombre_usuario`),
+  ADD KEY `id_sexo` (`id_sexo`),
+  ADD KEY `id_rol` (`id_rol`),
+  ADD KEY `id_ciudad` (`id_ciudad`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `AUDITORIA_CATEGORIA`
+--
+ALTER TABLE `AUDITORIA_CATEGORIA`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT de la tabla `AUDITORIA_PREGUNTA`
+--
+ALTER TABLE `AUDITORIA_PREGUNTA`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT de la tabla `CATEGORIA`
+--
+ALTER TABLE `CATEGORIA`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+
+--
+-- AUTO_INCREMENT de la tabla `CIUDAD`
+--
+ALTER TABLE `CIUDAD`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+
+--
+-- AUTO_INCREMENT de la tabla `ESTADO_PREGUNTA`
+--
+ALTER TABLE `ESTADO_PREGUNTA`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT de la tabla `PAIS`
+--
+ALTER TABLE `PAIS`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+
+--
+-- AUTO_INCREMENT de la tabla `PARTIDA`
+--
+ALTER TABLE `PARTIDA`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=283;
+
+--
+-- AUTO_INCREMENT de la tabla `PREGUNTA`
+--
+ALTER TABLE `PREGUNTA`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=188;
+
+--
+-- AUTO_INCREMENT de la tabla `RESPUESTA`
+--
+ALTER TABLE `RESPUESTA`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=190;
+
+--
+-- AUTO_INCREMENT de la tabla `RESPUESTA_USUARIO`
+--
+ALTER TABLE `RESPUESTA_USUARIO`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=639;
+
+--
+-- AUTO_INCREMENT de la tabla `RESULTADO`
+--
+ALTER TABLE `RESULTADO`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `ROL`
+--
+ALTER TABLE `ROL`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `SEXO`
+--
+ALTER TABLE `SEXO`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `TIPO_PARTIDA`
+--
+ALTER TABLE `TIPO_PARTIDA`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `USUARIO`
+--
+ALTER TABLE `USUARIO`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `AUDITORIA_CATEGORIA`
+--
+ALTER TABLE `AUDITORIA_CATEGORIA`
+  ADD CONSTRAINT `auditoria_categoria_ibfk_1` FOREIGN KEY (`id_categoria`) REFERENCES `CATEGORIA` (`id`),
+  ADD CONSTRAINT `auditoria_categoria_ibfk_2` FOREIGN KEY (`id_editor`) REFERENCES `USUARIO` (`id`);
+
+--
+-- Filtros para la tabla `AUDITORIA_PREGUNTA`
+--
+ALTER TABLE `AUDITORIA_PREGUNTA`
+  ADD CONSTRAINT `auditoria_pregunta_ibfk_1` FOREIGN KEY (`id_pregunta`) REFERENCES `PREGUNTA` (`id`),
+  ADD CONSTRAINT `auditoria_pregunta_ibfk_2` FOREIGN KEY (`id_solicitante`) REFERENCES `USUARIO` (`id`),
+  ADD CONSTRAINT `auditoria_pregunta_ibfk_3` FOREIGN KEY (`id_editor`) REFERENCES `USUARIO` (`id`),
+  ADD CONSTRAINT `auditoria_pregunta_ibfk_4` FOREIGN KEY (`estado_origen`) REFERENCES `ESTADO_PREGUNTA` (`id`),
+  ADD CONSTRAINT `auditoria_pregunta_ibfk_5` FOREIGN KEY (`estado_destino`) REFERENCES `ESTADO_PREGUNTA` (`id`);
+
+--
+-- Filtros para la tabla `CIUDAD`
+--
+ALTER TABLE `CIUDAD`
+  ADD CONSTRAINT `ciudad_ibfk_1` FOREIGN KEY (`id_pais`) REFERENCES `PAIS` (`id`);
+
+--
+-- Filtros para la tabla `PARTIDA`
+--
+ALTER TABLE `PARTIDA`
+  ADD CONSTRAINT `partida_ibfk_1` FOREIGN KEY (`id_jugador1`) REFERENCES `USUARIO` (`id`),
+  ADD CONSTRAINT `partida_ibfk_2` FOREIGN KEY (`id_jugador2`) REFERENCES `USUARIO` (`id`),
+  ADD CONSTRAINT `partida_ibfk_3` FOREIGN KEY (`id_resultado`) REFERENCES `RESULTADO` (`id`),
+  ADD CONSTRAINT `partida_ibfk_4` FOREIGN KEY (`id_tipo_partida`) REFERENCES `TIPO_PARTIDA` (`id`);
+
+--
+-- Filtros para la tabla `PREGUNTA`
+--
+ALTER TABLE `PREGUNTA`
+  ADD CONSTRAINT `pregunta_ibfk_1` FOREIGN KEY (`id_respuesta`) REFERENCES `RESPUESTA` (`id`),
+  ADD CONSTRAINT `pregunta_ibfk_2` FOREIGN KEY (`id_categoria`) REFERENCES `CATEGORIA` (`id`),
+  ADD CONSTRAINT `pregunta_ibfk_3` FOREIGN KEY (`id_estado_pregunta`) REFERENCES `ESTADO_PREGUNTA` (`id`),
+  ADD CONSTRAINT `pregunta_ibfk_4` FOREIGN KEY (`id_autor`) REFERENCES `USUARIO` (`id`);
+
+--
+-- Filtros para la tabla `RESPUESTA_USUARIO`
+--
+ALTER TABLE `RESPUESTA_USUARIO`
+  ADD CONSTRAINT `respuesta_usuario_ibfk_1` FOREIGN KEY (`id_partida`) REFERENCES `PARTIDA` (`id`),
+  ADD CONSTRAINT `respuesta_usuario_ibfk_2` FOREIGN KEY (`id_pregunta`) REFERENCES `PREGUNTA` (`id`),
+  ADD CONSTRAINT `respuesta_usuario_ibfk_3` FOREIGN KEY (`id_usuario`) REFERENCES `USUARIO` (`id`);
+
+--
+-- Filtros para la tabla `USUARIO`
+--
+ALTER TABLE `USUARIO`
+  ADD CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`id_sexo`) REFERENCES `SEXO` (`id`),
+  ADD CONSTRAINT `usuario_ibfk_2` FOREIGN KEY (`id_rol`) REFERENCES `ROL` (`id`),
+  ADD CONSTRAINT `usuario_ibfk_3` FOREIGN KEY (`id_ciudad`) REFERENCES `CIUDAD` (`id`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

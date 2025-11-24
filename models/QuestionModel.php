@@ -11,6 +11,7 @@ class QuestionModel {
         $approvedStatus = QuestionStatus::APPROVED;
         $responseId = $data["responseId"];
         $idCreator = $_SESSION["userId"];
+        date_default_timezone_set('America/Argentina/Buenos_Aires');
         $date = date("Y-m-d H:i:s");
 
         $sql = "INSERT INTO PREGUNTA (enunciado, id_respuesta, id_categoria, id_estado_pregunta, id_autor, fecha_creacion) VALUES ('{$data['statement']}', $responseId, {$data['categoryId']}, $approvedStatus,  $idCreator, '$date')";
@@ -102,6 +103,7 @@ class QuestionModel {
     }
 
     public function finalizeReport($reportId, $editorComment, $editorId) {
+        date_default_timezone_set('America/Argentina/Buenos_Aires');
         $date = date("Y-m-d H:i:s");
         $approved = QuestionStatus::APPROVED;
 
@@ -124,6 +126,7 @@ class QuestionModel {
     }
 
     public function logEditorActivity($questionId, $editorComment, $editorId) {
+        date_default_timezone_set('America/Argentina/Buenos_Aires');
         $date = date("Y-m-d H:i:s");
         $approved = QuestionStatus::APPROVED;
 
