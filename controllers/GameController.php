@@ -42,15 +42,61 @@ class GameController
 
     public function startGame() {
         unset($_SESSION["currentGame"]);
+
         $userId = $_SESSION["userId"];
         $currentGame = $this->model->createGame($userId);
 
+        $_SESSION['from_game_start'] = true;
         $_SESSION["currentGame"]["currentQuestionIndex"] = 0;
+        $_SESSION["currentGame"]["gameId"] = $currentGame->id;
 
-        $this->getPlayableQuestionsAndSetGameData($userId, $currentGame->id);
+
+
+        header("Location: /index.php?controller=game&method=displayGame");
+        exit;
+    }
+
+    public function displayGame() {
+        // Validaciones ✔
+        if (!isset($_SESSION["currentGame"]) ||
+            empty($_SESSION["currentGame"]) ||
+            !isset($_SESSION['from_game_start']) ||
+            $_SESSION['from_game_start'] !== true) {
+
+            header("Location: /index.php?controller=playerhome&method=displayHome");
+            exit;
+        }
+
+        // Una vez validado, borramos la marca
+        unset($_SESSION['from_game_start']);
+
+        // Si no hay preguntas cargadas, cargarlas ahora
+        if (!isset($_SESSION["currentGame"]["playableQuestions"])) {
+            $this->getPlayableQuestionsAndSetGameData($_SESSION["userId"], $_SESSION["currentGame"]["gameId"]);
+            return;
+        }
+
+        $index = $_SESSION["currentGame"]["currentQuestionIndex"];
+        $playableQuestions = $_SESSION["currentGame"]["playableQuestions"];
+
+        // Protege contra índices fuera de rango
+        if (!isset($playableQuestions[$index])) {
+            header("Location: /index.php?controller=playerhome&method=displayHome");
+            exit;
+        }
+
+        $activeQuestion = $playableQuestions[$index]->getIndividualPlayableQuestion(false);
+        $_SESSION['currentGame']['activeQuestion']['id'] = $activeQuestion['questionId'];
+
+
+        $activeQuestion['questionNumber'] = $index + 1;
+        $this->renderer->render("displayGame", $activeQuestion);
     }
 
     public function submitAnswer() {
+
+
+
         $index = $_SESSION["currentGame"]["currentQuestionIndex"];
         $currentQuestion = $_SESSION["currentGame"]["playableQuestions"][$index];
         $submittedAnswer = isset($_POST['answer']) ? $_POST['answer'] : 'NO_ANSWER';
@@ -149,7 +195,7 @@ class GameController
         $now = time();
         $elapsedTime = $now - $start;
 
-        $timeout = $elapsedTime >= 15;
+        $timeout = $elapsedTime > 15;
         return ["timeout" => $timeout, "elapsedTime" => $elapsedTime];
     }
 
@@ -174,7 +220,7 @@ class GameController
         $userId = $_SESSION["userId"];
         if (!isset($playableQuestions[$index])) {
             $this->getPlayableQuestionsAndSetGameData($userId, $currentGameId);
-            $playableQuestions = $_SESSION['currentGame']['playableQuestions'];
+            return;
         }
 
         $_SESSION["currentGame"]["currentQuestionIndex"] = $index;
