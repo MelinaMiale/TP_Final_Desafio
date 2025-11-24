@@ -46,6 +46,7 @@ class PlayerHomeModel {
             $correct = $this->getCorrectAnswersCount($game['id'], $userId);
             $games[] = [
                 'date' => date("d M Y", strtotime($game['fecha'])),
+                'time' => date("H:i", strtotime($game['fecha'])),
                 'correct' => $correct,
                 'points' => $game['points']
             ];
