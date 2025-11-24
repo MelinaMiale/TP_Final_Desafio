@@ -1,6 +1,6 @@
 {{> header }}
 
-<form action="../index.php?controller=ReportQuestion&method=submitReport" method="POST">
+<form action="/reportquestion/submitReport" method="POST">
     <div class="rq-container" style="--category-color: {{categoryColor}};">
         <div class="rq-category-header">
             <img src="../public/img/{{categoryIcon}}.png" alt="Category icon" class="rq-category-icon">
@@ -44,7 +44,7 @@
         <!-- Acciones -->
         <div class="rq-actions">
             <button type="submit" class="rq-btn rq-report-btn" title="Solo podrás reportar una pregunta por partida. Luego la partida continúa normalmente.">Reportar</button>
-            <a href="../index.php?controller=game&method=resumeAfterReport" class="rq-btn">Cancelar</a>
+            <a href="/game/resumeAfterReport" class="rq-btn">Cancelar</a>
         </div>
     </div>
 </form>

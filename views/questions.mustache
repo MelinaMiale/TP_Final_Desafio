@@ -28,11 +28,16 @@
                 <option value="">Todas</option>
                 {{#categories}} <option value="{{id}}" {{#isSelected}}selected{{/isSelected}}>{{nombre}}</option> {{/categories}}
             </select>
+
             <label for="status">Estado:</label>
             <select name="statusId" id="status">
                 <option value="">Todos</option>
                 {{#statuses}} <option value="{{id}}" {{#isSelected}}selected{{/isSelected}}>{{nombre}}</option> {{/statuses}}
             </select>
+
+            <label for="searchText">Buscar por enunciado:</label>
+            <input type="text" name="searchText" id="searchText" value="{{searchText}}">
+
             <button type="submit" class="btn-editor">Filtrar</button>
         </form>
         <div class="action-buttons">
@@ -74,7 +79,9 @@
             <div class="empty-state">No hay preguntas disponibles</div>
         {{/hasQuestions}}
             <div class="pagination"> {{#pages}}
-                <a href="?controller=question&method=manageQuestions&page={{number}}{{#categoryId}}&categoryId={{categoryId}}{{/categoryId}}{{#statusId}}&statusId={{statusId}}{{/statusId}}" class="page-link {{#selected}}active{{/selected}}"> {{number}} </a>
+                <a href="?controller=question&method=manageQuestions&page={{number}}{{#categoryId}}&categoryId={{categoryId}}{{/categoryId}}{{#statusId}}&statusId={{statusId}}{{/statusId}}{{#searchText}}&searchText={{searchText}}{{/searchText}}" class="page-link {{#selected}}active{{/selected}}">
+                {{number}}
+                </a>
             {{/pages}} </div>
         </div>
     </details>
