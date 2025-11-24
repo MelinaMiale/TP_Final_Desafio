@@ -1198,3 +1198,7 @@ SET dificultad_num = CASE dificultad_actual
 END;
 ALTER TABLE PREGUNTA DROP COLUMN dificultad_actual;
 ALTER TABLE PREGUNTA CHANGE dificultad_num dificultad_actual TINYINT NOT NULL DEFAULT 2;
+
+-- cambiosRiki
+ALTER TABLE USUARIO
+ADD COLUMN fechaDeRegistro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
