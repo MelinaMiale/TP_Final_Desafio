@@ -149,6 +149,9 @@
     margin: 0 1rem;
 }
 
+#edit-view label {
+    color: white !important;
+}
 /* Resaltar ganador */
 .player.winner .player-image {
     border-color: #4caf50;

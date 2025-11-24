@@ -11,7 +11,7 @@ class PlayableQuestion {
     public $categoryColor;
     public $categoryId;
     public $questionNumber;
-    public $correctAnswer; // solo para uso interno, me permite usar la misma clase tanto para la logica del negocio como para mostrar en la vista.
+    public $correctAnswer;
     public $numCorrectAnswers;
     public $numTotalAnswers;
     public $ratio;

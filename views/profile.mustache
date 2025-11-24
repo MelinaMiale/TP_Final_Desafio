@@ -1,7 +1,7 @@
 {{> header }}
 <div class="profile-container">
 
-    <!-- ✅ Carta del perfil -->
+
     <div class="profile-card" id="profile-view">
         <div class="profile-header">
             <div class="profile-image">
@@ -30,7 +30,7 @@
         {{/es_propietario}}
     </div>
 
-    <!-- ✅ Formulario de edición oculto -->
+
     {{#es_propietario}}
         <div class="history-card perfil-editar mt-4" id="edit-view" style="display: none;">
             <h2>Editar perfil</h2>
@@ -44,6 +44,12 @@
                 <div class="form-group">
                     <label for="pais">País:</label>
                     <input type="text" id="pais" name="pais" value="{{pais}}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Seleccionar ciudad y país:</label>
+                    <p class="small-text">Hacé click en el mapa para actualizar tu ubicación.</p>
+                    <div id="mapaEditar" style="width: 100%; height: 300px; margin-top: 10px;"></div>
                 </div>
 
                 <div class="form-group">
@@ -97,6 +103,8 @@
 
 {{> footer }}
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const btnEditar = document.getElementById('btnEditarPerfil');
@@ -104,10 +112,53 @@
         const profileView = document.getElementById('profile-view');
         const editView = document.getElementById('edit-view');
 
+        let mapaEditar;
+        let marcadorEditar;
+
+        function inicializarMapaEditar() {
+            if (mapaEditar) return;
+
+            mapaEditar = L.map('mapaEditar').setView([-34.6037, -58.3816], 5);
+
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: ''
+            }).addTo(mapaEditar);
+
+            mapaEditar.on('click', function(e) {
+                const lat = e.latlng.lat;
+                const lng = e.latlng.lng;
+                const token = "pk.4bceeb166ba6748c7eae85a1eed87707";
+
+                if (marcadorEditar) mapaEditar.removeLayer(marcadorEditar);
+
+                marcadorEditar = L.marker([lat, lng]).addTo(mapaEditar);
+
+                fetch(`https://us1.locationiq.com/v1/reverse?key=${token}&lat=${lat}&lon=${lng}&format=json`)
+                        .then(res => res.json())
+                        .then(data => {
+                            let ciudad = data.address.city ||
+                                    data.address.town ||
+                                    data.address.village ||
+                                    data.address.hamlet ||
+                                    data.address.municipality ||
+                                    data.address.county;
+
+                            let pais = data.address.country;
+
+                            document.getElementById('ciudad').value = ciudad;
+                            document.getElementById('pais').value = pais;
+
+                            marcadorEditar.bindPopup(ciudad + ', ' + pais).openPopup();
+                        })
+                        .catch(err => console.error(err));
+            });
+        }
+
         if (btnEditar) {
             btnEditar.addEventListener('click', () => {
                 profileView.style.display = 'none';
                 editView.style.display = 'block';
+                setTimeout(inicializarMapaEditar, 100);
             });
         }
 
@@ -119,3 +170,4 @@
         }
     });
 </script>
+

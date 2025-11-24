@@ -20,7 +20,7 @@ class PlayerHomeModel {
         }
 
         $rank = $this->rankingModel->getUserRank($username);
-        // $avatar = $this->rankingModel->getUserAvatar($username);
+
         $games = $this->getRecentGames($userId);
 
         return [
@@ -65,7 +65,6 @@ class PlayerHomeModel {
     private function emptyStats($username) {
         return [
             'user_name' => $username,
-            // 'avatar' => null,
             'ranking' => '-',
             'score' => 0,
             'games_played' => 0,
