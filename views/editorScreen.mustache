@@ -45,7 +45,7 @@
                     <td>{{fecha_reporte}}</td>
                     <td>{{estado_origen}}</td>
                     <td>
-                        <form action="../index.php?controller=editor&method=resolvePlayerReport" method="POST">
+                        <form action="/editor/resolvePlayerReport" method="POST">
                             <input type="hidden" name="reportId" value="{{reportId}}">
                             <select name="action" required>
                                 <option value="">Seleccionar...</option>

@@ -11,16 +11,25 @@ class CategoryModel {
         return $this->connection;
     }
 
-    public function getCategoriesPaginated($limit, $offset) {
-        $sql = "SELECT id, nombre, color 
-            FROM CATEGORIA 
-            LIMIT $limit OFFSET $offset";
+    public function getCategoriesPaginated($limit, $offset, $searchCategory = null) {
+        $sql = "SELECT id, nombre, color FROM CATEGORIA WHERE 1=1";
+        if ($searchCategory) {
+            $searchCategory = $this->connection->real_escape_string($searchCategory);
+            $sql .= " AND nombre LIKE '%$searchCategory%'";
+        }
+        $sql .= " LIMIT $limit OFFSET $offset";
+
         return $this->connection->query($sql) ?? [];
     }
 
-    public function getTotalCategoriesCount() {
-        $sql = "SELECT COUNT(*) as total FROM CATEGORIA";
+    public function getTotalCategoriesCount($searchCategory = null) {
+        $sql = "SELECT COUNT(*) as total FROM CATEGORIA WHERE 1=1";
+        if ($searchCategory) {
+            $searchCategory = $this->connection->real_escape_string($searchCategory);
+            $sql .= " AND nombre LIKE '%$searchCategory%'";
+        }
         $result = $this->connection->query($sql);
+
         return $result ? $result[0]['total'] : 0;
     }
 

@@ -22,7 +22,12 @@
     <div class="editor-panel">
         <div class="panel-title">Acciones</div>
         <div class="action-buttons">
-            <form method="post" action="?controller=category&method=newCategory">
+            <form method="get" action="/category/manageCategories" class="filter-form">
+                <label for="searchCategory">Nombre:</label>
+                <input type="text" name="searchCategory" id="searchCategory" value="{{searchCategory}}">
+                <button type="submit" class="btn-editor">Filtrar</button>
+            </form>
+            <form method="post" action="/category/newCategory">
                 <button type="submit" class="btn-circle">+ Categoría</button>
             </form>
         </div>
@@ -70,7 +75,7 @@
             {{/hasCategories}}
             <div class="pagination">
                 {{#pages}}
-                    <a href="?controller=category&method=manageCategories&page={{number}}" class="page-link {{#selected}}active{{/selected}}">
+                    <a href="?controller=category&method=manageCategories&page={{number}}{{#searchCategory}}&searchCategory={{searchCategory}}{{/searchCategory}}" class="page-link {{#selected}}active{{/selected}}">
                     {{number}}
                     </a>
                 {{/pages}}
