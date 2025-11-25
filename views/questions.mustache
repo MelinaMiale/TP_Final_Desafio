@@ -108,8 +108,13 @@
                 <label for="optionD">Opción D:</label>
                 <input type="text" name="optionD" id="optionD" value="{{questionToEdit.opcion_d}}" required>
 
-                <label for="correctAnswer">Respuesta Correcta:</label>
-                <input type="text" name="correctAnswer" id="correctAnswer" value="{{questionToEdit.respuesta_correcta}}" required>
+                <select name="correctAnswer" id="correctAnswer" class="editor-select" required>
+                    <option value="">Selecciona la opción correcta</option>
+                    <option value="A" {{#isCorrectA}}selected{{/isCorrectA}}>A</option>
+                    <option value="B" {{#isCorrectB}}selected{{/isCorrectB}}>B</option>
+                    <option value="C" {{#isCorrectC}}selected{{/isCorrectC}}>C</option>
+                    <option value="D" {{#isCorrectD}}selected{{/isCorrectD}}>D</option>
+                </select>
 
                 <label for="categoryId">Categoría:</label>
                 <select name="categoryId" id="categoryId">

@@ -44,7 +44,10 @@ class EditorModel {
         JOIN PREGUNTA p ON a.id_pregunta = p.id
         JOIN USUARIO u ON a.id_solicitante = u.id
         JOIN ESTADO_PREGUNTA eo ON a.estado_origen = eo.id
-        WHERE a.estado_destino = $pendingQuestionStatus";
+        WHERE 
+      p.id_estado_pregunta = $pendingQuestionStatus
+   OR a.estado_origen = $pendingQuestionStatus
+   OR a.estado_destino = $pendingQuestionStatus";
         return $this->connection->query($sql) ?? [];
     }
 
@@ -80,7 +83,8 @@ class EditorModel {
                 accion = 'rechazar',
                 comentario_editor = '$editorComment',
                 fecha_revision = '$date',
-                estado_destino = $statusDestination
+                estado_destino = $statusDestination,
+                estado_origen = $statusDestination
             WHERE id = $reportId";
         $this->connection->query($sqlAudit);
 
