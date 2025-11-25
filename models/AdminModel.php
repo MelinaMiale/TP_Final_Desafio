@@ -168,7 +168,7 @@ class AdminModel {
                     ELSE 0
                 END as porcentaje_correctas
             FROM USUARIO u
-            LEFT JOIN respuesta_usuario ru ON u.id = ru.id_usuario
+            LEFT JOIN RESPUESTA_USUARIO ru ON u.id = ru.id_usuario
             WHERE u.id_rol = 3
             GROUP BY u.id, u.nombre_usuario, u.nombre_completo
             ORDER BY porcentaje_correctas DESC";

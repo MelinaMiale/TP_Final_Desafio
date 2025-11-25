@@ -374,7 +374,7 @@ body {
 }
 
 .chart-container canvas {
-    max-height: 220px !important;
+    max-height: 320px !important;
 }
 
 .modal-buttons {
