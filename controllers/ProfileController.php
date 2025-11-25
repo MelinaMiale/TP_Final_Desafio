@@ -25,21 +25,16 @@ class ProfileController {
             return;
         }
 
-        // Traer las partidas del usuario
         $userId = $userData['id'];
         $partidas = $this->model->getPartidasByUser($userId);
 
-        // Datos adicionales
+
         $userData['inicial'] = strtoupper(substr($userData['nombre_usuario'], 0, 1));
-        //$userData['qr_base64'] = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://ejemplo.com/perfil/demo";
         $target = "http://desafio-unlam.infinityfreeapp.com/index.php?controller=profile&method=showProfile&user=" . $username;
         $userData['qr_url'] = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" . urlencode($target);
 
 
-
-        // Agregar partidas al contexto de Mustache
         $userData['partidas'] = $partidas;
-        //mostrar foto de perfil si existe
         $baseUrl = "/public/subidos/avatars/";
         $userData['foto_perfil'] = !empty($userData['foto'])
             ? $baseUrl . $userData['foto']
@@ -47,7 +42,6 @@ class ProfileController {
 
         $userData['es_propietario'] = ($currentUser === $username);
 
-        // Renderizar la vista
         $this->renderer->render("profile", $userData);
     }
 

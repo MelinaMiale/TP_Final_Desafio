@@ -26,13 +26,13 @@ class LoginController {
             $_SESSION["user_role"] = (int)$result["id_rol"];
             switch ($result["id_rol"]) {
                 case 1:
-                    header("Location: ?controller=admin&method=displayAdmin");
+                    header("Location: /admin/displayAdmin");
                     break;
                 case 2:
-                    header("Location: ?controller=editor&method=displayEditorHome");
+                    header("Location: /editor/displayEditorHome");
                     break;
                 case 3:
-                    header("Location: ?controller=playerhome&method=displayHome");
+                    header("Location: /playerHome/displayHome");
                     break;
             }
             exit;
@@ -42,7 +42,6 @@ class LoginController {
                 : "Usuario o clave incorrecta";
 
             if($message == "Tu cuenta aún no fue verificada. Revisa tu correo."){
-                // todo: ¿deberíamos re-enviar el mail o exponer la opción para reenviar el mail?
             }
 
             $this->renderer->render("login", [
@@ -54,7 +53,7 @@ class LoginController {
 
     public function home() {
         if (!isset($_SESSION["user_name"])) {
-            header("Location: ?controller=login&method=loginForm");
+            header("Location: /login/loginForm");
             exit;
         }
 

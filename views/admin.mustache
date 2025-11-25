@@ -9,8 +9,7 @@
 <header class="main-header">
     <h1 class="logo">Desafío UNLaM</h1>
     <nav class="nav-links">
-        <a href="../../index.php?controller=playerhome&method=displayHome">Inicio</a>
-        <a href="/ranking/display">Ranking</a>
+        <a href="../../admin/displayAdmin">Inicio</a>
         <a href="../../index.php?controller=login&method=logout">Cerrar Sesión</a>
     </nav>
 </header>
@@ -20,8 +19,8 @@
     <div>
         <p class="welcome">Bienvenido, {{admin_name}}</p>
         <div class="navigation-links">
-        <a href="../../index.php?controller=Admin&method=displayAdmin">Partidas</a>
-        <a href="../../index.php?controller=Admin&method=displayAdminUsers">Usuarios</a>
+        <a href="../../admin/displayAdmin">Partidas</a>
+        <a href="../../admin/displayAdminUsers">Usuarios</a>
         </div>
     </div>
     <div class="cuadradote">
@@ -141,11 +140,32 @@
             </div>
         </div>
     </div>
-    <div class="close-sesion">
-        <a href="?controller=login&method=logout" class="btn">Cerrar Sesión</a>
-    </div>
 </div>
-
+<footer class="main-footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>Preguntas frecuentes</h3>
+            <ul>
+                <li><a href="#">¿Cómo se juega?</a></li>
+                <li><a href="#">Reglas</a></li>
+                <li><a href="#">Puntajes</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>Redes sociales</h3>
+            <ul>
+                <li><a href="#">Instagram</a></li>
+                <li><a href="#">Facebook</a></li>
+                <li><a href="#">YouTube</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>Contacto</h3>
+            <p>desafio@unlam.edu.ar</p>
+        </div>
+    </div>
+    <p class="footer-bottom">© 2025 Desafío UNLaM — Proyecto académico</p>
+</footer>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>

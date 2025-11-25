@@ -27,7 +27,6 @@ class UserLevelManager {
             $ratio = $correctResponses / $totalResponses;
         }
 
-        // todo: si persistiera este valor en la tabla usuario, y utilizaría este bloque de codigo para detectar el cambio y avisarselo. incentivarlo a que siga jugando. reveer! por lo pronto no se usa.
         if ($ratio >= 0.7) {
             $level = UserLevel::SUPER_SAYAYIN;
         } elseif ($ratio >= 0.3 && $ratio < 0.7) {

@@ -113,7 +113,6 @@ class RankingModel {
 
     public function getUserScore($username, $timeFilter = 'historico') {
         if ($timeFilter === 'historico') {
-            // DIRECTO DE LA TABLA USUARIO
             $sql = "SELECT puntos_totales FROM USUARIO WHERE nombre_usuario = '$username'";
             $result = $this->connection->query($sql);
             return $result[0]['puntos_totales'] ?? 0;
