@@ -14,7 +14,7 @@
     <div class="row">
         <div class="col-main">
             <div class="header">
-                <a href="/home/displayHome" class="btn-back">
+                <a href="/playerhome/displayHome" class="btn-back">
                     <span class="material-symbols-outlined">arrow_back</span>
                 </a>
                 <h1>Ranking</h1>
@@ -155,17 +155,14 @@
     </div>
 </div>
 <script>
-    // 1. Leemos la URL actual para saber qué filtros hay
     const urlParams = new URLSearchParams(window.location.search);
 
-    // Referencias
     const btnTiempo = document.getElementById('btnTiempo');
     const desplegableTiempo = document.getElementById('desplegable');
     const btnPais = document.getElementById('btnPais');
     const desplegablePais = document.getElementById('desplegable2');
     const searchInput = document.querySelector('.input-field');
 
-    // 2. Manejo Dropdown TIEMPO
     btnTiempo.addEventListener('click', (e) => {
         e.stopPropagation();
         desplegableTiempo.classList.toggle('activo');
@@ -174,15 +171,14 @@
 
     document.querySelectorAll('.opcion').forEach(opcion => {
         opcion.addEventListener('click', () => {
-            // Obtenemos valor (historico, mes, semana, dia)
+
             const valor = opcion.getAttribute('data-value');
             urlParams.set('time', valor);
-            urlParams.set('page', 1); // Volver a pag 1 al filtrar
-            window.location.search = urlParams.toString(); // Recargar
+            urlParams.set('page', 1);
+            window.location.search = urlParams.toString();
         });
     });
 
-    // 3. Manejo Dropdown PAIS
     btnPais.addEventListener('click', (e) => {
         e.stopPropagation();
         desplegablePais.classList.toggle('activo');
@@ -202,15 +198,14 @@
         });
     });
 
-    // Cerrar menús al hacer click afuera
+
     document.addEventListener('click', () => {
         desplegableTiempo.classList.remove('activo');
         desplegablePais.classList.remove('activo');
     });
 
-    // 4. Manejo del Buscador (Enter)
     if(searchInput) {
-        // Rellenar input si ya había búsqueda
+
         if(urlParams.has('search')) searchInput.value = urlParams.get('search');
 
         searchInput.addEventListener('keypress', function(e) {

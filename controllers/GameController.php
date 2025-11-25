@@ -15,7 +15,6 @@ class GameController
         $playableQuestions = $this->model->getPlayableQuestionsForUser($userId);
 
         if (empty($playableQuestions)) {
-        // if (true) {
             $this->resetUserProgressIfNoQuestions();
         }
 
@@ -50,14 +49,11 @@ class GameController
         $_SESSION["currentGame"]["currentQuestionIndex"] = 0;
         $_SESSION["currentGame"]["gameId"] = $currentGame->id;
 
-
-
         header("Location: /index.php?controller=game&method=displayGame");
         exit;
     }
 
     public function displayGame() {
-        // Validaciones ✔
         if (!isset($_SESSION["currentGame"]) ||
             empty($_SESSION["currentGame"]) ||
             !isset($_SESSION['from_game_start']) ||
@@ -67,10 +63,8 @@ class GameController
             exit;
         }
 
-        // Una vez validado, borramos la marca
         unset($_SESSION['from_game_start']);
 
-        // Si no hay preguntas cargadas, cargarlas ahora
         if (!isset($_SESSION["currentGame"]["playableQuestions"])) {
             $this->getPlayableQuestionsAndSetGameData($_SESSION["userId"], $_SESSION["currentGame"]["gameId"]);
             return;
@@ -79,7 +73,6 @@ class GameController
         $index = $_SESSION["currentGame"]["currentQuestionIndex"];
         $playableQuestions = $_SESSION["currentGame"]["playableQuestions"];
 
-        // Protege contra índices fuera de rango
         if (!isset($playableQuestions[$index])) {
             header("Location: /index.php?controller=playerhome&method=displayHome");
             exit;
@@ -94,9 +87,6 @@ class GameController
     }
 
     public function submitAnswer() {
-
-
-
         $index = $_SESSION["currentGame"]["currentQuestionIndex"];
         $currentQuestion = $_SESSION["currentGame"]["playableQuestions"][$index];
         $submittedAnswer = isset($_POST['answer']) ? $_POST['answer'] : 'NO_ANSWER';
@@ -111,7 +101,6 @@ class GameController
         $elapsedTime = $timing["elapsedTime"];
 
         if ($timeout) {
-            // $this->endGame($submittedAnswer);
             $this->renderWrongAnswer($submittedAnswer, true, $elapsedTime);
             exit;
         }
@@ -123,13 +112,12 @@ class GameController
         }
 
         if (!$wasCorrect) {
-            //$this->endGame($submittedAnswer);
+
             $this->renderWrongAnswer($submittedAnswer, false, $elapsedTime);
             exit;
         }
 
         $_SESSION["currentGame"]["score"] = $_SESSION["currentGame"]["score"] + 1;
-        // $this->updateQuestionRatio($questionId, true);
         $this->updateUserResponse($submittedAnswer, $questionId, true);
         $_SESSION['currentGame']['currentQuestionIndex']++;
         $this->getAndDisplayNextQuestion();

@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . "/CiudadPaisModel.php";
 
-class ProfileModel {
+class ProfileModel extends CiudadPaisModel {
 
     public function __construct($connection) {
         $this->connection = $connection;
@@ -26,7 +26,6 @@ class ProfileModel {
     ";
 
         $result = $this->connection->query($sql);
-        // Si MyConnection->query() devuelve un array de filas:
         return $result ? $result[0] : null;
     }
 

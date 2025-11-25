@@ -451,3 +451,51 @@ body {
         font-size: 0.9rem;
     }
 }
+
+
+.main-footer {
+    background: rgba(38, 70, 83, 0.9);
+    color: white;
+    padding: 2rem 1rem;
+    margin-top: 3rem;
+    font-family: 'Rubik', sans-serif;
+    margin-left: -33px;
+
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 2rem;
+    text-align: left;
+}
+
+.footer-section h3 {
+    color: #e9c46a;
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+}
+
+.footer-section ul li a:hover {
+    color: #f4a261;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
