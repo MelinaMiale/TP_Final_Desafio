@@ -30,21 +30,31 @@ class ReportquestionController {
         }
         $this->renderer->render("reportQuestion", $completeQuestion);
     }
-
     public function submitReport() {
         $questionId = $_POST["questionId"];
-        if(!empty($_POST["proposedStatement"])){
-            $proposedStatement = $_POST["proposedStatement"];
-            $this->model->reportProposedStatement($proposedStatement, $questionId);
-        } else if(!empty($_POST["selectedOption"]) || !empty($_POST["proposedAnswer"])){
-            $selectedOption = $_POST["selectedOption"];
-            $userAnswer = $_POST["proposedAnswer"];
-            $proposedAnswer = $userAnswer || $selectedOption;
+        if (!empty($_POST["proposedStatement"])) {
+            $reason = trim($_POST["proposedStatement"]);
+            $this->model->reportProposedStatement($reason, $questionId);
+        }
+
+
+        if (!empty($_POST["selectedOption"]) || !empty($_POST["proposedAnswer"])) {
+
+            if (!empty($_POST["selectedOption"])) {
+                $proposedAnswer = trim($_POST["selectedOption"]);
+            }
+            else {
+                $proposedAnswer = trim($_POST["proposedAnswer"]);
+            }
+
             $this->model->reportProposedAnswer($proposedAnswer, $questionId);
         }
+
+        $_SESSION['reported'] = true;
 
         header("Location: ?controller=game&method=resumeAfterReport");
         exit;
     }
+
 
 }

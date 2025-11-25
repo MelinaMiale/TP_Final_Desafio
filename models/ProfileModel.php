@@ -49,6 +49,8 @@ class ProfileModel extends CiudadPaisModel {
             $partidas[] = [
                 'date' => date("d M Y",
                     strtotime($game['fecha'])),
+                'time' => date("H:i",
+                    strtotime($game['fecha'])),
                 'correct' => $correct,
                 'points' => $game['points'] ];
 
