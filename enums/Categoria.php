@@ -32,7 +32,7 @@ class Categoria
         self::LITERATURA => 'literatura',
         self::GEOGRAFIA => 'geografia',
         self::MUSICA => 'musica',
-        self::DEPORTES => 'deportes',
+        self::DEPORTES => 'deporte',
         self::TECNOLOGIA => 'tecnologia',
         self::VIDEOJUEGOS => 'videojuegos',
         self::GASTRONOMIA => 'gastronomia',
