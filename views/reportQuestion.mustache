@@ -11,15 +11,13 @@
         <p class="rq-subtitle">Elegí qué querés reportar:</p>
 
         <div class="rq-columns">
-            <!-- Enunciado -->
             <div id="colStatement" class="rq-column">
                 <h3>Enunciado</h3>
-                <p class="rq-question-text">{{questionText}}</p>
+                <p class="rq-question-text">{{text}}</p>
                 <textarea id="inputStatement" name="proposedStatement" placeholder="Proponé el enunciado correcto..." rows="3"></textarea>
                 <p id="msgStatement" class="rq-message rq-hidden">Has elegido reportar el enunciado</p>
             </div>
 
-            <!-- Respuestas -->
             <div id="colAnswers" class="rq-column">
                 <h3>Respuestas</h3>
                 <p class="rq-subtitle-small">Elegí la respuesta correcta o “Proponer respuesta manual”:</p>
@@ -36,12 +34,10 @@
             </div>
         </div>
 
-        <!-- Hidden fields -->
         <input type="hidden" name="questionId" value="{{questionId}}">
         <input type="hidden" id="issueType" name="issueType" value="">
         <input type="hidden" id="selectedAnswer" name="selectedAnswer" value="">
 
-        <!-- Acciones -->
         <div class="rq-actions">
             <button type="submit" class="rq-btn rq-report-btn" title="Solo podrás reportar una pregunta por partida. Luego la partida continúa normalmente.">Reportar</button>
             <a href="/game/resumeAfterReport" class="rq-btn">Cancelar</a>
